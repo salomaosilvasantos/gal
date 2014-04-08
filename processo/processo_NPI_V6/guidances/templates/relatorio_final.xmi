@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eclipse.epf.uma:GuidanceDescription xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.6/uma.ecore" xmlns:epf="http://www.eclipse.org/epf" epf:version="1.5.1" xmi:id="-qXFLWdKxbdkWjiZn6hrowA" name="relatorio_final,_EuX8cJ-3EeKL2OX-ZFDXHA" guid="-qXFLWdKxbdkWjiZn6hrowA">
+  <attachments>resources/Relatório_Final_Estágio_template.docx</attachments>
+</org.eclipse.epf.uma:GuidanceDescription>

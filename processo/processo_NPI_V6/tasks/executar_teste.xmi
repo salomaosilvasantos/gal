@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eclipse.epf.uma:TaskDescription xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.6/uma.ecore" xmlns:epf="http://www.eclipse.org/epf" epf:version="1.5.1" xmi:id="-8MCp-EbAc4vfxRZSNerKrw" name=",_CrkxIJ9dEeKlCuxxakZHpg" guid="-8MCp-EbAc4vfxRZSNerKrw">
+  <sections xmi:id="_hFHicJ9dEeKlCuxxakZHpg" name="1) Executar os testes   " guid="_hFHicJ9dEeKlCuxxakZHpg">
+    <sectionDescription>&lt;p&#xD;
+style=&quot;TEXT-ALIGN: left; TEXT-TRANSFORM: none; BACKGROUND-COLOR: rgb(255,255,255); TEXT-INDENT: 0px; LETTER-SPACING: normal; FONT: 13px arial, helvetica, sans-serif, kanji2; WHITE-SPACE: normal; COLOR: rgb(0,0,0); WORD-SPACING: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px&quot;>&#xD;
+    Os testes devem ser executados de acordo com os cenários descritos no documento de especificação de caso de uso. Todos&#xD;
+    os testes realizados devem ser inseridos na planilha de teste. Cada execução dos testes&amp;nbsp;deve gerar uma nova aba na&#xD;
+    planilha.&#xD;
+&lt;/p></sectionDescription>
+  </sections>
+</org.eclipse.epf.uma:TaskDescription>

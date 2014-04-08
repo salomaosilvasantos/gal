@@ -1,0 +1,8 @@
+#!/bin/bash
+SAVEIFS=$IFS
+IFS=$(echo -en "\n\b")
+for f in $(ls *.doc); do
+  echo "Processing $f file..."
+  soffice --headless --convert-to xml:"writer_layout_dump" "$f"
+done
+IFS=$SAVEIFS

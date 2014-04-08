@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br" >
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="./resources/jquery-ui-1.10.3/themes/base/jquery-ui.css" />
+<script src="./resources/jquery-ui-1.10.3/jquery-1.9.1.js" type="text/javascript"></script>
+<script src="./resources/jquery-ui-1.10.3/ui/jquery-ui.js" type="text/javascript"></script>
+<script src="./resources/js/layout.js" type="text/javascript"></script>
+<script src="./resources/js/cadastrarDisciplina.js" type="text/javascript"></script>
+<script src="./resources/jquery.validate.js" type="text/javascript"></script>
+<link rel="stylesheet" href="./resources/template.css" />
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
+	<title>GAL - Gestão e Aquisição de Livros</title>
+</head>
+<body>
+<div id=all>
+<div id="banner">
+	<h1> 
+	<img src="./resources/img/logo910w.png" alt="Imagem" id = "img" />
+	</h1>
+</div>
+
+<div id="breadcrumbs"><div id="inicio"><a href=index.html>Início > </a>Cadastrar Disciplinas</div>. </div>
+<div id="geral">
+<div id="menu">
+	<ul id="menu-lateral">
+		<li><a href="#">Disciplina</a>
+			<ul>
+				<li><a href="cadastrarDisciplinas.html" >Cadastrar Disciplina</a></li>
+				<li><a href="listarDisciplinas.html">Listar Disciplina</a></li>
+			</ul>
+		</li>
+		
+		<li><a href="#">Titulos</a>
+			<ul>
+				<li><a href="cadastrarTitulo.html">Cadastrar Titulos</a></li>
+				<li><a href="listarTitulos.html">Listar Titulos</a></li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<div id="conteudo">
+	<form onsubmit="return validarCadastroDisciplina(this);" action="CadastrarDisciplina" method="post" id = "cadastrarDisciplinas" enctype="application/x-www-form-urlencoded">
+	
+	<fieldset>
+	<div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span id="ui-id-7" class="ui-dialog-title">Cadastrar Disciplina</span></div>
+	<!-- <legend id="legenda">Cadastrar Disciplina</legend> -->
+	<table>
+		<tr>
+			<td><label for="codigo">Código da Disciplina:</label></td>
+			<td><input type="text" name="codigo" id="codigo" size ="40" /><br /></td>
+			<td><p id= "msg_codigo" class = "mensagens">* Preencha o Código da Disciplina Corretamente.</p></td>
+		</tr>
+		<tr>
+			<td><label for="nome_disciplina">Nome da Disciplina:</label></td>
+			<td> <textarea id="nome_disciplina" name="nome_disciplina" rows="2" cols="40"></textarea></td>
+			<td><p id= "msg_nome" class = "mensagens">* Nome da Disciplina não informado.</p></td>
+		</tr>
+		
+		<tr>
+			<td><label for="semestre_oferta">Semestre de Oferta:</label></td>
+			<td >
+			<select name="semestre_oferta" id="semestre_oferta">
+					<option value="1" selected="selected">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+				</select></td>
+		</tr>
+		
+		<tr>
+			<td> <label for="qantidade_aluno">Quantidade de Alunos:</label> </td>
+			<td> <input id="quantidade_aluno" type="text" name="quantidade_aluno" value = "0" size= "4"/> </td>
+			<td><p id= "msg_quantidade" class = "mensagens">* Quantidade de alunos só pode conter numeros.</p></td>
+		</tr>
+		</table>
+		<table align = "center">
+		<tr>
+			<td>
+			<input type="submit" value="Cadastrar" class="botao"/>
+			<input type="reset" value="Limpar" class="botao" />
+			</td>
+		</tr>
+		</table>
+	
+	
+	
+	
+
+
+	
+	
+	</fieldset>
+	</form> 
+</div>
+</div>
+</div>
+
+</body>
+</html>

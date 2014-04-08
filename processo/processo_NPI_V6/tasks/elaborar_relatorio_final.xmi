@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eclipse.epf.uma:TaskDescription xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.6/uma.ecore" xmlns:epf="http://www.eclipse.org/epf" epf:version="1.5.1" xmi:id="-PLocQGO5pNgFjtrm4u4jJw" name=",_dWpLUJ-6EeKL2OX-ZFDXHA" guid="-PLocQGO5pNgFjtrm4u4jJw">
+  <sections xmi:id="_A8-xoJ-7EeKL2OX-ZFDXHA" name="1) Elaborar Relatório Final  " guid="_A8-xoJ-7EeKL2OX-ZFDXHA">
+    <sectionDescription>&lt;p&#xD;
+style=&quot;TEXT-ALIGN: left; TEXT-TRANSFORM: none; BACKGROUND-COLOR: rgb(255,255,255); TEXT-INDENT: 0px; LETTER-SPACING: normal; FONT: 13px arial, helvetica, sans-serif, kanji2; WHITE-SPACE: normal; COLOR: rgb(0,0,0); WORD-SPACING: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px&quot;>&#xD;
+    Deve ser elaborado&amp;nbsp;um relatório final o qual deve conter:&lt;br />&#xD;
+    - Dados de todos os integrantes da equipe;&lt;br />&#xD;
+    - Dados da instituição do estágio;&lt;br />&#xD;
+    - Descrever a empresa onde a equipe realizou o estágio;&lt;br />&#xD;
+    - Escrever um relato de experiência descrevendo como foi o estágio, as atividades mostradas no relato devem ser&#xD;
+    demonstradas em uma tabela com o cronograma destas e as lições aprendidas durante o estágio devem ser descritas, bem&#xD;
+    como as dificuldades encontradas e as oportunidades de melhoria identificadas.&lt;br />&#xD;
+    - Breve encerramento do relatório.&#xD;
+&lt;/p>&#xD;
+&lt;p&#xD;
+style=&quot;TEXT-ALIGN: left; TEXT-TRANSFORM: none; BACKGROUND-COLOR: rgb(255,255,255); TEXT-INDENT: 0px; LETTER-SPACING: normal; FONT: 13px arial, helvetica, sans-serif, kanji2; WHITE-SPACE: normal; COLOR: rgb(0,0,0); WORD-SPACING: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px&quot;>&#xD;
+    O template do relatório final deve servir de guia para a construção do relatório.&#xD;
+&lt;/p></sectionDescription>
+  </sections>
+</org.eclipse.epf.uma:TaskDescription>

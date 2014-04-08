@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<link rel="stylesheet" href="./resources/jquery-ui-1.10.3/themes/base/jquery-ui.css" />
+<script src="./resources/jquery-ui-1.10.3/jquery-1.9.1.js" type="text/javascript"></script>
+<script src="./resources/jquery-ui-1.10.3/ui/jquery-ui.js" type="text/javascript"></script>
+<script src="./resources/js/layout.js" type="text/javascript"></script>
+<script src="./resources/js/vincularBibliografia.js" type="text/javascript"></script>
+<script src="./resources/jquery.validate.js" type="text/javascript"></script>
+<link rel="stylesheet" href="./resources/template.css" />
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
+	<title>GAL - Gestão e Aquisição de Livros</title>
+</head>
+<body>
+<div id=all>
+<div id="banner">
+	<h1> 
+	<img src="./resources/img/imagem7.jpg" alt="Imagem" id = "img" />
+	</h1>
+</div>
+
+<div id="breadcrumbs"><div id="inicio"><a href=index.html>Início</a>Cadastrar Disciplinas</div><div id="logado">Logado como: <div id="login"></div>, <a href="#">Sair</a></div></div>
+
+<div id="menu">
+	<ul id="menu-lateral">
+		<li><a href="#">Cadastro</a>
+			<ul>
+				<li><a href="cadastrarDisciplinas.html">Cadastrar Disciplina</a></li>
+				<li><a href="cadastrarTitulo.html">Cadastrar Titulo</a></li>
+			</ul>
+		</li>
+		
+		<li><a href="#">Listar</a>
+			<ul>
+				<li><a href="listarDisciplinas.html">Listar Disciplinas</a></li>
+				<li><a href="listarTitulos.html">Listar Titulos</a></li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<div id="conteudo">
+	<form action="CadastrarDisciplina" method="post" id = "cadastrarDisciplinas">
+	<fieldset>
+	<legend id="legenda">Vincular Bibliografia à Disciplina</legend>
+	<legend id="legenda">Disciplina:</legend>
+	<table>
+		<tr>
+			<td><label for="titulo">Títulos para Vincular</label></td>
+			<td/>
+			<td><label for="basica">Básica</label><br /></td>
+			
+		</tr>
+			
+			<tr>
+			<td><form name=myform>
+			<select id=selecionarBibliografia name="Titulos" size="26" style="width: 320px" MULTIPLE>
+			</select>
+			</form></td>
+			
+			<td>
+			<input type="Button" value=">>" style="width:100px" onClick="MoveParaBibliografia(document.myform.Titulos,document.myform.Basica)"><br>
+            <br>
+            <input type="Button" value="<<" style="width:100px" onClick="MoveParaBibliografia(document.myform.Basica,document.myform.Titulos)"> <br>			
+			<br><br><br><br><br><br><br>
+			<input type="Button" value=">>" style="width:100px" onClick="MoveParaBibliografia(document.myform.Titulos,document.myform.Complementar)"><br>
+            <br>
+            <input type="Button" value="<<" style="width:100px" onClick="MoveParaBibliografia(document.myform.Complementar,document.myform.Titulos)">
+			</td>
+
+			<td><form name=myform>
+			<select name="Basica" size=12 style="width: 300px" MULTIPLE>
+			</select>
+			</form>
+
+			<label for="complementar">Complementar</label><br />
+
+			<form name=myform>
+			<select name="Complementar" size=12 style="width: 300px" MULTIPLE>
+			</select>
+			</form></td>
+		</tr>
+		
+		<tr>
+			<td> <td> <input type="submit" value="Vincular" class="botao"/> </td> </td>
+		</tr>
+		
+	</table>
+	
+	</fieldset>
+	</form> 
+</div>
+</div>
+<div id="sobre"><a href="#">Sobre</a></div>
+</body>
+</html>

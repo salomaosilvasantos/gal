@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eclipse.epf.uma:TaskDescription xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.6/uma.ecore" xmlns:epf="http://www.eclipse.org/epf" epf:version="1.5.1" xmi:id="-C5ltr_OXr5C1OQdjVGyhVg" name=",__xm3MJ9YEeKlCuxxakZHpg" guid="-C5ltr_OXr5C1OQdjVGyhVg">
+  <sections xmi:id="_IZer8J9ZEeKlCuxxakZHpg" name="1) Desenvolver caso de uso  " guid="_IZer8J9ZEeKlCuxxakZHpg">
+    <sectionDescription>&lt;span&#xD;
+style=&quot;TEXT-ALIGN: left; TEXT-TRANSFORM: none; BACKGROUND-COLOR: rgb(255,255,255); TEXT-INDENT: 0px; LETTER-SPACING: normal; DISPLAY: inline !important; FONT: 13px arial, helvetica, sans-serif, kanji2; WHITE-SPACE: normal; FLOAT: none; COLOR: rgb(0,0,0); WORD-SPACING: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px&quot;>&#xD;
+A equipe de desenvolvimento deve implementar todos os casos de uso que foram selecionados para a sprint atual e realizar&#xD;
+teste funcional ao fim da implementação.&lt;/span></sectionDescription>
+  </sections>
+</org.eclipse.epf.uma:TaskDescription>

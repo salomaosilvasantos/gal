@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<org.eclipse.epf.uma:TaskDescription xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.6/uma.ecore" xmlns:epf="http://www.eclipse.org/epf" epf:version="1.5.1" xmi:id="-NGAl0ecJIs7prtRYE9D-gA" name=",_VWZ1YJ9ZEeKlCuxxakZHpg" guid="-NGAl0ecJIs7prtRYE9D-gA">
+  <sections xmi:id="_gsarYJ9ZEeKlCuxxakZHpg" name="1) Gerar release do produto" guid="_gsarYJ9ZEeKlCuxxakZHpg">
+    <sectionDescription>&lt;p>&#xD;
+    Todos os casos de uso implemetados durante a Sprint devem ser unidos a fim de gerar uma release do produto&#xD;
+    potencialmete entregável. Devem ser realizados testes funcionais na release gerada.&#xD;
+&lt;/p></sectionDescription>
+  </sections>
+</org.eclipse.epf.uma:TaskDescription>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<link rel="stylesheet" href="./resources/jquery-ui-1.10.3/themes/base/jquery-ui.css" />
+<script src="./resources/jquery-ui-1.10.3/jquery-1.9.1.js" type="text/javascript"></script>
+<script src="./resources/jquery-ui-1.10.3/ui/jquery-ui.js" type="text/javascript"></script>
+<script src="./resources/js/layout.js" type="text/javascript"></script>
+<script src="./resources/js/listarDisciplinas.js" type="text/javascript"></script>
+<script src="./resources/js/vincularBibliografia.js" type="text/javascript"></script>
+<link rel="stylesheet" href="./resources/template.css" />
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">	
+	<title>GAL - Gestão e Aquisição de Livros</title>
+</head>
+<body onload="ListarDisciplinas();">
+<div id=all>
+<div id="banner">
+	<h1> 
+	<img src="./resources/img/logo910w.png" alt="Imagem" id = "img" />
+	</h1>
+</div>
+
+<div id="breadcrumbs"><div id="inicio"><a href=index.html>Início</a> > Listar Disciplinas</div>.</div>
+
+<div id="menu">
+	<ul id="menu-lateral">
+		<li><a href="#">Disciplina</a>
+			<ul>
+				<li><a href="cadastrarDisciplinas.html" >Cadastrar Disciplina</a></li>
+				<li><a href="listarDisciplinas.html">Listar Disciplina</a></li>
+			</ul>
+		</li>
+		
+		<li><a href="#">Titulos</a>
+			<ul>
+				<li><a href="cadastrarTitulo.html">Cadastrar Titulos</a></li>
+				<li><a href="listarTitulos.html">Listar Titulos</a></li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<div id="conteudo">
+<p hidden="true" id="notificacao">Essa ação irá excluir o titulo permanentemente. Tem certeza que dezeja continuar?</p>
+<div id="janelaModalDisciplina" title="Editar Disciplina">
+
+	<form onsubmit="return validarEdicaoDisciplina(this);" action="EditarDisciplina" method="post" id = "cadastrarDisciplinas">
+	<input type="hidden" name="codigo_atual" id="codigo_atual" value="123">
+	<fieldset>
+	<legend id="legenda">Editar Disciplina</legend>
+	<table>
+		<tr>
+			<td><label for="codigo">Código:</label></td>
+			<td><input type="text" name="codigo" id="codigo" size = 30 /><br /></td>
+			<td><p id= "msg_codigo" class = "mensagens">* Preencha o Código da Disciplina Corretamente.</p></td>
+		</tr>
+		<tr>
+			<td><label for="nome_disciplina">Nome da Disciplina:</label>
+			</td>
+			<td> <textarea name="disciplina" rows="2" cols="30" id = "nome_disciplina"></textarea></td>
+			<td><p id= "msg_nome" class = "mensagens">* Nome da Disciplina não informado.</p></td>
+		
+		<tr>
+			<td><label for="semestre_oferta">Semestre de Oferta:</label></td>
+			<td >
+			<select name="semestre_oferta" id="semestre_oferta">
+					<option value="1" selected="selected">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+				</select>
+			</td>
+		</tr>
+		
+		<tr>
+			<td> <label for="qantidade_aluno">Quantidade de Aluno:</label> </td>
+			<td> <input id="quantidade_aluno" type="text" name="quantidade_aluno" value = "0" size = 4/> </td>
+			<td><p id= "msg_quantidade" class = "mensagens">* Quantidade de alunos só pode conter numeros.</p></td>
+		
+		</tr>
+	</table>
+	<table align = "center">	
+		<tr>
+			<td>
+			<input type="submit" value="Editar" class="botao"/>
+			<input type="reset" value="Limpar" class="botao" />
+			</td>
+		</tr>
+	</table>
+	</fieldset>
+	</form> 
+
+</div>
+
+
+<div id="janelaModalDisciplinaVincular" title="Vincular Bibliografia">
+	<input type="hidden" name="id_disciplina" id="id_disciplina" value="123">
+	<form action="VincularBibliografia" method="post" id = "vincularBibliografia">
+	<fieldset>
+	<legend id="legendaVincular">Disciplina:</legend>
+	<table>
+		<tr>
+			<td><label for="titulo">Títulos para Vincular</label></td>
+			<td/>
+			<td><label for="basica">Básica</label><br /></td>
+			
+		</tr>
+			
+			<tr>
+			<td>
+			<select id=selecionarBibliografia name="Titulos" size="26" style="width: 440px" multiple="multiple">
+			</select>
+			</td>
+			
+			<td>
+			<input id="basicaAdd" type="Button" value=">>" style="width:100px"><br>
+            <br>
+            <input id="basicaDel" type="Button" value="<<" style="width:100px"> <br>			
+			<br><br><br><br><br><br><br>
+			<input id="complementarAdd" type="Button" value=">>" style="width:100px"><br>
+            <br>
+            <input id="complementarDel" type="Button" value="<<" style="width:100px">
+			</td>
+
+			<td>
+			<select id="selecionarBasica" name="Basica" style="width: 300px; height: 200px;" multiple="multiple">
+			</select>		
+
+			<label for="complementar">Complementar</label><br />
+
+			
+			<select id="selecionarComplementar" name="Complementar" style="width: 300px; height: 200px;" multiple="multiple">
+			</select>
+			
+			</td>
+		</tr>
+		
+		<tr>
+			<td></td> <td> <input id="vincular" type="submit" value="Vincular" class="botao"/> </td>
+		</tr>
+		
+	</table>
+	
+	</fieldset>
+	</form> 
+
+</div>
+
+
+	<div id="menu_busca">
+<span class="ui-icon ui-icon-search" style="display:inline-block"></span>
+<select name="tipo" id="tipoBuscaDisciplina">
+<option value="true">Código</option>
+<option value="false"  selected="selected">Nome</option>
+</select>
+<input id="buscar" />
+<input type="submit" value="Buscar" id="btnbuscarDisciplinas" class="botao"/>
+<input type="submit" value="Listar Todos" id="botaoListarTodasDisciplinas" class="botao"/>
+</div>
+<div id="limiteTabela" class="limiteTabela">
+	<!-- <form action="DeletarDisciplinaServlet" method="get" name = "DeletarDisciplinaServlet" > -->
+	<table id="tabela" class="tabela_listar">
+		<tr><td>Código</td><td>Nome</td><td>Semestre de Oferta</td><td>Quantidade de Alunos</td> <td>Ações</td><!--<td>Vincular Bibliografia</td><td>Deletar</td> --></tr>
+	</table>
+	<!--</form> -->
+</div>
+</div>
+</div>
+
+</body>
+</html>
