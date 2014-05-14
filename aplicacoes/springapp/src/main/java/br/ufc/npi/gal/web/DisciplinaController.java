@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,15 +52,21 @@ public class DisciplinaController {
 			return "redirect:/";
 
 		} else {
-			model.addAttribute("editDisciplina", disc);
+			model.addAttribute("disciplina", disc);
 		}
 			return "edit";
 	}
 	
 	@RequestMapping(value = "/{id}/editDisciplinaForm.htm", method=RequestMethod.POST)
-	public String updateDisciplina(@PathVariable("id") Integer id, @ModelAttribute(value="editDisciplina") Disciplina discUpdate,BindingResult result){
+	public String updateDisciplina(@PathVariable("id") Integer id, @Valid Disciplina discUpdate, BindingResult result){
+		
+		if(result.hasErrors()){
+			return "edit";
+		}
+
 		this.disciplinaService.updateDisciplina(discUpdate);
 		return "redirect:/";
+		
 	}
 	
 	

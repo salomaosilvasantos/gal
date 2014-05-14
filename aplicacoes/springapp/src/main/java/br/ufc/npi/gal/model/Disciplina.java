@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -21,12 +22,14 @@ public class Disciplina {
 
 	@NotEmpty(message="Campo Nome não pode ficar vazio")
 	@Column(name = "nome")
-	@Pattern(regexp="^[a-zA-Z0-9]+",message="Não pode possuir caracteres especiais")
+	@Pattern(regexp="[a-zA-Z\\sà-ùÀ-Ù]{0,}",message="O campo Nome não pode possuir caracteres especiais ou números.")
+	@Size(min = 6, max = 40, message = "O nome deve estar entre 6 e 40 caracteres")
 	private String nome;
 	
 	@NotEmpty(message="Campo Código não pode ficar vazio")
 	@Column(name = "cod_d")
-	@Pattern(regexp="^[a-zA-Z0-9]+",message="Não pode possuir caracteres especiais")
+	@Pattern(regexp="^[a-z\\sA-Z0-9]+",message="O campo código não pode possuir caracteres especiais.")
+	@Size(min = 6, max = 12, message = "O código deve estar entre 6 e 12 caracteres")
 	private String codigoDisciplina;	
 	
 	public Disciplina() {

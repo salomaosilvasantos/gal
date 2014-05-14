@@ -6,6 +6,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 
+<title>Disciplina</title>
 <jsp:include page="fragments/headTag.jsp" />
 
 <body>
