@@ -9,10 +9,10 @@
 <body>
 	<form:form action="inserirDisciplina.htm" method="post"
 		modelAttribute="disciplina">
-		<label for="code">Código da Disciplina:</label>
-		<input type="text" name="code" id="code" />
+		<label for="codigoDisciplina">Código da Disciplina:</label>
+		<input type="text" name="code" id="codigoDisciplina" />
 		<br />
-		<form:errors cssClass="error" path="code" />
+		<form:errors cssClass="error" path="codigoDisciplina" />
 		<label for="code">Nome da Disciplina:</label>
 		<input type="text" name="nome" id="nome" />
 		<br />

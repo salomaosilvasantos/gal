@@ -28,8 +28,8 @@
 		 <form:input path="nome"/><br>
 		 <form:errors class="invalid" path="nome" />
 		 
-		  <form:label path="code">Codigo:</form:label><br>
-		 <form:input path="code"/><br>
+		  <form:label path="codigoDisciplina">Codigo:</form:label><br>
+		 <form:input path="codigoDisciplina"/><br>
 		 
 		
 		<input type="submit" value="Submit" />
