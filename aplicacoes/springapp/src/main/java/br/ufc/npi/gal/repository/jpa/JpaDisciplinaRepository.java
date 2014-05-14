@@ -1,4 +1,4 @@
-package com.companyname.springapp.repository;
+package br.ufc.npi.gal.repository.jpa;
 
 import java.util.List;
 
@@ -9,20 +9,21 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.companyname.springapp.domain.Disciplina;
+import br.ufc.npi.gal.model.Disciplina;
+import br.ufc.npi.gal.repository.DisciplinaRepository;
 
 @Repository(value = "disciplinaDao")
 @Transactional
-public class JPADisciplinaDao implements DisciplinaDao {
+public class JpaDisciplinaRepository implements DisciplinaRepository {
 
-	// etiqueta do spring utiliza para carregar o objeto EntityManager
-	// responsável por fazer
-	// as operações com as entities
+	/**
+	 * etiqueta do spring utiliza para carregar o objeto EntityManager
+	 * responsável por fazer as operações com as entities
+	 **/
 	@PersistenceContext
 	private EntityManager em;
 
 	public Disciplina findById(Integer id) {
-
 		Disciplina disc = em.find(Disciplina.class, id);
 		return disc;
 	}
@@ -34,13 +35,11 @@ public class JPADisciplinaDao implements DisciplinaDao {
 	}
 
 	public void deleteDisciplina(Integer id) {
-
 		Disciplina disc = findById(id);
 		em.remove(disc);
 	}
 
 	public void updateDisciplina(Disciplina disciplina) {
-
 		em.merge(disciplina);
 	}
 
@@ -50,14 +49,16 @@ public class JPADisciplinaDao implements DisciplinaDao {
 		} else
 			em.merge(disciplina);
 	}
-
+	
+	/**
+	 * Verifica se possui disciplina com o mesmo codigo cadastrada, para não ter conflito de id.
+	 * */
 	public Disciplina pesquisarDisciplina(String cod, String nome) {
-
 		List<Disciplina> results = null;
 
 		try {
 			results = em
-					.createQuery("from Disciplina where code =:cod",
+					.createQuery("from Disciplina where codigoDisciplina =:cod",
 							Disciplina.class).setParameter("cod", cod)
 					.getResultList();
 

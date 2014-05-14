@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
@@ -11,7 +10,6 @@
 <link href="<c:url value="/resource-bootstrap/css/bootstrap-combined.min.css" />" rel="stylesheet"/>
 <link href="<c:url value="/resource-bootstrap/css/jquery.dataTables.css" />" rel="stylesheet"/>
 <script src="<c:url value="/resource-bootstrap/js/jquery.dataTables.js"/>"></script>
-<script src="<c:url value="/resource-bootstrap/js/jquery-latest.min.js"/>"></script>
 
 
 
@@ -29,13 +27,11 @@
 	    </datatables:column>
 	    
 	    <datatables:column title="Codigo">
-	        <c:out value="${disciplina.code}"></c:out>
+	        <c:out value="${disciplina.codigoDisciplina}"></c:out>
 	    </datatables:column>
 	    
 	    <datatables:column title="Editar">
-	        <!--  <button class = "btn btn-primary"  href ="<c:url value = "/${disciplina.id}/editDisciplina.htm"></c:url>"></button>-->
 	       <a class="buttonAdd" href="<c:url value = "/${disciplina.id}/editDisciplina.htm"></c:url>">Editar Disciplina</a>
-<!-- 	       <input type="button" class="btn" value="Editar"  /> -->
 	    </datatables:column>
 	    
 	    <datatables:column title="Deletar">
@@ -43,7 +39,7 @@
 	    </datatables:column>
 	</datatables:table>
 	
-	<aside class="leftBox"> <a class="buttonAdd" href="adicionarDisciplina.htm"><p class = "textoMenu">Adicionar Disciplina</p></a> </aside>			 
+	<a class="buttonAdd" href="adicionarDisciplina.htm">Adicionar Disciplina</a>			 
 	
 </body>
 </html>

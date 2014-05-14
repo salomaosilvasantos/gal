@@ -1,11 +1,11 @@
-package com.companyname.springapp.repository;
+package br.ufc.npi.gal.repository;
 
 
 import java.util.List;
 
-import com.companyname.springapp.domain.Disciplina;
+import br.ufc.npi.gal.model.Disciplina;
 
-public interface DisciplinaDao {
+public interface DisciplinaRepository {
 
 	public Disciplina findById(Integer id);
 	

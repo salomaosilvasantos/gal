@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.companyname</groupId>
-	<artifactId>springapp</artifactId>
+	<groupId>br.ufc.npi.gal</groupId>
+	<artifactId>gal_npi</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>springapp Maven Webapp</name>
+	<name>gal_npi Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
@@ -42,7 +42,6 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.3-1101-jdbc4</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>taglibs</groupId>
@@ -102,7 +101,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>springapp</finalName>
+		<finalName>gal_npi</finalName>
 	</build>
 	<properties>
 		<org.springframework.version>4.0.3.RELEASE</org.springframework.version>

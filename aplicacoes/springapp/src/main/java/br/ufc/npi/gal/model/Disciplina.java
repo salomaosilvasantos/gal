@@ -1,4 +1,4 @@
-package com.companyname.springapp.domain;
+package br.ufc.npi.gal.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -27,15 +27,11 @@ public class Disciplina {
 	@NotEmpty(message="Campo Código não pode ficar vazio")
 	@Column(name = "cod_d")
 	@Pattern(regexp="^[a-zA-Z0-9]+",message="Não pode possuir caracteres especiais")
-	private String code;	
+	private String codigoDisciplina;	
 	
 	public Disciplina() {
-		this.code = "";
+		this.codigoDisciplina = "";
 		this.nome = "";
-	}
-
-	public String getCode() {
-		return code;
 	}
 
 	public Integer getId() {
@@ -46,8 +42,12 @@ public class Disciplina {
 		this.id = id;
 	}
 	
-	public void setCode(String code) {
-		this.code = code;
+	public String getCodigoDisciplina() {
+		return codigoDisciplina;
+	}
+	
+	public void setCodigoDisciplina(String codigoDisciplina) {
+		this.codigoDisciplina = codigoDisciplina;
 	}
 
 	public String getNome() {
@@ -61,6 +61,6 @@ public class Disciplina {
 	@Override
 	public String toString() {
 		return "Disciplina [id=" + id + ", nome=" + nome
-				+ ", code=" + code + "]";
+				+ ", codigo Disciplina=" + codigoDisciplina + "]";
 	}
 }

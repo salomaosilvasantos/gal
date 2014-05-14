@@ -1,12 +1,12 @@
-package com.companyname.springapp.service;
+package br.ufc.npi.gal.service;
 
 import java.io.Serializable;
 import java.util.List;
 
-import com.companyname.springapp.domain.Disciplina;
+import br.ufc.npi.gal.model.Disciplina;
 
 
-public interface ProductManager extends Serializable {
+public interface DisciplinaService extends Serializable {
     
     public List<Disciplina> getDisciplinas();
     
