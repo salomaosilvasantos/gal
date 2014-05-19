@@ -10,11 +10,11 @@
 	<form:form action="inserirDisciplina.htm" method="post"
 		modelAttribute="disciplina">
 		<label for="codigoDisciplina">Código da Disciplina:</label>
-		<input type="text" name="code" id="codigoDisciplina" />
+		<form:input type="text" name="code" id="codigoDisciplina" path="codigoDisciplina"/>
 		<br />
 		<form:errors cssClass="error" path="codigoDisciplina" />
 		<label for="code">Nome da Disciplina:</label>
-		<input type="text" name="nome" id="nome" />
+		<form:input type="text" name="nome" id="nome" path="nome"/>
 		<br />
 		<form:errors cssClass="error" path="nome" />
 		<input type="submit" value="Cadastrar">

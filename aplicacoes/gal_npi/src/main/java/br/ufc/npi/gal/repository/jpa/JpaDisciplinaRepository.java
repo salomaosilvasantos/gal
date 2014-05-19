@@ -2,9 +2,7 @@ package br.ufc.npi.gal.repository.jpa;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,40 +12,17 @@ import br.ufc.npi.gal.repository.DisciplinaRepository;
 
 @Repository(value = "disciplinaDao")
 @Transactional
-public class JpaDisciplinaRepository implements DisciplinaRepository {
+public class JpaDisciplinaRepository extends GenericRepositoryImpl<Disciplina> implements DisciplinaRepository {
 
-	/**
-	 * etiqueta do spring utiliza para carregar o objeto EntityManager
-	 * responsável por fazer as operações com as entities
-	 **/
-	@PersistenceContext
-	private EntityManager em;
-
-	public Disciplina findById(Integer id) {
-		Disciplina disc = em.find(Disciplina.class, id);
-		return disc;
+	public JpaDisciplinaRepository() {
+		super();
+		this.persistentClass = Disciplina.class;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	public List<Disciplina> getDisciplinaList() {
+	public List<Disciplina> list() {
 		return em.createQuery("select d from Disciplina d order by d.id")
 				.getResultList();
-	}
-
-	public void deleteDisciplina(Integer id) {
-		Disciplina disc = findById(id);
-		em.remove(disc);
-	}
-
-	public void updateDisciplina(Disciplina disciplina) {
-		em.merge(disciplina);
-	}
-
-	public void save(Disciplina disciplina) {
-		if (disciplina.getId() == null) {
-			em.persist(disciplina);
-		} else
-			em.merge(disciplina);
 	}
 	
 	/**

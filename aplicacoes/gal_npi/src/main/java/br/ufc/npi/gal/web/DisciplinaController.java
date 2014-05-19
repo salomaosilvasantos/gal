@@ -82,8 +82,8 @@ public class DisciplinaController {
 	}
 	
 	@RequestMapping(value = "/adicionarDisciplina.htm")
-	public String addDisciplina(){
-
+	public String addDisciplina(ModelMap modelMap){
+		modelMap.addAttribute("disciplina", new Disciplina());
 		return "adicionarDisciplina";
 	}
 	

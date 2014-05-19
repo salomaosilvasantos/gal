@@ -15,33 +15,24 @@ public class DisciplinaServiceImpl implements DisciplinaService {
 	// numero de serie dos ficheiros, para saber qual classe os criou.
     private static final long serialVersionUID = 1L;
     
+    @Autowired
     private DisciplinaRepository disciplinaRepository;
      
-    @Autowired
-    public DisciplinaServiceImpl(DisciplinaRepository disciplinaRepository){
-    	this.disciplinaRepository  = disciplinaRepository;  
-    }
-  
-    public void setDisciplinaDao(DisciplinaRepository disciplinaRepository) {
-        this.disciplinaRepository = disciplinaRepository;
-    }
-    
-    
     public List<Disciplina> getDisciplinas(){
-    	return disciplinaRepository.getDisciplinaList();
+    	return disciplinaRepository.list();
     }
     
     public void deleteDisciplina(Integer id){
-    	this.disciplinaRepository.deleteDisciplina(id);
+    	this.disciplinaRepository.delete(disciplinaRepository.find(id));
     }
 
 	public Disciplina findById(Integer id) {
-		Disciplina disc = this.disciplinaRepository.findById(id);
+		Disciplina disc = this.disciplinaRepository.find(id);
 		return disc;
 	}
 
 	public void updateDisciplina(Disciplina disciplina) {
-		this.disciplinaRepository.updateDisciplina(disciplina);
+		this.disciplinaRepository.update(disciplina);
 	}
 	
 	public Disciplina pesquisar(String cod, String nome) {
