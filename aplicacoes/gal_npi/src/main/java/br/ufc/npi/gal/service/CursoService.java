@@ -16,9 +16,10 @@ public interface CursoService extends Serializable {
 
     public void updateCurso(Curso curso);
 
-    public Curso pesquisar(String sigla, String nome);
+    public Curso pesquisar(String sigla, String nome, String cod);
     
     public void inserir(Curso curso);
     
     public abstract List<Curso> findByCod(String cod);
+
 }

@@ -45,8 +45,8 @@ public class CursoServiceImpl implements CursoService {
 		return disc;
 	}
 	
-	public Curso pesquisar(String sigla, String nome) {
-		return cursoRepository.pesquisarCurso(sigla, nome);
+	public Curso pesquisar(String sigla, String nome, String cod) {
+		return cursoRepository.pesquisarCurso(sigla, nome, cod);
 	}
 	
 }
