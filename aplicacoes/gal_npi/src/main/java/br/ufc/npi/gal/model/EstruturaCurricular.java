@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -21,7 +22,7 @@ public class EstruturaCurricular {
 	@Column(name="ano_semestre")
 	private String anoSemestre;
 	
-	@Column(name="cod_curso")
+	@JoinColumn(name="cod_curso")
 	@ManyToOne
 	private Curso curso;
 	

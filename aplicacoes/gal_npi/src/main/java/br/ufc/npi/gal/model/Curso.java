@@ -1,11 +1,15 @@
 package br.ufc.npi.gal.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.util.List;
+
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -31,6 +35,9 @@ public class Curso {
 	@Pattern(regexp="^[a-z\\sA-Z0-9]+",message="O campo sigla não pode possuir caracteres especiais.")
 	@Size(min = 2, max = 2, message = "O sigla deve conter 2 caracteres")
 	private String sigla;	
+	
+	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class, fetch = FetchType.LAZY)
+	private List<EstruturaCurricular> curriculos;
 	
 	public Curso() {
 		this.sigla = "";
