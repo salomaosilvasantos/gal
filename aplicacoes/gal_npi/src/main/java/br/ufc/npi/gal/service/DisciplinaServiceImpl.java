@@ -12,39 +12,36 @@ import br.ufc.npi.gal.repository.DisciplinaRepository;
 @Service
 public class DisciplinaServiceImpl implements DisciplinaService {
 
-	// numero de serie dos ficheiros, para saber qual classe os criou.
-    private static final long serialVersionUID = 1L;
-    
     @Autowired
     private DisciplinaRepository disciplinaRepository;
      
-    public List<Disciplina> getDisciplinas(){
-    	return disciplinaRepository.list();
+    public List<Disciplina> listar(){
+    	return disciplinaRepository.listar();
     }
     
-    public void deleteDisciplina(Integer id){
-    	this.disciplinaRepository.delete(disciplinaRepository.find(id));
+    public void excluir(Integer id){
+    	this.disciplinaRepository.excluir(disciplinaRepository.buscar(id));
     }
 
 	public Disciplina findById(Integer id) {
-		Disciplina disc = this.disciplinaRepository.find(id);
-		return disc;
+		Disciplina disciplina = this.disciplinaRepository.buscar(id);
+		return disciplina;
 	}
 
-	public void updateDisciplina(Disciplina disciplina) {
-		this.disciplinaRepository.update(disciplina);
+	public void atualizar(Disciplina disciplina) {
+		this.disciplinaRepository.atualizar(disciplina);
 	}
 	
-	public Disciplina pesquisar(String cod, String nome) {
-		return disciplinaRepository.pesquisarDisciplina(cod, nome);
+	public Disciplina buscar(String codigo, String nome) {
+		return disciplinaRepository.buscar(codigo, nome);
 	}
 
-	public void inserir(Disciplina disciplina) {
-		disciplinaRepository.save(disciplina);
+	public void adicionar(Disciplina disciplina) {
+		disciplinaRepository.adicionar(disciplina);
 	}
 
-	public List<Disciplina> findByCod(String cod) {
-		List<Disciplina> d = disciplinaRepository.findByCod(cod);
-		return d;
+	public List<Disciplina> findByCodigo(String codigo) {
+		List<Disciplina> disciplinas = disciplinaRepository.findByCodigo(codigo);
+		return disciplinas;
 	}
 }

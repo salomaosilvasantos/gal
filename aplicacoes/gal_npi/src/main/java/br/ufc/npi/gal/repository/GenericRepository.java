@@ -3,11 +3,11 @@ package br.ufc.npi.gal.repository;
 
 public interface GenericRepository<T> {
 	
-	public abstract void save(T entity);
+	public abstract void adicionar(T entity);
 	
-	public abstract void update(T entity);
+	public abstract void atualizar(T entity);
 
-	public abstract void delete(T entity);
+	public abstract void excluir(T entity);
 	
-	public abstract T find(Object id);
+	public abstract T buscar(Object id);
 }

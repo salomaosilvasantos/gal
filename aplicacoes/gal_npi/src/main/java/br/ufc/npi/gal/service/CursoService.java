@@ -1,25 +1,24 @@
 package br.ufc.npi.gal.service;
 
-import java.io.Serializable;
 import java.util.List;
 
 import br.ufc.npi.gal.model.Curso;
 
 
-public interface CursoService extends Serializable {
+public interface CursoService {
     
-    public List<Curso> getCursos();
+	public void adicionar(Curso curso);
+	
+	public void atualizar(Curso curso);
+	
+	public void excluir(Integer codigo);
+	
+    public List<Curso> listar();
     
-    public void deleteCurso(Integer cod);
-    
-    public Curso findByCod(Integer cod);
+    public Curso findByCodigo(Integer codigo);
 
-    public void updateCurso(Curso curso);
-
-    public Curso pesquisar(String sigla, String nome, String cod);
+    public Curso buscar(String sigla, String nome, String codigo);
     
-    public void inserir(Curso curso);
-    
-    public abstract List<Curso> findByCod(String cod);
+    public abstract List<Curso> findByCodigo(String codigo);
 
 }

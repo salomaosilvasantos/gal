@@ -7,9 +7,9 @@ import br.ufc.npi.gal.model.Curso;
 
 public interface CursoRepository extends GenericRepository<Curso>{
 
-	public List<Curso> list();
+	public List<Curso> listar();
 	
-	public Curso pesquisarCurso(String sigla, String nome, String cod);
+	public Curso buscar(String sigla, String nome, String codigo);
 	
-	public abstract List<Curso> findByCod(String cod);
+	public abstract List<Curso> findByCodigo(String codigo);
 }

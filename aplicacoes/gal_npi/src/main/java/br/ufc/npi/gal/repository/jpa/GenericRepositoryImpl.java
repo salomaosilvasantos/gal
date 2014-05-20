@@ -15,21 +15,21 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T>{
 	protected Class<T> persistentClass;
 	
 	@Transactional
-	public void save(T entity) {
-		this.em.persist(entity);		
-	}
-
-	@Transactional
-	public void update(T entity) {
+	public void adicionar(T entity) {
 		this.em.merge(entity);		
 	}
 
 	@Transactional
-	public void delete(T entity) {
+	public void atualizar(T entity) {
+		this.em.merge(entity);		
+	}
+
+	@Transactional
+	public void excluir(T entity) {
 		em.remove(em.merge(entity));		
 	}
 
-	public T find(Object id) {
+	public T buscar(Object id) {
 		return em.find(this.persistentClass, id);
 	}
 

@@ -9,7 +9,7 @@ import br.ufc.npi.gal.model.EstruturaCurricular;
 import br.ufc.npi.gal.repository.EstruturaCurricularRepository;
 
 
-@Repository
+@Repository("estruturaCurricular")
 @Transactional
 public class JpaEstruturaCurricularRepositoryImpl extends GenericRepositoryImpl<EstruturaCurricular> implements EstruturaCurricularRepository{
 
@@ -19,8 +19,7 @@ public class JpaEstruturaCurricularRepositoryImpl extends GenericRepositoryImpl<
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<EstruturaCurricular> listarCurriculos() {
-		// TODO Auto-generated method stub
+	public List<EstruturaCurricular> listar() {
 		return em.createQuery("select ec from EstruturaCurricular ec").getResultList();
 	}
 	

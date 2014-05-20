@@ -35,7 +35,6 @@ public class Curso {
 	
 	@NotEmpty(message="Campo Sigla não pode ficar vazio")
 	@Column(name = "sigla")
-	@Pattern(regexp="[A-Z]",message="O campo sigla não pode possuir caracteres especiais ou números, e precisar ser toda em maiúscula.")
 	@Size(min = 2, max = 3, message = "O sigla deve conter entre 2 e 3 caracteres")
 	private String sigla;	
 	

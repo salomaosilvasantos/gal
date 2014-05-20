@@ -11,19 +11,19 @@ import br.ufc.npi.gal.repository.EstruturaCurricularRepository;
 
 @Service
 public class EstruturaCurricularServiceImpl implements EstruturaCurricularService{
+	
 	@Autowired
 	private EstruturaCurricularRepository estruturaCurricularRepository;
 	
 	
-	public void inserirEstruturaCurricular(
-			EstruturaCurricular estruturaCurricular) {
+	public void inserir(EstruturaCurricular estruturaCurricular) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public List<EstruturaCurricular> listarCurriculos() {
+	public List<EstruturaCurricular> listar() {
 		
-		return estruturaCurricularRepository.listarCurriculos();
+		return estruturaCurricularRepository.listar();
 	}
 
 }

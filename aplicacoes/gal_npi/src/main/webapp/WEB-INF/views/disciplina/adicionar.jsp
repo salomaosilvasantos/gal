@@ -1,27 +1,28 @@
-<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> -->
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ page session="false" %>
+
+<!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Cadastro de Disciplina</title>
-	<jsp:include page="fragments/htmlHead.jsp" />
+	<jsp:include page="../fragments/htmlHead.jsp" />
 </head>
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
-		<jsp:include page="fragments/header.jsp" />
-		<form:form action="inserirDisciplina.htm" method="post"
+		<jsp:include page="../fragments/header.jsp" />
+		<form:form action="/gal_npi/disciplina/adicionar.htm" method="post"
 			modelAttribute="disciplina">
-			<label for="codigoDisciplina">Código:</label>
+			<label for="codigo">CÃ³digo:</label>
 			<form:input type="text" name="codigo" id="codigo" path="codigo"/>
 			<br />
 			<form:errors cssClass="error" path="codigo" />
-			<label for="code">Nome:</label>
+			<label for="nome">Nome:</label>
 			<form:input type="text" name="nome" id="nome" path="nome"/>
 			<br />
 			<form:errors cssClass="error" path="nome" />
 			<input type="submit" value="Cadastrar">
-			<a class="buttonAdd" href="listar_disciplinas.htm"><p class = "textoMenu">Voltar</p></a>
+			<a class="buttonAdd" href="/gal_npi/disciplina/listar.htm"><p class = "textoMenu">Voltar</p></a>
 		</form:form>
 	</div>
 </body>

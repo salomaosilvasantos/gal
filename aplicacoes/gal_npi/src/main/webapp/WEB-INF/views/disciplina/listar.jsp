@@ -9,7 +9,7 @@
 <head>
 	<title>Disciplinas</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<jsp:include page="fragments/htmlHead.jsp" />
+	<jsp:include page="../fragments/htmlHead.jsp" />
 	<script type="text/javascript">
 		$(document)
 				.ready(
@@ -49,7 +49,7 @@
 </head>
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
-		<jsp:include page="fragments/header.jsp" />
+		<jsp:include page="../fragments/header.jsp" />
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 20px;">Disciplinas</label>
 		</div>
@@ -64,18 +64,16 @@
 			</datatables:column>
 
 			<datatables:column title="Editar">
-				<a class="buttonAdd"
-					href="<c:url value = "/${disciplina.id}/editDisciplina.htm"></c:url>">Editar</a>
+				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/editar.htm"></c:url>">Editar</a>
 			</datatables:column>
 
 			<datatables:column title="Deletar">
-				<a class="buttonAdd"
-					href="<c:url value = "/${disciplina.id}/deleteDisciplina.htm"></c:url>">Deletar</a>
+				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir.htm"></c:url>">Deletar</a>
 			</datatables:column>
 		</datatables:table>
 
-		<a class="buttonAdd" href="adicionarDisciplina.htm">Adicionar</a>
-		<jsp:include page="fragments/footer.jsp" />
+		<a class="buttonAdd" href="/gal_npi/disciplina/adicionar.htm">Adicionar</a>
+		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 </body>
 </html>

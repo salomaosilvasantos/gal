@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.ufc.npi.gal.model.Curso;
 import br.ufc.npi.gal.repository.CursoRepository;
 
-@Repository(value = "cursoDao")
+@Repository(value = "curso")
 @Transactional
 public class JpaCursoRepository extends GenericRepositoryImpl<Curso> implements CursoRepository {
 
@@ -20,37 +20,35 @@ public class JpaCursoRepository extends GenericRepositoryImpl<Curso> implements 
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Curso> list() {
-		return em.createQuery("select c from Curso c order by c.codigo")
-				.getResultList();
+	public List<Curso> listar() {
+		return em.createQuery("select c from Curso c order by c.codigo").getResultList();
 	}
 	
 	/**
 	 * Verifica se possui curso com o mesmo codigo cadastrada, para não ter conflito de id.
 	 * */
 	
-	public Curso pesquisarCurso(String sigla, String nome, String cod) {
+	public Curso buscar(String sigla, String nome, String codigo) {
 		List<Curso> results = null;
 
 		try {
-			results = em
-					.createQuery("from Curso where codigo =:cod",
-							Curso.class).setParameter("cod", cod)
-					.getResultList();
+			results = em.createQuery("from Curso where codigo =:codigo", Curso.class).setParameter("codigo", codigo).getResultList();
 
 		} catch (NoResultException nre) {
 			
 		}
-		if (!(results.isEmpty()))
+		if (!(results.isEmpty())) {
 			return results.get(0);
+		}
 		
-		else return null;
+		else {
+			return null;
+		}
 	}
 	
 	
-	
-	public List<Curso> findByCod(String cod) {
-		return em.createQuery("from Curso where codigo =:cod", Curso.class).setParameter("cod", cod).getResultList();
+	public List<Curso> findByCodigo(String codigo) {
+		return em.createQuery("from Curso where codigo =:codigo", Curso.class).setParameter("codigo", codigo).getResultList();
 	}
 	
 }

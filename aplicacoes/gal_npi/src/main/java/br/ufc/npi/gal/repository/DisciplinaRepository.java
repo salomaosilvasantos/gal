@@ -7,9 +7,9 @@ import br.ufc.npi.gal.model.Disciplina;
 
 public interface DisciplinaRepository extends GenericRepository<Disciplina>{
 
-	public List<Disciplina> list();
+	public List<Disciplina> listar();
 	
-	public Disciplina pesquisarDisciplina(String codigoDisciplina, String nome);
+	public Disciplina buscar(String codigo, String nome);
 	
-	public abstract List<Disciplina> findByCod(String codigoDisciplina);
+	public abstract List<Disciplina> findByCodigo(String codigo);
 }

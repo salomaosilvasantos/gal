@@ -1,13 +1,5 @@
 package br.ufc.npi.gal.web;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,96 +10,89 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Curso;
 import br.ufc.npi.gal.service.CursoService;
 
 @Controller
+@RequestMapping("curso")
 public class CursoController {
 
 	@Autowired
 	private CursoService cursoService;
 
-	@RequestMapping(value = "/listar_cursos.htm")
-	public ModelAndView handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	@RequestMapping(value = "/listar.htm")
+	public String listar(ModelMap modelMap) {
+		modelMap.addAttribute("cursos", this.cursoService.listar());
 
-		String now = (new Date()).toString();
-
-		Map<String, Object> myModel = new HashMap<String, Object>();
-		myModel.put("now", now);
-		myModel.put("products", this.cursoService.getCursos());
-
-		return new ModelAndView("listar_cursos", "cursos", this.cursoService.getCursos());
+		return "curso/listar";
 	} 
 
-	@RequestMapping(value = "/{cod}/editCurso.htm", method = RequestMethod.GET)
-	public String editCurso(@PathVariable("cod") Integer cod, Model model) {
+	@RequestMapping(value = "/{codigo}/editar.htm", method = RequestMethod.GET)
+	public String editar(@PathVariable("codigo") Integer codigo, Model model) {
 
-		Curso disc = this.cursoService.findByCod(cod);
+		Curso curso = this.cursoService.findByCodigo(codigo);
 
-		if (disc == null) {
+		if (curso == null) {
 			return "redirect:/";
 
 		} else {
-			model.addAttribute("curso", disc);
+			model.addAttribute("curso", curso);
 		}
-			return "edit";
+			return "curso/editar";
 	}
 	
-	@RequestMapping(value = "/{cod}/editCursoForm.htm", method=RequestMethod.POST)
-	public String updateCurso(@PathVariable("cod") Integer cod, @Valid Curso discUpdate, BindingResult result){
+	@RequestMapping(value = "/editar.htm", method=RequestMethod.POST)
+	public String atualizar(@PathVariable("codigo") Integer codigo, @Valid Curso curso, BindingResult result){
 		
 		if(result.hasErrors()){
-			return "edit";
+			return "curso/editar";
 		}
 
-		this.cursoService.updateCurso(discUpdate);
+		this.cursoService.atualizar(curso);
 		return "redirect:/";
 		
 	}
 	
 	
-	@RequestMapping(value = "/{cod}/deleteCurso.htm", method = RequestMethod.GET)
-	public String deleteCurso(@PathVariable("cod") Integer cod) {
-		this.cursoService.deleteCurso(cod);
-		return "redirect:/listar_cursos.htm";
+	@RequestMapping(value = "/{codigo}/excluir.htm", method = RequestMethod.GET)
+	public String excluir(@PathVariable("cod") Integer codigo) {
+		this.cursoService.excluir(codigo);
+		return "redirect:/curso/listar.htm";
 	}
 	
-	@RequestMapping("/curso-adicionado")
+	@RequestMapping("/adicionado")
 	public String confirm(){
-		return "curso-adicionado";
+		return "curso/adicionado";
 	}
 	
-	@RequestMapping(value = "/adicionarCurso.htm")
-	public String addCurso(ModelMap modelMap){
+	@RequestMapping(value = "/adicionar.htm")
+	public String adicionar(ModelMap modelMap){
 		modelMap.addAttribute("curso", new Curso());
-		return "adicionarCurso";
+		return "curso/adicionar";
 	}
 	
-	@RequestMapping(value="/inserirCurso.htm",method = RequestMethod.POST)
-	public String inserir(@Valid Curso curso, BindingResult result, final RedirectAttributes redirectAttributes) {
+	@RequestMapping(value="/adicionar.htm",method = RequestMethod.POST)
+	public String adicionar(@Valid Curso curso, BindingResult result, final RedirectAttributes redirectAttributes) {
 		
 		if(result.hasErrors())
-			return "adicionarCurso";
+			return "curso/adicionar";
 		
-		if(cursoService.pesquisar(curso.getSigla(), curso.getNome(), curso.getCodigo()) == null) {
-			cursoService.inserir(curso);
-			System.out.println("Curso adicionado com sucesso");
-			return "curso-adicionado";
+		if(cursoService.buscar(curso.getSigla(), curso.getNome(), curso.getCodigo()) == null) {
+			cursoService.adicionar(curso);
+			return "curso/adicionado";
 		
-		}else{
+		} else {
 			redirectAttributes.addFlashAttribute("message", "Curso não pode ser adicionado pois já existe semelhante registrada");
-			return "redirect:/adicionarCurso.htm";
+			return "redirect:/curso/adicionar.htm";
 		}
 	}
 	
-	@RequestMapping("/buscarCurso")
-	public String buscar(ModelMap model, String disc) {
-		model.addAttribute("cursos", cursoService.findByCod(disc));
-		return "listar_cursos";
+	@RequestMapping("/buscar.htm")
+	public String buscar(ModelMap model, String codigo) {
+		model.addAttribute("cursos", cursoService.findByCodigo(codigo));
+		return "cursos/listar";
 	}
 	
 	public void setProductManager(CursoService productManager) {

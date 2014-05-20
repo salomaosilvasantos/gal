@@ -12,41 +12,38 @@ import br.ufc.npi.gal.repository.CursoRepository;
 @Service
 public class CursoServiceImpl implements CursoService {
 
-	// numero de serie dos ficheiros, para saber qual classe os criou.
-    private static final long serialVersionUID = 1L;
-    
-    @Autowired
+	@Autowired
     private CursoRepository cursoRepository;
      
-    public List<Curso> getCursos(){
-    	return cursoRepository.list();
+    public List<Curso> listar(){
+    	return cursoRepository.listar();
     }
     
-    public void deleteCurso(Integer id){
-    	this.cursoRepository.delete(cursoRepository.find(id));
+    public void excluir(Integer id){
+    	this.cursoRepository.excluir(cursoRepository.buscar(id));
     }
 
-	public void updateCurso(Curso curso) {
-		this.cursoRepository.update(curso);
+	public void atualizar(Curso curso) {
+		this.cursoRepository.atualizar(curso);
 	}
 
-	public void inserir(Curso curso) {
-		cursoRepository.save(curso);
+	public void adicionar(Curso curso) {
+		cursoRepository.adicionar(curso);
 	}
 	
 	
-	public List<Curso> findByCod(String cod) {
-		List<Curso> d = cursoRepository.findByCod(cod);
-		return d;
+	public List<Curso> findByCodigo(String codigo) {
+		List<Curso> cursos = cursoRepository.findByCodigo(codigo);
+		return cursos;
 	}
 	
-	public Curso findByCod(Integer cod) {
-		Curso disc = this.cursoRepository.find(cod);
-		return disc;
+	public Curso findByCodigo(Integer codigo) {
+		Curso curso = this.cursoRepository.buscar(codigo);
+		return curso;
 	}
 	
-	public Curso pesquisar(String sigla, String nome, String cod) {
-		return cursoRepository.pesquisarCurso(sigla, nome, cod);
+	public Curso buscar(String sigla, String nome, String codigo) {
+		return cursoRepository.buscar(sigla, nome, codigo);
 	}
 	
 }

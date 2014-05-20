@@ -5,6 +5,8 @@ import java.util.List;
 import br.ufc.npi.gal.model.EstruturaCurricular;
 
 public interface EstruturaCurricularService {
-	public void inserirEstruturaCurricular(EstruturaCurricular estruturaCurricular);
-	public List<EstruturaCurricular> listarCurriculos();
+	
+	public void inserir(EstruturaCurricular estruturaCurricular);
+	
+	public List<EstruturaCurricular> listar();
 }

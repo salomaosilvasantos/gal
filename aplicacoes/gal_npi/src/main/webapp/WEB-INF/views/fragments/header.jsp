@@ -19,31 +19,31 @@
 		        <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Disciplina<b class="caret"></b></a>
 		          <ul class="dropdown-menu">
-		            <li><a href="<c:url value='/adicionarDisciplina.htm'/>">Cadastrar</a></li>
+		            <li><a href="<c:url value='/disciplina/adicionar.htm'/>">Adicionar</a></li>
 		            <li class="divider"></li>
-		            <li><a href="<c:url value='/listar_disciplinas.htm'/>">Listar</a></li>
+		            <li><a href="<c:url value='/disciplina/listar.htm'/>">Listar</a></li>
 		          </ul>
 		        </li>
 		        <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Curso<b class="caret"></b></a>
 		          <ul class="dropdown-menu">
-		            <li><a href="<c:url value='/adicionarCurso.htm'/>">Cadastrar</a></li>
+		            <li><a href="<c:url value='/curso/adicionar.htm'/>">Adicionar</a></li>
 		            <li class="divider"></li>
-		            <li><a href="<c:url value='/listar_cursos.htm'/>">Listar</a></li>
+		            <li><a href="<c:url value='/curso/listar.htm'/>">Listar</a></li>
 		          </ul>
 		        </li>
 		        <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Título<b class="caret"></b></a>
 		          <ul class="dropdown-menu">
-		            <li><a href="#">Cadastrar</a></li>
+		            <li><a href="#">Adicionar</a></li>
 		            <li class="divider"></li>
-		            <li><a href="<c:url value='/titulo/list'/>">Listar</a></li>
+		            <li><a href="<c:url value='/titulo/listar.htm'/>">Listar</a></li>
 		          </ul>
 		        </li>
 		        <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Estrutura Curricular<b class="caret"></b></a>
 		          <ul class="dropdown-menu">
-		            <li><a href="#">Cadastrar</a></li>
+		            <li><a href="#">Adicionar</a></li>
 		            <li class="divider"></li>
 		            <li><a href="<c:url value='/estrutura/listar.htm'/>">Listar</a></li>
 		          </ul>
