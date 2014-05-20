@@ -25,11 +25,27 @@
 		          </ul>
 		        </li>
 		        <li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Curso<b class="caret"></b></a>
+		          <ul class="dropdown-menu">
+		            <li><a href="<c:url value='/adicionarCurso.htm'/>">Cadastrar</a></li>
+		            <li class="divider"></li>
+		            <li><a href="<c:url value='/listar_cursos.htm'/>">Listar</a></li>
+		          </ul>
+		        </li>
+		        <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Título<b class="caret"></b></a>
 		          <ul class="dropdown-menu">
 		            <li><a href="#">Cadastrar</a></li>
 		            <li class="divider"></li>
 		            <li><a href="<c:url value='/titulo/list'/>">Listar</a></li>
+		          </ul>
+		        </li>
+		        <li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Estrutura Curricular<b class="caret"></b></a>
+		          <ul class="dropdown-menu">
+		            <li><a href="#">Cadastrar</a></li>
+		            <li class="divider"></li>
+		            <li><a href="<c:url value='/estrutura/listar.htm'/>">Listar</a></li>
 		          </ul>
 		        </li>
 		        <li><a href="#">Metas</a></li>

@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -20,9 +21,11 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class Curso {
 
 	@Id
+	@NotEmpty(message="Campo Código não pode ficar vazio")
 	@Column(name = "cod_c")
+	@DecimalMin(value = "1", message="O campo deve conter apenas números")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer cod;
+	private String cod;
 
 	@NotEmpty(message="Campo Nome não pode ficar vazio")
 	@Column(name = "nome_c")
@@ -32,8 +35,8 @@ public class Curso {
 	
 	@NotEmpty(message="Campo Sigla não pode ficar vazio")
 	@Column(name = "sigla")
-	@Pattern(regexp="^[a-z\\sA-Z0-9]+",message="O campo sigla não pode possuir caracteres especiais.")
-	@Size(min = 2, max = 2, message = "O sigla deve conter 2 caracteres")
+	@Pattern(regexp="[A-Z]",message="O campo sigla não pode possuir caracteres especiais ou números, e precisar ser toda em maiúscula.")
+	@Size(min = 2, max = 3, message = "O sigla deve conter entre 2 e 3 caracteres")
 	private String sigla;	
 	
 	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class, fetch = FetchType.LAZY)
@@ -44,11 +47,11 @@ public class Curso {
 		this.nome = "";
 	}
 
-	public Integer getCod() {
+	public String getCod() {
 		return cod;
 	}
 
-	public void setCod(Integer cod) {
+	public void setCod(String cod) {
 		this.cod = cod;
 	}
 	
