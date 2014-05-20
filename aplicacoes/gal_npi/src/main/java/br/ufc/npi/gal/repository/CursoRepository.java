@@ -11,5 +11,5 @@ public interface CursoRepository extends GenericRepository<Curso>{
 	
 	public Curso pesquisarCurso(String sigla, String nome);
 	
-	public abstract List<Curso> findByCod(String codigoCurso);
+	public abstract List<Curso> findByCod(String cod);
 }
