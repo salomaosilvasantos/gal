@@ -29,13 +29,13 @@ public class JpaCursoRepository extends GenericRepositoryImpl<Curso> implements 
 	 * Verifica se possui curso com o mesmo codigo cadastrada, para não ter conflito de id.
 	 * */
 	
-	public Curso pesquisarCurso(String sigla, String nome) {
+	public Curso pesquisarCurso(String sigla, String nome, String cod) {
 		List<Curso> results = null;
 
 		try {
 			results = em
-					.createQuery("from Curso where sigla =:sigla",
-							Curso.class).setParameter("sigla", sigla)
+					.createQuery("from Curso where cod =:cod",
+							Curso.class).setParameter("cod", cod)
 					.getResultList();
 
 		} catch (NoResultException nre) {

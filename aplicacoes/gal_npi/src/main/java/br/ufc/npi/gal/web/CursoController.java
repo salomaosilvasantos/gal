@@ -93,7 +93,7 @@ public class CursoController {
 		if(result.hasErrors())
 			return "adicionarCurso";
 		
-		if(cursoService.pesquisar(curso.getSigla(), curso.getNome()) == null) {
+		if(cursoService.pesquisar(curso.getSigla(), curso.getNome(), curso.getCod()) == null) {
 			cursoService.inserir(curso);
 			System.out.println("Curso adicionado com sucesso");
 			return "curso-adicionado";
