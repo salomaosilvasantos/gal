@@ -13,9 +13,9 @@
 		<form:form action="inserirDisciplina.htm" method="post"
 			modelAttribute="disciplina">
 			<label for="codigoDisciplina">Código:</label>
-			<form:input type="text" name="code" id="codigoDisciplina" path="codigoDisciplina"/>
+			<form:input type="text" name="codigo" id="codigo" path="codigo"/>
 			<br />
-			<form:errors cssClass="error" path="codigoDisciplina" />
+			<form:errors cssClass="error" path="codigo" />
 			<label for="code">Nome:</label>
 			<form:input type="text" name="nome" id="nome" path="nome"/>
 			<br />

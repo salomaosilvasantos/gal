@@ -13,9 +13,9 @@
 		<form:form action="inserirCurso.htm" method="post"
 			modelAttribute="curso">
 			<label for="cod">Código:</label>
-			<form:input type="text" name="cod" id="cod" path="cod"/>
+			<form:input type="text" name="codigo" id="codigo" path="codigo"/>
 			<br />
-			<form:errors cssClass="error" path="cod" />
+			<form:errors cssClass="error" path="codigo" />
 			<label for="nome">Nome:</label>
 			<form:input type="text" name="nome" id="nome" path="nome"/>
 			<br />
@@ -23,7 +23,7 @@
 			<label for="sigla">Sigla:</label>
 			<form:input type="text" name="sigla" id="sigla" path="sigla"/>
 			<br />
-			<form:errors cssClass="error" path="nome" />
+			<form:errors cssClass="error" path="sigla" />
 			<input type="submit" value="Cadastrar">
 			<a class="buttonAdd" href="listar_cursos.htm"><p class="textoMenu">Voltar</p></a>
 		</form:form>

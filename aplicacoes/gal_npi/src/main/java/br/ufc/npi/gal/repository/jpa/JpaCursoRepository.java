@@ -21,7 +21,7 @@ public class JpaCursoRepository extends GenericRepositoryImpl<Curso> implements 
 	
 	@SuppressWarnings("unchecked")
 	public List<Curso> list() {
-		return em.createQuery("select c from Curso c order by c.cod")
+		return em.createQuery("select c from Curso c order by c.codigo")
 				.getResultList();
 	}
 	
@@ -34,7 +34,7 @@ public class JpaCursoRepository extends GenericRepositoryImpl<Curso> implements 
 
 		try {
 			results = em
-					.createQuery("from Curso where cod =:cod",
+					.createQuery("from Curso where codigo =:cod",
 							Curso.class).setParameter("cod", cod)
 					.getResultList();
 
@@ -50,7 +50,7 @@ public class JpaCursoRepository extends GenericRepositoryImpl<Curso> implements 
 	
 	
 	public List<Curso> findByCod(String cod) {
-		return em.createQuery("from Curso where cod =:cod", Curso.class).setParameter("cod", cod).getResultList();
+		return em.createQuery("from Curso where codigo =:cod", Curso.class).setParameter("cod", cod).getResultList();
 	}
 	
 }

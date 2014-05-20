@@ -25,7 +25,7 @@ public class Curso {
 	@Column(name = "cod_c")
 	@DecimalMin(value = "1", message="O campo deve conter apenas números")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private String cod;
+	private String codigo;
 
 	@NotEmpty(message="Campo Nome não pode ficar vazio")
 	@Column(name = "nome_c")
@@ -47,12 +47,12 @@ public class Curso {
 		this.nome = "";
 	}
 
-	public String getCod() {
-		return cod;
+	public String getCodigo() {
+		return codigo;
 	}
 
-	public void setCod(String cod) {
-		this.cod = cod;
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 	
 	public String getSigla() {
@@ -73,7 +73,7 @@ public class Curso {
 
 	@Override
 	public String toString() {
-		return "Curso [id=cod=" + cod + ", nome=" + nome
+		return "Curso [codigo=" + codigo + ", nome=" + nome
 				+ ", sigla=" + sigla + "]";
 	}
 }

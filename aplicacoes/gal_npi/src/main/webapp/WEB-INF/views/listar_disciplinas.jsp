@@ -60,7 +60,7 @@
 			</datatables:column>
 
 			<datatables:column title="Codigo">
-				<c:out value="${disciplina.codigoDisciplina}"></c:out>
+				<c:out value="${disciplina.codigo}"></c:out>
 			</datatables:column>
 
 			<datatables:column title="Editar">

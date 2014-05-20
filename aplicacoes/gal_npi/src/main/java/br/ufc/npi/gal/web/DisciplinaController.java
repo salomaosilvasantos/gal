@@ -93,7 +93,7 @@ public class DisciplinaController {
 		if(result.hasErrors())
 			return "adicionarDisciplina";
 		
-		if(disciplinaService.pesquisar(disciplina.getCodigoDisciplina(), disciplina.getNome()) == null) {
+		if(disciplinaService.pesquisar(disciplina.getCodigo(), disciplina.getNome()) == null) {
 			disciplinaService.inserir(disciplina);
 			System.out.println("Disciplina adicionada com sucesso");
 			return "disciplina-adicionada";

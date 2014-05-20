@@ -21,8 +21,8 @@
 		 <form:label path="nome">Nome:</form:label><br>
 		 <form:input path="nome"/><br>
 		 
-		  <form:label path="codigoDisciplina">Codigo:</form:label><br>
-		 <form:input path="codigoDisciplina"/><br>
+		  <form:label path="codigo">Codigo:</form:label><br>
+		 <form:input path="codigo"/><br>
 		 
 		<form:errors path="*" cssClass="errorBox" element="div" />
 		

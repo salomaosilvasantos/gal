@@ -44,7 +44,7 @@
     		    
 					<tr class = "rows" id = "<c:out value="${prod.id}"></c:out>">
 						
-						<th class = "colsRight" id = "<c:out value="${prod.id}"></c:out>"><c:out value="${prod.codigoDisciplina}"></c:out>
+						<th class = "colsRight" id = "<c:out value="${prod.id}"></c:out>"><c:out value="${prod.codigo}"></c:out>
 						</th>
 						
 						<th class = "colsLeft" id = "<c:out value="${prod.id}"></c:out>"><c:out value="${prod.nome}"></c:out></th>
