@@ -3,22 +3,26 @@
 <%@ page session="false" %>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Cadastro de Disciplinas</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Cadastro de Disciplina</title>
+	<jsp:include page="fragments/htmlHead.jsp" />
 </head>
 <body>
-	<form:form action="inserirDisciplina.htm" method="post"
-		modelAttribute="disciplina">
-		<label for="codigoDisciplina">Código da Disciplina:</label>
-		<form:input type="text" name="code" id="codigoDisciplina" path="codigoDisciplina"/>
-		<br />
-		<form:errors cssClass="error" path="codigoDisciplina" />
-		<label for="code">Nome da Disciplina:</label>
-		<form:input type="text" name="nome" id="nome" path="nome"/>
-		<br />
-		<form:errors cssClass="error" path="nome" />
-		<input type="submit" value="Cadastrar">
-		<a class="buttonAdd" href="listar_disciplinas.htm"><p class = "textoMenu">Voltar</p></a>
-	</form:form>
+	<div id="container" style="width: 1000px; margin: 0 auto;">
+		<jsp:include page="fragments/header.jsp" />
+		<form:form action="inserirDisciplina.htm" method="post"
+			modelAttribute="disciplina">
+			<label for="codigoDisciplina">Código:</label>
+			<form:input type="text" name="code" id="codigoDisciplina" path="codigoDisciplina"/>
+			<br />
+			<form:errors cssClass="error" path="codigoDisciplina" />
+			<label for="code">Nome:</label>
+			<form:input type="text" name="nome" id="nome" path="nome"/>
+			<br />
+			<form:errors cssClass="error" path="nome" />
+			<input type="submit" value="Cadastrar">
+			<a class="buttonAdd" href="listar_disciplinas.htm"><p class = "textoMenu">Voltar</p></a>
+		</form:form>
+	</div>
 </body>
 </html>

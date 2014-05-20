@@ -1,0 +1,8 @@
+@CHARSET "utf-8";
+
+.dataTables_filter, .dataTables_scroll {
+	margin-bottom: 20px;
+}
+.form-horizontal {
+	text-align: center;
+}
