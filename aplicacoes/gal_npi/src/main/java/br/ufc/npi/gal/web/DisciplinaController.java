@@ -60,13 +60,6 @@ public class DisciplinaController {
 		
 	}
 	
-	
-	/*@RequestMapping(value = "/{id}/exluir.htm", method = RequestMethod.GET)
-	public String excluir(@PathVariable("id") Integer id, ModelMap modelMap) {
-		this.disciplinaService.excluir(id);
-		return "redirect:/disciplina/listar.htm";
-	}*/
-	
 	@RequestMapping("/adicionada.htm")
 	public String confirm(){
 		return "disciplina/adicionada";
