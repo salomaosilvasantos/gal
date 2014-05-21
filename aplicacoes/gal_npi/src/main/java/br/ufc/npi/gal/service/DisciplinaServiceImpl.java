@@ -12,48 +12,36 @@ import br.ufc.npi.gal.repository.DisciplinaRepository;
 @Service
 public class DisciplinaServiceImpl implements DisciplinaService {
 
-	// numero de serie dos ficheiros, para saber qual classe os criou.
-    private static final long serialVersionUID = 1L;
-    
+    @Autowired
     private DisciplinaRepository disciplinaRepository;
      
-    @Autowired
-    public DisciplinaServiceImpl(DisciplinaRepository disciplinaRepository){
-    	this.disciplinaRepository  = disciplinaRepository;  
-    }
-  
-    public void setDisciplinaDao(DisciplinaRepository disciplinaRepository) {
-        this.disciplinaRepository = disciplinaRepository;
+    public List<Disciplina> listar(){
+    	return disciplinaRepository.listar();
     }
     
-    
-    public List<Disciplina> getDisciplinas(){
-    	return disciplinaRepository.getDisciplinaList();
-    }
-    
-    public void deleteDisciplina(Integer id){
-    	this.disciplinaRepository.deleteDisciplina(id);
+    public void excluir(Integer id){
+    	this.disciplinaRepository.excluir(disciplinaRepository.buscar(id));
     }
 
 	public Disciplina findById(Integer id) {
-		Disciplina disc = this.disciplinaRepository.findById(id);
-		return disc;
+		Disciplina disciplina = this.disciplinaRepository.buscar(id);
+		return disciplina;
 	}
 
-	public void updateDisciplina(Disciplina disciplina) {
-		this.disciplinaRepository.updateDisciplina(disciplina);
+	public void atualizar(Disciplina disciplina) {
+		this.disciplinaRepository.adicionarOuAtualizar(disciplina);
 	}
 	
-	public Disciplina pesquisar(String cod, String nome) {
-		return disciplinaRepository.pesquisarDisciplina(cod, nome);
+	public Disciplina buscar(String codigo, String nome) {
+		return disciplinaRepository.buscar(codigo, nome);
 	}
 
-	public void inserir(Disciplina disciplina) {
-		disciplinaRepository.save(disciplina);
+	public void adicionar(Disciplina disciplina) {
+		disciplinaRepository.adicionarOuAtualizar(disciplina);
 	}
 
-	public List<Disciplina> findByCod(String cod) {
-		List<Disciplina> d = disciplinaRepository.findByCod(cod);
-		return d;
+	public List<Disciplina> findByCodigo(String codigo) {
+		List<Disciplina> disciplinas = disciplinaRepository.findByCodigo(codigo);
+		return disciplinas;
 	}
 }

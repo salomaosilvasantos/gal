@@ -5,19 +5,11 @@ import java.util.List;
 
 import br.ufc.npi.gal.model.Disciplina;
 
-public interface DisciplinaRepository {
+public interface DisciplinaRepository extends GenericRepository<Disciplina>{
 
-	public Disciplina findById(Integer id);
+	public List<Disciplina> listar();
 	
-	public List<Disciplina> getDisciplinaList();
+	public Disciplina buscar(String codigo, String nome);
 	
-	public void deleteDisciplina(Integer id);
-	
-	public void updateDisciplina(Disciplina disciplina);
-	
-	public Disciplina pesquisarDisciplina(String codigoDisciplina, String nome);
-	
-	public void save(Disciplina disciplina);
-	
-	public abstract List<Disciplina> findByCod(String codigoDisciplina);
+	public abstract List<Disciplina> findByCodigo(String codigo);
 }

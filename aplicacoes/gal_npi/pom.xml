@@ -25,6 +25,11 @@
 			<version>${org.springframework.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>${javax.inject.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
@@ -105,5 +110,6 @@
 	</build>
 	<properties>
 		<org.springframework.version>4.0.3.RELEASE</org.springframework.version>
+		<javax.inject.version>1</javax.inject.version>
 	</properties>
 </project>

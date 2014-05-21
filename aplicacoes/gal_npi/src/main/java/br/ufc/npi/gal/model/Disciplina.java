@@ -30,10 +30,10 @@ public class Disciplina {
 	@Column(name = "cod_d")
 	@Pattern(regexp="^[a-z\\sA-Z0-9]+",message="O campo código não pode possuir caracteres especiais.")
 	@Size(min = 6, max = 12, message = "O código deve estar entre 6 e 12 caracteres")
-	private String codigoDisciplina;	
+	private String codigo;	
 	
 	public Disciplina() {
-		this.codigoDisciplina = "";
+		this.codigo = "";
 		this.nome = "";
 	}
 
@@ -45,12 +45,12 @@ public class Disciplina {
 		this.id = id;
 	}
 	
-	public String getCodigoDisciplina() {
-		return codigoDisciplina;
+	public String getCodigo() {
+		return codigo;
 	}
 	
-	public void setCodigoDisciplina(String codigoDisciplina) {
-		this.codigoDisciplina = codigoDisciplina;
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 
 	public String getNome() {
@@ -64,6 +64,6 @@ public class Disciplina {
 	@Override
 	public String toString() {
 		return "Disciplina [id=" + id + ", nome=" + nome
-				+ ", codigo Disciplina=" + codigoDisciplina + "]";
+				+ ", codigo=" + codigo + "]";
 	}
 }
