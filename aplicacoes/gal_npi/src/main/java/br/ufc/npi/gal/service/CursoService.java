@@ -11,7 +11,7 @@ public interface CursoService {
 	
 	public void atualizar(Curso curso);
 	
-	public void excluir(Integer codigo);
+	public void excluir(String codigo);
 	
     public List<Curso> listar();
     

@@ -19,7 +19,7 @@ public class CursoServiceImpl implements CursoService {
     	return cursoRepository.listar();
     }
     
-    public void excluir(Integer id){
+    public void excluir(String id){
     	this.cursoRepository.excluir(cursoRepository.buscar(id));
     }
 

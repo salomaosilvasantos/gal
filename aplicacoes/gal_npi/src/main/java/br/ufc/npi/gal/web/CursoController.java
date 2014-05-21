@@ -57,7 +57,7 @@ public class CursoController {
 	
 	
 	@RequestMapping(value = "/{codigo}/excluir.htm", method = RequestMethod.GET)
-	public String excluir(@PathVariable("cod") Integer codigo) {
+	public String excluir(@PathVariable("codigo") String codigo) {
 		this.cursoService.excluir(codigo);
 		return "redirect:/curso/listar.htm";
 	}
