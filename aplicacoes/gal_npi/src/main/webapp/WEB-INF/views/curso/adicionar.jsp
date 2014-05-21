@@ -13,7 +13,7 @@
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
 		<form:form action="/gal_npi/curso/adicionar.htm" method="post" modelAttribute="curso">
-			<label for="cod">Código:</label>
+			<label for="codigo">Código:</label>
 			<form:input type="text" name="codigo" id="codigo" path="codigo"/>
 			<br />
 			<form:errors cssClass="error" path="codigo" />

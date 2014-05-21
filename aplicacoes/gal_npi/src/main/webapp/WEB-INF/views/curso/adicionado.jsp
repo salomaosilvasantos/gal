@@ -7,6 +7,6 @@
 </head>
 <body>
 	<h2>Curso adicionado com sucesso</h2>
-	<a class="buttonAdd" href="gal_npi/curso/listar"><p class="textoMenu">Voltar</p></a>
+	<a class="buttonAdd" href="/gal_npi/curso/listar.htm"><p class="textoMenu">Voltar</p></a>
 </body>
 </html>
