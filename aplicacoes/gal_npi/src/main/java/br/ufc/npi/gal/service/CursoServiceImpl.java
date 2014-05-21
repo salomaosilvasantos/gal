@@ -32,18 +32,18 @@ public class CursoServiceImpl implements CursoService {
 	}
 	
 	
-	public List<Curso> findByCodigo(String codigo) {
+	public List<Curso> findByCodigoList(String codigo) {
 		List<Curso> cursos = cursoRepository.findByCodigo(codigo);
 		return cursos;
 	}
 	
-	public Curso findByCodigo(Integer codigo) {
+	public Curso findByCodigo(String codigo) {
 		Curso curso = this.cursoRepository.buscar(codigo);
 		return curso;
 	}
 	
-	public Curso buscar(String sigla, String nome, String codigo) {
-		return cursoRepository.buscar(sigla, nome, codigo);
+	public Curso buscar(String sigla, String codigo) {
+		return cursoRepository.buscar(sigla, codigo);
 	}
 	
 }

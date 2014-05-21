@@ -15,10 +15,10 @@ public interface CursoService {
 	
     public List<Curso> listar();
     
-    public Curso findByCodigo(Integer codigo);
+    public Curso findByCodigo(String codigo);
 
-    public Curso buscar(String sigla, String nome, String codigo);
+    public Curso buscar(String sigla, String codigo);
     
-    public abstract List<Curso> findByCodigo(String codigo);
+    public abstract List<Curso> findByCodigoList(String codigo);
 
 }

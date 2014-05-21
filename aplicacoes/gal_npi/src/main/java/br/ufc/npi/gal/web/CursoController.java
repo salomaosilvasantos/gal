@@ -30,7 +30,7 @@ public class CursoController {
 	} 
 
 	@RequestMapping(value = "/{codigo}/editar.htm", method = RequestMethod.GET)
-	public String editar(@PathVariable("codigo") Integer codigo, Model model) {
+	public String editar(@PathVariable("codigo") String codigo, Model model) {
 
 		Curso curso = this.cursoService.findByCodigo(codigo);
 
@@ -44,14 +44,14 @@ public class CursoController {
 	}
 	
 	@RequestMapping(value = "/editar.htm", method=RequestMethod.POST)
-	public String atualizar(@PathVariable("codigo") Integer codigo, @Valid Curso curso, BindingResult result){
+	public String atualizar(@Valid Curso curso, BindingResult result){
 		
 		if(result.hasErrors()){
 			return "curso/editar";
 		}
 
 		this.cursoService.atualizar(curso);
-		return "redirect:/";
+		return "redirect:/curso/listar.htm";
 		
 	}
 	
@@ -79,7 +79,7 @@ public class CursoController {
 		if(result.hasErrors())
 			return "curso/adicionar";
 		
-		if(cursoService.buscar(curso.getSigla(), curso.getNome(), curso.getCodigo()) == null) {
+		if(cursoService.buscar(curso.getSigla(), curso.getCodigo()) == null) {
 			cursoService.adicionar(curso);
 			return "curso/adicionado";
 		
@@ -91,7 +91,7 @@ public class CursoController {
 	
 	@RequestMapping("/buscar.htm")
 	public String buscar(ModelMap model, String codigo) {
-		model.addAttribute("cursos", cursoService.findByCodigo(codigo));
+		model.addAttribute("cursos", cursoService.findByCodigoList(codigo));
 		return "cursos/listar";
 	}
 	

@@ -28,7 +28,7 @@ public class JpaCursoRepository extends GenericRepositoryImpl<Curso> implements 
 	 * Verifica se possui curso com o mesmo codigo cadastrada, para não ter conflito de id.
 	 * */
 	
-	public Curso buscar(String sigla, String nome, String codigo) {
+	public Curso buscar(String sigla, String codigo) {
 		List<Curso> results = null;
 
 		try {
