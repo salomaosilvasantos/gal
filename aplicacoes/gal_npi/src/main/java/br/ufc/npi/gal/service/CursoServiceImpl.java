@@ -24,11 +24,11 @@ public class CursoServiceImpl implements CursoService {
     }
 
 	public void atualizar(Curso curso) {
-		this.cursoRepository.atualizar(curso);
+		this.cursoRepository.adicionarOuAtualizar(curso);
 	}
 
 	public void adicionar(Curso curso) {
-		cursoRepository.adicionar(curso);
+		cursoRepository.adicionarOuAtualizar(curso);
 	}
 	
 	

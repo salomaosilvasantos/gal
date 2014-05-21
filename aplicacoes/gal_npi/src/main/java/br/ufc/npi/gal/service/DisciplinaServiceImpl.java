@@ -29,7 +29,7 @@ public class DisciplinaServiceImpl implements DisciplinaService {
 	}
 
 	public void atualizar(Disciplina disciplina) {
-		this.disciplinaRepository.atualizar(disciplina);
+		this.disciplinaRepository.adicionarOuAtualizar(disciplina);
 	}
 	
 	public Disciplina buscar(String codigo, String nome) {
@@ -37,7 +37,7 @@ public class DisciplinaServiceImpl implements DisciplinaService {
 	}
 
 	public void adicionar(Disciplina disciplina) {
-		disciplinaRepository.adicionar(disciplina);
+		disciplinaRepository.adicionarOuAtualizar(disciplina);
 	}
 
 	public List<Disciplina> findByCodigo(String codigo) {
