@@ -1,4 +1,4 @@
-package br.ufc.npi.gal.service;
+package br.ufc.npi.gal.service.impl;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.ufc.npi.gal.model.Curso;
 import br.ufc.npi.gal.repository.CursoRepository;
+import br.ufc.npi.gal.service.CursoService;
 
 
 @Service
@@ -19,7 +20,7 @@ public class CursoServiceImpl implements CursoService {
     	return cursoRepository.listar();
     }
     
-    public void excluir(String id){
+    public void excluir(Integer id){
     	this.cursoRepository.excluir(cursoRepository.buscar(id));
     }
 
@@ -37,8 +38,8 @@ public class CursoServiceImpl implements CursoService {
 		return cursos;
 	}
 	
-	public Curso findByCodigo(String codigo) {
-		Curso curso = this.cursoRepository.buscar(codigo);
+	public Curso findById(Integer id) {
+		Curso curso = this.cursoRepository.buscar(id);
 		return curso;
 	}
 	

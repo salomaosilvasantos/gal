@@ -1,11 +1,15 @@
 package br.ufc.npi.gal.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.util.List;
+
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -31,6 +35,9 @@ public class Disciplina {
 	@Pattern(regexp="^[a-z\\sA-Z0-9]+",message="O campo código não pode possuir caracteres especiais.")
 	@Size(min = 6, max = 12, message = "O código deve estar entre 6 e 12 caracteres")
 	private String codigo;	
+	
+	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class, fetch = FetchType.LAZY)
+	private List<EstruturaCurricular> curriculos;
 	
 	public Disciplina() {
 		this.codigo = "";

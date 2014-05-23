@@ -16,6 +16,8 @@
         <form:form modelAttribute="curso" id="codigo" action="/gal_npi/curso/editar.htm" method = "post" >
         <h2>Editar Curso </h2>
          
+         <form:input path="id" type="hidden"/>
+         
          <form:label path="codigo">Codigo:</form:label><br>
 		 <form:input path="codigo"/><br>
 		 
