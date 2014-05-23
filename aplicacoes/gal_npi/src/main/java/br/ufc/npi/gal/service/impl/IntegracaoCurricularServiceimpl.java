@@ -16,8 +16,7 @@ public class IntegracaoCurricularServiceimpl implements IntegracaoCurricularServ
 	private IntegracaoCurricularRepository integracaoRepository;
 	
 	public List<IntegracaoCurricular> listar() {
-		// TODO Auto-generated method stub
-		return null;
+		return integracaoRepository.listar();
 	}
 
 }
