@@ -17,4 +17,9 @@ public class JpaIntegracaoCurricularRepositoryImpl extends GenericRepositoryImpl
 		return em.createQuery("Select ic from IntegracaoCurricular ic").getResultList();
 	}
 
+	public void salvar(IntegracaoCurricular integracaoCurricular) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
