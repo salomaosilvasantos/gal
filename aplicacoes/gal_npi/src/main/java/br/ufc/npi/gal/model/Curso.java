@@ -21,6 +21,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 public class Curso {
 
 	@Id
+	@Column(name="id_curso")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer id;
+	
 	@NotEmpty(message="Campo Código não pode ficar vazio")
 	@Column(name = "cod_c")
 	@DecimalMin(value = "1", message="O campo deve conter apenas números")
@@ -45,6 +49,22 @@ public class Curso {
 		this.codigo = "";
 		this.sigla = "";
 		this.nome = "";
+	}
+	
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public List<EstruturaCurricular> getCurriculos() {
+		return curriculos;
+	}
+
+	public void setCurriculos(List<EstruturaCurricular> curriculos) {
+		this.curriculos = curriculos;
 	}
 
 	public String getCodigo() {

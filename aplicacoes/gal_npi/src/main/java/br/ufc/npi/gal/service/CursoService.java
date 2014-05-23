@@ -11,11 +11,11 @@ public interface CursoService {
 	
 	public void atualizar(Curso curso);
 	
-	public void excluir(String codigo);
+	public void excluir(Integer id);
 	
     public List<Curso> listar();
     
-    public Curso findByCodigo(String codigo);
+    public Curso findById(Integer id);
 
     public Curso buscar(String sigla, String codigo);
     

@@ -27,8 +27,7 @@
 		
 		<input type="submit" value="Submit" />
  		
- 		<a class="buttonAdd" href="/gal_npi/discplina/listar.htm"><p class = "textoMenu">Voltar</p></a>
- 	   
+ 		<a class="buttonAdd" href="/gal_npi/disciplina/listar.htm"><p class = "textoMenu">Voltar</p></a>
  	   </form:form>
  
     </body>

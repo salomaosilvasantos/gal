@@ -29,10 +29,10 @@ public class CursoController {
 		return "curso/listar";
 	} 
 
-	@RequestMapping(value = "/{codigo}/editar.htm", method = RequestMethod.GET)
-	public String editar(@PathVariable("codigo") String codigo, Model model) {
+	@RequestMapping(value = "/{id}/editar.htm", method = RequestMethod.GET)
+	public String editar(@PathVariable("id") Integer id, Model model) {
 
-		Curso curso = this.cursoService.findByCodigo(codigo);
+		Curso curso = this.cursoService.findById(id);
 
 		if (curso == null) {
 			return "redirect:/";
@@ -56,9 +56,9 @@ public class CursoController {
 	}
 	
 	
-	@RequestMapping(value = "/{codigo}/excluir.htm", method = RequestMethod.GET)
-	public String excluir(@PathVariable("codigo") String codigo) {
-		this.cursoService.excluir(codigo);
+	@RequestMapping(value = "/{id}/excluir.htm", method = RequestMethod.GET)
+	public String excluir(@PathVariable("id") Integer id) {
+		this.cursoService.excluir(id);
 		return "redirect:/curso/listar.htm";
 	}
 	

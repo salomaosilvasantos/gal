@@ -68,11 +68,11 @@
 			</datatables:column>
 
 			<datatables:column title="Editar">
-				<a class="buttonAdd" href="<c:url value = "/curso/${curso.codigo}/editar.htm"></c:url>">Editar</a>
+				<a class="buttonAdd" href="<c:url value = "/curso/${curso.id}/editar.htm"></c:url>">Editar</a>
 			</datatables:column>
 
 			<datatables:column title="Deletar">
-				<a class="buttonAdd" href="<c:url value = "/curso/${curso.codigo}/excluir.htm"></c:url>">Excluir</a>
+				<a class="buttonAdd" href="<c:url value = "/curso/${curso.id}/excluir.htm"></c:url>">Excluir</a>
 			</datatables:column>
 		</datatables:table>
 
