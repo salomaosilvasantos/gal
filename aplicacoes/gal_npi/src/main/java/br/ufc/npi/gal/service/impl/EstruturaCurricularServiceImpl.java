@@ -1,4 +1,4 @@
-package br.ufc.npi.gal.service;
+package br.ufc.npi.gal.service.impl;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import br.ufc.npi.gal.model.EstruturaCurricular;
 import br.ufc.npi.gal.repository.EstruturaCurricularRepository;
+import br.ufc.npi.gal.service.EstruturaCurricularService;
 
 
 @Service
