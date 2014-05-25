@@ -56,10 +56,8 @@ public class SimpleProductManager implements ProductManager {
     public void deleteDisciplina(Integer id){
     	
     	this.disciplinaDao.deleteDisciplina(id);
-    	
     }
     
-
 	public Disciplina findById(Integer id) {
 		
 		Disciplina disc = this.disciplinaDao.findById(id);

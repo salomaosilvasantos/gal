@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-	
+	/*
 	$(".buttonUpdate").click(function editarDados(){
 		
 		//pegando o ID do botao que foi clicado
@@ -12,21 +12,24 @@ $(document).ready(function() {
 		var conteudoCodigo = $(".colsRight[id='" +idBotao +"']").text();
 		
 		$(".rows[id=" +idBotao +"]").html("");
-		$(".rows[id=" +idBotao +"]").append("<th class = 'colsRight' id = '" +idBotao+ "' colspan='3'>" +
-				"<form id ='editDisciplina' action = 'editDisciplinaForm.htm' method='post'>" +
-				"<input id='id' name='id' disabled='disabled' type='text' value='"+idBotao+"'/>" +
+		$(".rows[id=" +idBotao +"]").html("<th class = 'colsRight' id = '" +idBotao+ "' colspan='3'>" +
+				"<form id ='editDisciplina' action = '' method='post'>" +
+				"<input id='id' name='id' type='text' value='"+idBotao+"'/>" +
 				"<input type= 'text' class = 'inputTextCodigo' id='code' name = 'code' value = '"+conteudoCodigo+"'/>" +
 				"<input type= 'text' class = 'inputTextNome' id='nome' name ='nome' value = '"+conteudoNome+"'/>"+
 				//"<a class = 'enviarDados' href ='springapp/" +idBotao +"/editDisciplina.htm'>click</a>" +
 				//"<a class = 'buttonTable' href ='/" +idBotao +"/deleteDisciplina.htm'></a>" +
-				"<input class = 'enviarDados' type = 'button' id = '" +idBotao+ "' value = 'submit'></input></form></th>");
+				"<input class = 'enviarDados' id = '" +idBotao+ "' value = 'submit' type = 'button'></input></form></th>");
 		
 		});
 
+	*/
 	$(".enviarDados").click(function enviarDadosAjax(){
 		
 		var idBotao = $(this).attr("id");
-		
+		alert(idBotao);
+		alert("asdsa");
+		/*
 		if (window.XMLHttpRequest)
 		{// code for IE7+, Firefox, Chrome, Opera, Safari
 	       
@@ -42,7 +45,7 @@ $(document).ready(function() {
 		xmlhttp.onreadystatechange = recuperarDadosForm;
 		xmlhttp.open("POST","springapp/" +idBotao +"/editDisciplina.htm",true);
 		xmlhttp.send(null);  
-		
+		*/
 	});
 	
 

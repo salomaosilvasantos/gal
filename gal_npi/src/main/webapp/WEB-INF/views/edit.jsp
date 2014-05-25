@@ -12,28 +12,28 @@
     <title>Editar Disciplina</title>
     
 <jsp:include page="fragments/headTag.jsp" />
-
+		
     <body>
  
- 		<section id = "caixaFormulario">
- 		
- 		<form:form modelAttribute="disciplina" id="formulario" action="editDisciplinaForm.htm" method = "post">
-        <h2>Editar Disciplina </h2>
+        <c:url value = "/editDisciplinaForm.htm" var = "edit"></c:url>
+ 
+         <form:form modelAttribute="disciplina" id="reg" action="${edit}" method = "post" >
+         <h2>Editar Disciplina </h2>
         
-	
+		 <form:input path="id" type = "hidden"/>
+        
 		 <form:label path="nome">Nome:</form:label><br>
 		 <form:input path="nome"/><br>
-		 
-		  <form:label path="code">Codigo:</form:label><br>
-		  <form:input path="code"/><br>
-		  
-		<form:errors path="*" cssClass="errorBox" element="div" />
-		 
 		
-		<input type="submit" value="Submit"/>
- 
+		 <form:label path="codigoDisciplina">Codigo:</form:label><br>
+		 <form:input path="codigoDisciplina"/><br>
+		 
+		<form:errors path="*" cssClass="errorBox" element="div" />
+		
+		<input type="submit" value="Submit" />
+ 		
+ 		<a class="buttonAdd" href="/gal_npi/listar_disciplinas.htm"><p class = "textoMenu">Voltar</p></a>
+ 	   
  	   </form:form>
  
- 		</section>
-        
     </body>

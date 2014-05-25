@@ -1,4 +1,4 @@
-package com.companyname.springapp.domain;
+package br.ufc.npi.gal.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -17,28 +17,24 @@ public class Disciplina {
 
 	@Id
 	@Column(name = "id_d")
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // identity adiciona na ultima posiçao dos Ids
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
 	@NotEmpty(message="Campo Nome não pode ficar vazio")
 	@Column(name = "nome")
 	@Pattern(regexp="[a-zA-Z\\sà-ùÀ-Ù]{0,}",message="O campo Nome não pode possuir caracteres especiais ou números.")
-	@Size(min = 6, max = 24, message = "O nome deve estar entre 6 e 24 caracteres")
+	@Size(min = 6, max = 40, message = "O nome deve estar entre 6 e 40 caracteres")
 	private String nome;
 	
 	@NotEmpty(message="Campo Código não pode ficar vazio")
 	@Column(name = "cod_d")
 	@Pattern(regexp="^[a-z\\sA-Z0-9]+",message="O campo código não pode possuir caracteres especiais.")
 	@Size(min = 6, max = 12, message = "O código deve estar entre 6 e 12 caracteres")
-	private String code;	
+	private String codigoDisciplina;	
 	
 	public Disciplina() {
-		this.code = "";
+		this.codigoDisciplina = "";
 		this.nome = "";
-	}
-
-	public String getCode() {
-		return code;
 	}
 
 	public Integer getId() {
@@ -49,8 +45,12 @@ public class Disciplina {
 		this.id = id;
 	}
 	
-	public void setCode(String code) {
-		this.code = code;
+	public String getCodigoDisciplina() {
+		return codigoDisciplina;
+	}
+	
+	public void setCodigoDisciplina(String codigoDisciplina) {
+		this.codigoDisciplina = codigoDisciplina;
 	}
 
 	public String getNome() {
@@ -61,4 +61,9 @@ public class Disciplina {
 		this.nome = nome;
 	}
 
+	@Override
+	public String toString() {
+		return "Disciplina [id=" + id + ", nome=" + nome
+				+ ", codigo Disciplina=" + codigoDisciplina + "]";
+	}
 }
