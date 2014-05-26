@@ -15,6 +15,7 @@
 		<form:form action="/gal_npi/curso/adicionar.htm" method="post" modelAttribute="curso">
 			<label for="codigo">Código:</label>
 			<form:input type="text" name="codigo" id="codigo" path="codigo"/>
+			<form:errors path="codigo" cssStyle="color:red"/>
 			<br />
 			<form:errors cssClass="error" path="codigo" />
 			<label for="nome">Nome:</label>

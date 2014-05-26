@@ -19,15 +19,18 @@
          <form:input path="id" type="hidden"/>
          
          <form:label path="codigo">Codigo:</form:label><br>
-		 <form:input path="codigo"/><br>
+		 <form:input path="codigo"/>
+		 <br><form:errors path="codigo" cssStyle="color:red"/><br>
 		 
 		 <form:label path="nome">Nome:</form:label><br>
-		 <form:input path="nome"/><br>
+		 <form:input path="nome"/>
+		 <br><form:errors path="nome" cssStyle="color:red"/><br>
 		 
 		 <form:label path="sigla">Sigla:</form:label><br>
-		 <form:input path="sigla"/><br>
+		 <form:input path="sigla"/>
+		 <br><form:errors path="sigla" cssStyle="color:red"/><br>
 		 
-		<form:errors path="*" cssClass="errorBox" element="div" />
+<%-- 		<form:errors path="*" cssClass="errorBox" element="div" /> --%>
 		
 		<input type="submit" value="Submit" />
  		
