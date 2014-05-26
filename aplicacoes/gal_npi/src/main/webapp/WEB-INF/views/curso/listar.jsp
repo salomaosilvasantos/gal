@@ -54,7 +54,7 @@
 			<label class="control-label" style="font-size: 20px;">Cursos</label>
 		</div>
 
-		<datatables:table id="curso" data="${cursos}" cdn="true" row="curso" theme="bootstrap3" cssClass="table table-striped">
+		<datatables:table id="curso" data="${cursos}" cdn="true" row="curso" theme="bootstrap2" cssClass="table table-striped">
 			<datatables:column title="Nome">
 				<c:out value="${curso.nome}"></c:out>
 			</datatables:column>
@@ -76,7 +76,55 @@
 			</datatables:column>
 		</datatables:table>
 
-		<a class="buttonAdd" href="/gal_npi/curso/adicionar.htm">Adicionar</a>
+		<button id="btnAdicionar" class="btn btn-primary" data-toggle="modal" data-target="#add-curso-modal">Adicionar</button>
+		
+		<!-- Modal -->
+		<div class="modal fade" id="add-curso-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Adicionar curso</h4>
+					</div>
+
+					<div class="modal-body">
+
+						<form class="form-horizontal" id="add-curso-form" action="<c:url value = "/curso/adicionar.htm"></c:url>">
+
+							<input type="hidden" name="id" id="id" /> 
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="nome">Código</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" placeholder="Código" name="codigo" id="codigo" />
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="nome">Nome</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" placeholder="Nome" name="nome" id="nome" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="sobreNome">Sigla</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" placeholder="Sigla" name="sigla" id="sigla" />
+								</div>
+							</div>
+
+						</form>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+						<button id="add-curso-button" type="button" class="btn btn-primary">Salvar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 </body>
