@@ -54,7 +54,7 @@
 			<label class="control-label" style="font-size: 20px;">Disciplinas</label>
 		</div>
 
-		<datatables:table id="disciplina" data="${disciplinas}" cdn="true" row="disciplina" theme="bootstrap3" cssClass="table table-striped">
+		<datatables:table id="disciplina" data="${disciplinas}" cdn="true" row="disciplina" theme="bootstrap2" cssClass="table table-striped">
 			<datatables:column title="Nome">
 				<c:out value="${disciplina.nome}"></c:out>
 			</datatables:column>

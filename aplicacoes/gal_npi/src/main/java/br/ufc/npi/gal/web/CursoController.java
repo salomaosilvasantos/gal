@@ -76,7 +76,7 @@ public class CursoController {
 		return "curso/adicionar";
 	}
 	
-	/*@RequestMapping(value="/adicionar.htm",method = RequestMethod.POST)
+	@RequestMapping(value="/adicionar.htm",method = RequestMethod.POST)
 	public String adicionar(@Valid Curso curso, BindingResult result, final RedirectAttributes redirectAttributes) {
 		
 		if(result.hasErrors())
@@ -90,9 +90,9 @@ public class CursoController {
 			redirectAttributes.addFlashAttribute("message", "Curso não pode ser adicionado pois já existe semelhante registrada");
 			return "redirect:/curso/adicionar.htm";
 		}
-	}*/
+	}
 	
-	@RequestMapping(value="/adicionar.htm",method = RequestMethod.POST)
+	/*@RequestMapping(value="/adicionar.htm",method = RequestMethod.POST)
 	public @ResponseBody Curso adicionar(@RequestBody Curso curso, BindingResult result, SessionStatus status) {
 		
 		ModelMap modelMap = new ModelMap();
@@ -109,7 +109,7 @@ public class CursoController {
 			modelMap.addAttribute("status", "ERROR");
 		}
 		return curso;
-	}
+	}*/
 	
 	@RequestMapping("/buscar.htm")
 	public String buscar(ModelMap model, String codigo) {
