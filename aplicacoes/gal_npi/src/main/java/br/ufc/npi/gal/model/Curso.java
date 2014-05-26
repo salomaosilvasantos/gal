@@ -45,12 +45,6 @@ public class Curso {
 	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class, fetch = FetchType.LAZY)
 	private List<EstruturaCurricular> curriculos;
 	
-	public Curso() {
-		this.codigo = "";
-		this.sigla = "";
-		this.nome = "";
-	}
-	
 	public Integer getId() {
 		return id;
 	}

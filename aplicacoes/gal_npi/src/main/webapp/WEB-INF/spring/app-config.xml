@@ -15,10 +15,13 @@
     <context:component-scan base-package="br.ufc.npi.gal.web" />
 
     <!-- Configures the @Controller programming model -->
-    <mvc:annotation-driven/>
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
+    <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+    <!-- Turn off working out content type based on URL file extension, should fall back to looking at the Accept headers -->
+    <property name="favorPathExtension" value="false" />
+</bean>
 	
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
         <!-- As minhas paginas JSP ficam escondidas nesse diretorio para nao serem acessadas de maneira direta,
         tudo isso por questao de segurança -->
         <property name="prefix" value="/WEB-INF/views/"></property>
