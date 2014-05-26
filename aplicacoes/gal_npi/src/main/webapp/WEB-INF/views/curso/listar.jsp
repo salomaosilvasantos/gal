@@ -50,6 +50,7 @@
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
+		<a class="buttonAdd" href="<c:url value = "/curso/adicionar.htm"></c:url>">Adicionar</a>
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 20px;">Cursos</label>
 		</div>
@@ -76,10 +77,10 @@
 			</datatables:column>
 		</datatables:table>
 
-		<button id="btnAdicionar" class="btn btn-primary" data-toggle="modal" data-target="#add-curso-modal">Adicionar</button>
+		<!--<button id="btnAdicionar" class="btn btn-primary" data-toggle="modal" data-target="#add-curso-modal">Adicionar</button>-->
 		
 		<!-- Modal -->
-		<div class="modal fade" id="add-curso-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<!--<div class="modal fade" id="add-curso-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -123,7 +124,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div>-->
 		
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
