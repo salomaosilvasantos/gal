@@ -119,7 +119,7 @@ public class CursoController {
 	}*/
 	
 	@RequestMapping("/buscar.htm")
-	public String buscar(ModelMap model, String codigo) {
+	public String buscar(ModelMap model, Integer codigo) {
 		model.addAttribute("cursos", cursoService.findByCodigoList(codigo));
 		return "cursos/listar";
 	}

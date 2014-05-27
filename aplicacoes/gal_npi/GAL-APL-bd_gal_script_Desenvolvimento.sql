@@ -1,6 +1,10 @@
 ﻿--
--- PostgreSQL database bd_gal
+-- PostgreSQL database dump
 --
+
+-- Dumped from database version 9.1.12
+-- Dumped by pg_dump version 9.1.12
+-- Started on 2014-05-19 08:54:01 BRT
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -8,13 +12,26 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
+DROP VIEW IF EXISTS quantidade_exemplares_view;
+DROP TABLE IF EXISTS exemplares;
+DROP TABLE IF EXISTS integracao_curricular;
+DROP TABLE IF EXISTS bibliografias;
+DROP TABLE IF EXISTS curriculo;
+DROP TABLE IF EXISTS titulos;
+DROP TABLE IF EXISTS curso;
+DROP TABLE IF EXISTS disciplinas;
+
 --
+-- TOC entry 173 (class 3079 OID 11681)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
---CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
 
 --
+-- TOC entry 1979 (class 0 OID 0)
+-- Dependencies: 173
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -26,215 +43,1222 @@ SET search_path = public, pg_catalog;
 SET default_tablespace = '';
 
 SET default_with_oids = false;
-DROP VIEW IF EXISTS quantidade_exemplares_view;
-DROP TABLE IF EXISTS exemplares;
-DROP TABLE IF EXISTS integracao_curricular;
-DROP TABLE IF EXISTS bibliografias;
-DROP TABLE IF EXISTS curriculo;
-DROP TABLE IF EXISTS titulos;
-DROP TABLE IF EXISTS curso;
-DROP TABLE IF EXISTS disciplinas;
 
 --
--- Tabela: titulos;  Owner: postgres; Tablespace: 
+-- TOC entry 161 (class 1259 OID 17478)
+-- Dependencies: 6
+-- Name: bibliografias; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
+
+CREATE TABLE bibliografias (
+    id_disciplina integer NOT NULL,
+    id_titulo integer NOT NULL,
+    tipo_bibliografia character varying NOT NULL
+);
+
+
+ALTER TABLE public.bibliografias OWNER TO postgres;
+
+--
+-- TOC entry 162 (class 1259 OID 17484)
+-- Dependencies: 6
+-- Name: curriculo; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE curriculo (
+    id_c integer NOT NULL,
+    ano_semestre character varying,
+    id_curso integer NOT NULL
+);
+
+
+ALTER TABLE public.curriculo OWNER TO postgres;
+
+--
+-- TOC entry 163 (class 1259 OID 17490)
+-- Dependencies: 6
+-- Name: curso; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE curso (
+    id_crs integer NOT NULL,
+    cod_c integer NOT NULL,
+    nome_c character varying,
+    sigla character varying
+);
+
+
+ALTER TABLE public.curso OWNER TO postgres;
+
+--
+-- TOC entry 164 (class 1259 OID 17496)
+-- Dependencies: 6
+-- Name: disciplinas; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE disciplinas (
+    id_d integer NOT NULL,
+    cod_d character varying NOT NULL,
+    nome character varying NOT NULL
+);
+
+
+ALTER TABLE public.disciplinas OWNER TO postgres;
+
+--
+-- TOC entry 165 (class 1259 OID 17502)
+-- Dependencies: 6
+-- Name: exemplares; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE exemplares (
+    id_e integer NOT NULL,
+    id_titulo integer NOT NULL,
+    cod_e character varying NOT NULL
+);
+
+
+ALTER TABLE public.exemplares OWNER TO postgres;
+
+--
+-- TOC entry 166 (class 1259 OID 17508)
+-- Dependencies: 1830 1831 6
+-- Name: integracao_curricular; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE integracao_curricular (
+    id_disciplina integer NOT NULL,
+    id_curriculo integer NOT NULL,
+    qtd_alunos integer,
+    semestre_oferta integer,
+    CONSTRAINT integracao_curricular_semestre_oferta_check CHECK ((0 < semestre_oferta)),
+    CONSTRAINT integracao_curricular_semestre_oferta_check1 CHECK ((11 > semestre_oferta))
+);
+
+
+ALTER TABLE public.integracao_curricular OWNER TO postgres;
+
+--
+-- TOC entry 167 (class 1259 OID 17513)
+-- Dependencies: 6
+-- Name: titulos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
 CREATE TABLE titulos (
     id_t integer NOT NULL,
     isbn character varying NOT NULL,
     nome_titulo character varying NOT NULL,
     tipo_titulo character varying NOT NULL
 );
+
+
 ALTER TABLE public.titulos OWNER TO postgres;
-ALTER TABLE ONLY titulos ADD CONSTRAINT isbn UNIQUE (isbn);
-ALTER TABLE ONLY titulos ADD CONSTRAINT id PRIMARY KEY (id_t);
-
 
 --
--- Name: seq_id_titulo_pk;; Type: SEQUENCE; Owner: postgres; Artibuindo a titulos.id_titulo_pk
+-- TOC entry 168 (class 1259 OID 17519)
+-- Dependencies: 1960 6
+-- Name: quantidade_exemplares_view; Type: VIEW; Schema: public; Owner: postgres
 --
-CREATE SEQUENCE seq_id_titulo
-    START WITH 0
-    INCREMENT BY 1
-    MINVALUE 0
-    NO MAXVALUE
-    CACHE 1;
-ALTER TABLE public.seq_id_titulo OWNER TO postgres;
-ALTER SEQUENCE seq_id_titulo OWNED BY titulos.id_t;
-ALTER TABLE ONLY titulos ALTER COLUMN id_t SET DEFAULT nextval('seq_id_titulo'::regclass);
-SELECT pg_catalog.setval('seq_id_titulo', 0, true);
+
+CREATE VIEW quantidade_exemplares_view AS
+    SELECT titulos.id_t AS id_titulo, count(exemplares.id_titulo) AS quant_exemplares FROM (titulos LEFT JOIN exemplares ON ((titulos.id_t = exemplares.id_titulo))) GROUP BY titulos.id_t HAVING (count(exemplares.id_titulo) >= 0) ORDER BY titulos.id_t;
 
 
---
--- TABLE: exemplares Owner: postgres; Tablespace: 
---
-CREATE TABLE exemplares (
-    id_e integer NOT NULL,
-    id_titulo integer NOT NULL,
-    cod_e character varying NOT NULL
-);
-ALTER TABLE public.exemplares OWNER TO postgres;
-ALTER TABLE ONLY exemplares ADD CONSTRAINT cod_e UNIQUE (cod_e);
-ALTER TABLE ONLY exemplares ADD CONSTRAINT id_e PRIMARY KEY (id_e);
-ALTER TABLE ONLY exemplares 
-	ADD CONSTRAINT titulo_exemplares 
-	FOREIGN KEY (id_titulo) 
-	REFERENCES titulos(id_t)
-	ON DELETE CASCADE;
+ALTER TABLE public.quantidade_exemplares_view OWNER TO postgres;
 
 --
--- Name: seq_id_exemplar_pk; Type: SEQUENCE; Owner: postgres; Artibuindo a exemplares.id_exemplar_pk
+-- TOC entry 169 (class 1259 OID 17523)
+-- Dependencies: 162 6
+-- Name: seq_id_curriculo; Type: SEQUENCE; Schema: public; Owner: postgres
 --
-CREATE SEQUENCE seq_id_exemplar
-    START WITH 0
-    INCREMENT BY 1
-    MINVALUE 0
-    NO MAXVALUE
-    CACHE 1;
-ALTER TABLE public.seq_id_exemplar OWNER TO postgres;
-ALTER SEQUENCE seq_id_exemplar OWNED BY exemplares.id_e;
-ALTER TABLE ONLY exemplares ALTER COLUMN id_e SET DEFAULT nextval('seq_id_exemplar'::regclass);
-SELECT pg_catalog.setval('seq_id_exemplar', 0, true);
 
-
---
--- Tabela: diciplinas;  Owner: postgres; Tablespace: 
---
-CREATE TABLE disciplinas (
-    id_d integer NOT NULL,
-    cod_d character varying NOT NULL,
-    nome character varying NOT NULL
-    
-);
-ALTER TABLE public.disciplinas OWNER TO postgres;
-ALTER TABLE ONLY disciplinas ADD CONSTRAINT cod_d UNIQUE (cod_d);
-ALTER TABLE ONLY disciplinas ADD CONSTRAINT id_d PRIMARY KEY (id_d);
-
---
--- Name: seq_id_disciplina_pk; Type: SEQUENCE; Owner: postgres; Artibuindo a disciplinas.id_disciplina_pk
---
-CREATE SEQUENCE seq_id_disciplina
-    START WITH 0
-    INCREMENT BY 1
-    MINVALUE 0
-    NO MAXVALUE
-    CACHE 1;
-ALTER TABLE public.seq_id_disciplina OWNER TO postgres;
-ALTER SEQUENCE seq_id_disciplina OWNED BY disciplinas.id_d;
-ALTER TABLE ONLY disciplinas ALTER COLUMN id_d SET DEFAULT nextval('seq_id_disciplina'::regclass);
-SELECT pg_catalog.setval('seq_id_disciplina', 0, true);
-
-
---
--- Tabela: curso;  Owner: postgres; Tablespace: 
---
-CREATE TABLE curso (
-	id_curso integer NOT NULL,
-	cod_c character varying NOT NULL,
-	nome_c character varying,
-	sigla character varying
-	
-);
-ALTER TABLE public.curso OWNER TO postgres;
-ALTER TABLE ONLY curso ADD CONSTRAINT cod_c UNIQUE (cod_c);
-ALTER TABLE ONLY curso ADD CONSTRAINT id_curso PRIMARY KEY (id_curso);
-
---
--- Name: seq_id_curso_pk; Type: SEQUENCE; Owner: postgres; Artibuindo a curso.id_curso_pk
---
-CREATE SEQUENCE seq_id_curso
-    START WITH 0
-    INCREMENT BY 1
-    MINVALUE 0
-    NO MAXVALUE
-    CACHE 1;
-ALTER TABLE public.seq_id_curso OWNER TO postgres;
-ALTER SEQUENCE seq_id_curso OWNED BY curso.id_curso;
-ALTER TABLE ONLY curso ALTER COLUMN id_curso SET DEFAULT nextval('seq_id_curso'::regclass);
-SELECT pg_catalog.setval('seq_id_curso', 0, true);
-
---
--- Tabela: curriculo;  Owner: postgres; Tablespace: 
---
-CREATE TABLE curriculo (
-	id_c integer NOT NULL,
-	ano_semestre character varying,
-	cod_curso character varying NOT NULL
-	
-);
-ALTER TABLE public.curriculo OWNER TO postgres;
-ALTER TABLE ONLY curriculo ADD CONSTRAINT id_c PRIMARY KEY (id_c);
-ALTER TABLE ONLY curriculo 
-	ADD CONSTRAINT curso_curriculo 
-	FOREIGN KEY (cod_curso) 
-	REFERENCES curso(cod_c)
-	ON DELETE CASCADE;
-
-
--- Name: seq_id_curriculo; Type: SEQUENCE; Owner: postgres; Artibuindo a curriculo.id_curriculo
---
 CREATE SEQUENCE seq_id_curriculo
     START WITH 0
     INCREMENT BY 1
     MINVALUE 0
     NO MAXVALUE
     CACHE 1;
+
+
 ALTER TABLE public.seq_id_curriculo OWNER TO postgres;
+
+--
+-- TOC entry 1980 (class 0 OID 0)
+-- Dependencies: 169
+-- Name: seq_id_curriculo; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
 ALTER SEQUENCE seq_id_curriculo OWNED BY curriculo.id_c;
+
+
+--
+-- TOC entry 170 (class 1259 OID 17525)
+-- Dependencies: 6 164
+-- Name: seq_id_disciplina; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seq_id_disciplina
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seq_id_disciplina OWNER TO postgres;
+
+--
+-- TOC entry 1981 (class 0 OID 0)
+-- Dependencies: 170
+-- Name: seq_id_disciplina; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seq_id_disciplina OWNED BY disciplinas.id_d;
+
+
+--
+-- TOC entry 171 (class 1259 OID 17527)
+-- Dependencies: 6 165
+-- Name: seq_id_exemplar; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seq_id_exemplar
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seq_id_exemplar OWNER TO postgres;
+
+--
+-- TOC entry 1982 (class 0 OID 0)
+-- Dependencies: 171
+-- Name: seq_id_exemplar; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seq_id_exemplar OWNED BY exemplares.id_e;
+
+
+CREATE SEQUENCE seq_id_curso
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seq_id_curso OWNER TO postgres;
+
+--
+-- TOC entry 1982 (class 0 OID 0)
+-- Dependencies: 171
+-- Name: seq_id_exemplar; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seq_id_curso OWNED BY curso.id_crs;
+
+
+--
+-- TOC entry 172 (class 1259 OID 17529)
+-- Dependencies: 6 167
+-- Name: seq_id_titulo; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seq_id_titulo
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seq_id_titulo OWNER TO postgres;
+
+--
+-- TOC entry 1983 (class 0 OID 0)
+-- Dependencies: 172
+-- Name: seq_id_titulo; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seq_id_titulo OWNED BY titulos.id_t;
+
+
+--
+-- TOC entry 1827 (class 2604 OID 17531)
+-- Dependencies: 169 162
+-- Name: id_c; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
 ALTER TABLE ONLY curriculo ALTER COLUMN id_c SET DEFAULT nextval('seq_id_curriculo'::regclass);
-SELECT pg_catalog.setval('seq_id_curriculo', 0, true);
-
-
 
 
 --
--- Tabela: integração curricular;  Owner: postgres; Tablespace: 
+-- TOC entry 1828 (class 2604 OID 17532)
+-- Dependencies: 170 164
+-- Name: id_d; Type: DEFAULT; Schema: public; Owner: postgres
 --
-CREATE TABLE integracao_curricular (
-    id_disciplina integer NOT NULL,
-    id_curriculo integer NOT NULL,
-    qtd_alunos integer,
-    semestre_oferta  integer,
-    CHECK (0 < semestre_oferta),
-    CHECK (11 > semestre_oferta),
-    PRIMARY KEY (id_disciplina,id_curriculo)
-    
-);
-ALTER TABLE public.integracao_curricular OWNER TO postgres;
-ALTER TABLE ONLY integracao_curricular 
-	ADD CONSTRAINT disciplinas_integracao_curricular 
-	FOREIGN KEY (id_disciplina) 
-	REFERENCES disciplinas(id_d)
-	ON DELETE CASCADE;
-ALTER TABLE ONLY integracao_curricular 
-	ADD CONSTRAINT curriculo_integracao_curricular 
-	FOREIGN KEY (id_curriculo) 
-	REFERENCES curriculo(id_c)
-	ON DELETE CASCADE;
+
+ALTER TABLE ONLY disciplinas ALTER COLUMN id_d SET DEFAULT nextval('seq_id_disciplina'::regclass);
+
 
 --
--- Tabela: bibliografias;  Owner: postgres; Tablespace: 
+-- TOC entry 1829 (class 2604 OID 17533)
+-- Dependencies: 171 165
+-- Name: id_e; Type: DEFAULT; Schema: public; Owner: postgres
 --
-CREATE TABLE bibliografias (
-    id_disciplina integer NOT NULL,
-    id_titulo integer NOT NULL,
-    tipo_bibliografia character varying NOT NULL,
-    PRIMARY KEY (id_disciplina,id_titulo,tipo_bibliografia)
-);
-ALTER TABLE public.bibliografias OWNER TO postgres;
-ALTER TABLE ONLY bibliografias 
-	ADD CONSTRAINT disciplinas_bibliografias 
-	FOREIGN KEY (id_disciplina) 
-	REFERENCES disciplinas(id_d)
-	ON DELETE CASCADE;
-ALTER TABLE ONLY bibliografias 
-	ADD CONSTRAINT titulo_bibliografias 
-	FOREIGN KEY (id_titulo) 
-	REFERENCES titulos(id_t)
-	ON DELETE CASCADE;
+
+ALTER TABLE ONLY exemplares ALTER COLUMN id_e SET DEFAULT nextval('seq_id_exemplar'::regclass);
+
+ALTER TABLE ONLY curso ALTER COLUMN id_crs SET DEFAULT nextval('seq_id_curso'::regclass);
+
+--
+-- TOC entry 1832 (class 2604 OID 17534)
+-- Dependencies: 172 167
+-- Name: id_t; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY titulos ALTER COLUMN id_t SET DEFAULT nextval('seq_id_titulo'::regclass);
 
 
+--
+-- TOC entry 1961 (class 0 OID 17478)
+-- Dependencies: 161 1972
+-- Data for Name: bibliografias; Type: TABLE DATA; Schema: public; Owner: postgres
+--
 
--- Inserindo dados na tabela Disciplina.
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (4, 589, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (4, 370, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (4, 380, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (4, 30, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (4, 608, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (4, 372, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (4, 381, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (4, 590, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (4, 394, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (5, 435, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (5, 330, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (5, 457, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (5, 518, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (5, 443, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (5, 679, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (5, 689, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (5, 456, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (6, 44, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (6, 54, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (6, 36, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (6, 42, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (6, 652, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (6, 43, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (6, 47, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (6, 145, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 488, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 432, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (29, 488, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (29, 432, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 309, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 593, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 307, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 248, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 125, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 748, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 528, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 387, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 386, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 783, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (22, 57, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (22, 61, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (34, 92, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (34, 842, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (102, 619, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (103, 631, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (105, 914, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 700, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 237, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 750, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 481, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (29, 750, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (29, 481, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 310, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 466, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 34, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 734, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 313, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 579, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 199, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 181, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (22, 53, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (22, 85, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (34, 684, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (34, 682, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (105, 918, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 223, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 97, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (89, 843, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (89, 328, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (89, 844, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (89, 587, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (89, 444, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (89, 323, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (89, 20, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (89, 1, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (89, 2, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (93, 475, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (93, 517, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (97, 444, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (97, 328, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (97, 843, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (97, 844, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (97, 20, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (97, 2, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (97, 587, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (97, 1, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (97, 323, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (102, 618, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (103, 673, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (105, 913, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (105, 916, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (104, 118, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (104, 638, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (104, 120, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (104, 172, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (104, 161, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (104, 225, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (104, 125, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (104, 167, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (112, 870, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (120, 840, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (120, 868, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (86, 7, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (86, 718, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (1, 637, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (1, 44, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (42, 799, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (42, 381, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (111, 45, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (111, 405, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (111, 813, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (111, 838, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (111, 397, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (111, 803, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (69, 609, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (69, 653, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (65, 595, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (65, 167, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (65, 661, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (28, 525, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (28, 445, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (28, 468, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (48, 291, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (48, 622, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 943, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 942, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (112, 868, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (112, 781, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (120, 821, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (86, 82, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (1, 43, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (1, 36, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (42, 112, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (42, 785, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (69, 655, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (69, 120, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (65, 651, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (65, 131, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (65, 125, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (28, 521, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (28, 440, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (48, 292, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (48, 856, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (48, 857, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 885, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 836, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 887, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (43, 159, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (43, 125, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (43, 596, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (43, 235, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (43, 234, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (43, 107, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 138, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 37, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 694, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 114, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 207, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 208, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 177, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 693, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 139, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 394, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 377, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 396, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 810, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 379, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 376, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 383, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 395, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (8, 221, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (8, 210, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (8, 936, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (8, 207, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (8, 624, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (8, 623, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (8, 233, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (8, 170, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (9, 30, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (9, 589, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (9, 381, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (9, 590, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (9, 371, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (9, 370, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (9, 380, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (9, 608, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 751, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 689, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (29, 751, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (29, 689, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 311, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 312, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 31, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 32, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (11, 605, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (11, 621, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (11, 146, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (11, 138, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (11, 37, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (11, 113, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (11, 137, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (11, 139, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 316, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 317, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 198, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 19, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (12, 295, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (12, 294, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (12, 291, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (12, 197, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (12, 606, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (12, 622, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (12, 299, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (12, 776, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (13, 415, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (13, 378, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (13, 413, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (13, 418, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (13, 416, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (13, 423, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (13, 398, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (13, 417, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (13, 404, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (14, 261, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (14, 270, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (14, 739, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (14, 252, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (14, 38, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (14, 230, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (14, 268, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (14, 267, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 167, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 172, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 173, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 667, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 668, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 176, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 120, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 125, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 473, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 462, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 517, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 753, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 775, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 754, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 735, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 680, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 437, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (16, 475, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 182, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 191, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 639, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 280, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 170, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 597, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 207, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 387, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 199, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (17, 229, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 640, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 390, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 641, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 40, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 597, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 391, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 41, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 604, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 385, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 30, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (18, 586, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (20, 176, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (20, 119, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (20, 126, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (20, 234, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (20, 160, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (20, 244, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (20, 107, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (20, 108, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (20, 164, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 611, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 225, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 610, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 242, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 296, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 241, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 285, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 188, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 214, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (21, 229, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 646, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 909, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 516, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 434, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 304, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 302, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 303, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 63, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 306, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (23, 732, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (24, 502, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (24, 504, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (24, 505, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (24, 592, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (24, 118, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (22, 79, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (22, 99, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (22, 59, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (34, 708, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (34, 57, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (102, 620, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (103, 632, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 51, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 304, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (24, 493, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (24, 633, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (24, 503, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 31, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 486, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 446, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 34, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 131, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 471, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 236, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 853, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 280, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 275, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 801, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 209, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 816, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 800, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 835, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 786, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 514, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 509, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 447, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 507, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 506, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 468, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 330, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 440, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (112, 869, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (112, 873, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (120, 869, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (86, 720, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (86, 719, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (32, 752, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (32, 323, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (32, 365, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (32, 346, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (32, 776, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (32, 1, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (32, 3, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (32, 444, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (32, 773, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 761, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 492, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 490, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 759, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 756, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 758, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 449, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 760, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 753, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (33, 755, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (35, 495, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (35, 109, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (35, 503, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (35, 493, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (35, 633, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (35, 125, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (35, 494, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 435, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 466, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (29, 435, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (29, 466, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 345, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 406, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 806, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 853, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 850, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 314, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 280, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 191, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (22, 62, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (22, 682, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (34, 62, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (34, 281, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (102, 600, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (103, 666, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (105, 779, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 274, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 269, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (47, 386, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (47, 28, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (47, 19, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (47, 325, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (47, 385, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (47, 387, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (47, 392, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (47, 783, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (49, 697, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (49, 49, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (49, 80, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (49, 56, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (49, 741, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (49, 105, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (49, 8, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (49, 57, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (56, 54, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (56, 129, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (56, 126, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (56, 16, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (56, 42, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (56, 128, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (56, 18, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (56, 637, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (57, 30, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (57, 372, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (57, 608, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (57, 590, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (57, 394, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (57, 370, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (57, 589, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (57, 381, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (57, 380, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (58, 128, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (58, 129, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (58, 126, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (58, 159, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (58, 21, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (58, 672, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (58, 151, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (58, 150, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (59, 165, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (59, 176, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (59, 168, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (59, 658, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (59, 153, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (59, 166, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (59, 160, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (59, 115, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (59, 163, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (60, 51, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (60, 62, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (60, 274, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (60, 79, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (60, 97, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (60, 614, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (60, 615, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (60, 57, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (61, 650, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (61, 159, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (61, 141, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (61, 422, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (61, 656, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (61, 21, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (61, 126, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (61, 612, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 155, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 630, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 126, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 130, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 141, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 628, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 672, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 660, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 151, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (62, 150, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (63, 239, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (63, 196, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (63, 160, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (63, 115, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (64, 603, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (64, 627, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (64, 107, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (64, 596, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (64, 235, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (64, 234, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (64, 129, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (64, 125, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (67, 647, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (67, 12, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (67, 244, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (67, 607, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (67, 642, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (67, 670, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (67, 671, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (68, 635, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (68, 116, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (68, 636, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (68, 157, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (68, 196, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (68, 144, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (68, 115, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 479, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 434, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 306, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 646, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 909, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 303, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 62, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 304, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 249, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (70, 305, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (71, 649, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (71, 221, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (71, 222, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (71, 51, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (71, 613, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (72, 472, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (72, 515, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (72, 626, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (72, 594, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (72, 601, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (72, 602, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (72, 585, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (72, 659, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (72, 625, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (73, 173, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (73, 310, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (73, 307, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (73, 221, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (73, 657, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (73, 624, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (73, 623, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (74, 145, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (74, 731, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (74, 637, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (74, 55, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (74, 44, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (74, 46, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (74, 730, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (74, 36, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (74, 729, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (75, 590, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (75, 30, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (75, 589, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (75, 113, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (75, 380, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (75, 385, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (75, 372, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (75, 898, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (102, 617, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (103, 665, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (105, 919, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (77, 261, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (77, 738, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (77, 106, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (77, 262, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (77, 736, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (77, 737, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (77, 247, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (77, 251, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (78, 273, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (78, 271, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (78, 746, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (78, 255, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (78, 260, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (78, 259, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (78, 272, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (78, 743, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (78, 250, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (79, 53, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (79, 79, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (79, 62, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (79, 84, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (79, 61, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (79, 96, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (79, 57, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (79, 95, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (80, 427, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (80, 100, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (80, 699, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (80, 697, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (80, 682, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (80, 428, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (80, 80, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (84, 733, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (84, 516, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (84, 434, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (84, 302, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (84, 304, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (84, 306, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (84, 732, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (84, 301, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (85, 895, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (85, 262, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (85, 707, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (85, 266, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (85, 271, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (85, 738, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (85, 106, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (85, 57, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (87, 473, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (87, 517, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (87, 475, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (87, 462, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (87, 735, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (87, 680, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (87, 480, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (87, 437, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 427, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 847, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 83, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 747, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 717, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 99, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 56, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 60, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 428, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 588, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 664, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 663, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 591, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 197, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 292, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 291, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 237, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (94, 862, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (94, 860, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (94, 861, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (94, 864, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (94, 863, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 374, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 849, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 372, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 394, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 379, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 807, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 790, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 819, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 948, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 949, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 950, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 951, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 953, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 954, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 955, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 956, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 957, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 958, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 959, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 960, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 961, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 167, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 118, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 1, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 2, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 161, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 125, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 20, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 598, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 6, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 323, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 444, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 346, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 638, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 225, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 244, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 120, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 328, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 320, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 97, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 283, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 599, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 98, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 644, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 643, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (101, 235, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (101, 144, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (101, 648, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (101, 595, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (101, 294, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (101, 161, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (101, 244, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (102, 616, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (105, 915, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (105, 917, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (112, 867, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (120, 822, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (120, 839, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (86, 721, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (86, 38, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (1, 16, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (1, 47, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (42, 30, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (42, 146, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (69, 645, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (108, 938, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (108, 937, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (108, 939, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (108, 962, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (108, 964, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (108, 963, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (108, 227, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (108, 965, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (109, 911, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (109, 910, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (109, 799, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (109, 37, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (109, 112, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (109, 287, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (109, 912, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (109, 381, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (110, 907, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (110, 906, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (110, 908, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (110, 113, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (113, 874, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (113, 875, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (113, 876, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (113, 880, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (113, 877, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (113, 613, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (113, 879, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (113, 878, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (114, 802, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (114, 306, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (115, 825, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (115, 811, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (115, 966, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (115, 824, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (115, 884, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (115, 883, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (115, 788, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (115, 789, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (116, 885, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (116, 836, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (116, 887, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (117, 817, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (117, 804, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (117, 805, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (118, 889, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (118, 818, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (118, 890, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (118, 394, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (118, 377, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (118, 396, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (121, 813, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (121, 45, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (121, 397, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (121, 405, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (121, 838, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (122, 941, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (122, 943, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (122, 942, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (122, 945, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (122, 947, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (122, 946, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (122, 9, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (123, 945, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (123, 943, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (123, 9, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (123, 941, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (123, 946, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (123, 942, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (124, 922, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (124, 940, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (124, 923, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (125, 934, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (125, 935, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (125, 933, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (126, 932, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (126, 930, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (126, 931, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (127, 778, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (127, 928, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (127, 927, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (127, 929, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (128, 926, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (128, 924, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (128, 925, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (129, 921, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (129, 920, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (129, 967, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (129, 922, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (129, 923, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (119, 891, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (119, 604, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (119, 892, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (119, 40, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (119, 41, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (119, 893, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 356, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 357, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 795, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 796, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 793, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 465, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 353, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 354, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 356, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 357, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 795, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 796, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 793, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 465, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 353, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 354, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (3, 54, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (3, 16, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (3, 39, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (3, 637, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (3, 42, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (3, 750, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (3, 481, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (3, 36, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (19, 292, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (19, 289, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (19, 291, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (19, 294, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (19, 256, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (19, 298, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (19, 776, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (92, 327, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (92, 326, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (92, 342, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (92, 344, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (92, 714, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (92, 343, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (92, 341, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (92, 773, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (31, 686, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (31, 327, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (31, 326, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (31, 344, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (31, 773, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (31, 714, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (31, 343, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (31, 341, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 528, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 837, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 529, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 344, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 104, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 530, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 527, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 318, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (112, 830, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (120, 841, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 767, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 768, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 451, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 433, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 450, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 762, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 763, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 764, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 373, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 455, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 765, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 432, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (27, 766, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (81, 206, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (81, 712, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (81, 253, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (81, 82, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (81, 281, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (81, 246, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (81, 710, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (81, 229, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (82, 727, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (82, 728, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (82, 80, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (82, 63, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (82, 726, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (82, 741, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (82, 690, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (82, 57, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (83, 426, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (83, 681, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (83, 424, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (83, 723, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (83, 722, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (83, 351, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (83, 425, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (83, 264, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (83, 724, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (120, 873, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (86, 845, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (86, 688, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (1, 54, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (1, 42, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (42, 110, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (42, 589, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (69, 654, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (69, 165, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (69, 125, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (65, 662, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (65, 236, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (28, 522, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (28, 436, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (28, 852, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (48, 289, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (48, 858, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (48, 606, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 945, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 9, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 968, 'Complementar');
+
+
+--
+-- TOC entry 1962 (class 0 OID 17484)
+-- Dependencies: 162 1972
+-- Data for Name: curriculo; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO curriculo (id_c, ano_semestre, id_curso) VALUES (1, '2007.1', 1);
+INSERT INTO curriculo (id_c, ano_semestre, id_curso) VALUES (2, '2010.1', 2);
+INSERT INTO curriculo (id_c, ano_semestre, id_curso) VALUES (3, '2010.1', 3);
+INSERT INTO curriculo (id_c, ano_semestre, id_curso) VALUES (4, '2013.1', 4);
+
+
+--
+-- TOC entry 1963 (class 0 OID 17490)
+-- Dependencies: 163 1972
+-- Data for Name: curso; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO curso (id_crs,cod_c, nome_c, sigla) VALUES (1,401, 'Sistemas de Informação', 'SI');
+INSERT INTO curso (id_crs,cod_c, nome_c, sigla) VALUES (2,402, 'Engenharia de Software', 'ES');
+INSERT INTO curso (id_crs,cod_c, nome_c, sigla) VALUES (3,403, 'Redes de Computadores', 'RC');
+INSERT INTO curso (id_crs,cod_c, nome_c, sigla) VALUES (4,404, 'Ciência da Computação', 'CC');
+
+
+--
+-- TOC entry 1964 (class 0 OID 17496)
+-- Dependencies: 164 1972
+-- Data for Name: disciplinas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (1, 'QXD0108', 'INTRODUÇÃO À CIÊNCIA DA COMPUTAÇÃO');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (2, 'QXD0001', 'FUNDAMENTOS DE PROGRAMAÇÃO');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (3, 'QXD0002', 'INTRODUÇÃO A CIÊNCIA DA COMPUTAÇÃO E SISTEMAS DE INFORMAÇÃO');
@@ -265,7 +1289,6 @@ INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (27, 'QXD0026', 'CONTABILIDAD
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (28, 'QXD0027', 'E-BUSINESS');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (29, 'QXD0028', 'ECONOMIA E FINANÇAS');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (30, 'QXD0029', 'EMPREENDEDORISMO');
-INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (31, 'QXD0030', 'ÉTICA,DIREITO E LEGISLAÇÃO');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (32, 'QXD0031', 'FILOSOFIA DA CIÊNCIA');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (33, 'QXD0032', 'FUNÇÕES EMPRESARIAIS');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (34, 'QXD0033', 'GERÊNCIA DE REDES');
@@ -323,14 +1346,12 @@ INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (85, 'QXD0092', 'SERVIÇOS DE
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (86, 'QXD0093', 'ANÁLISE DE DESEMPENHO DE REDES DE COMPUTADORES');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (87, 'QXD0094', 'GESTÃO DE TECNOLOGIA DA INFORMAÇÃO E COMUNICAÇÃO');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (88, 'QXD0095', 'PROJETO INTEGRADO EM REDES DE COMPUTADORES');
-INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (89, 'QXD0096', 'PROJETO DE PESQUISA CIENTÍFICA E TECNOLÓGICA');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (90, 'QXD0099', 'DESENVOLVIMENTO DE SOFTWARE PARA PERSISTÊNCIA');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (91, 'QXD0102', 'DESENVOLVIMENTO DE SOFTWARE PARA DISPOSITIVOS MÓVEIS');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (92, 'QXD0103', 'ÉTICA, DIREITO E LEGISLAÇÃO');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (93, 'QXD0106', 'GOVERNANÇA ESTRATÉGICA DE TECNOLOGIA DA INFORMAÇÃO');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (94, 'QXD0107', 'PROGRAMAÇÃO LINEAR');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (96, 'QXD0109', 'PRÉ-CÁLCULO');
-INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (97, 'QXD0110', 'PROJETO DE PESQUISA CIENTIFICA E TECNOLOGICA');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (98, 'QXD0113', 'LINGUA BRASILEIRA DE SINAIS - LIBRAS');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (99, '1111111', 'PRÁTICAS EM TECNOLOGIA DA INFORMAÇÃO I');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (100, 'QXD0071', 'INTEGRAÇÃO DE APLICAÇÕES');
@@ -344,6 +1365,7 @@ INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (107, 'PRG0002', 'RELAÇOES E
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (108, 'QXD0114', 'PROGRAMAÇÃO FUNCIONAL');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (109, 'QXD0115', 'ESTRUTURA DE DADOS AVANÇADA');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (110, '1111113', 'ALGORITMOS PROBABILÍSTICOS');
+INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (97, 'QXD0110', 'PROJETO DE PESQUISA CIENTÍFICA E TECNOLÓGICA');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (111, '1111114', 'ANALISE E DESEMPENHO DE SISTEMAS');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (112, '1111115', 'APRENDIZADO DE MÁQUINA');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (113, '1111116', 'COMPUTAÇÃO PARALELA');
@@ -363,1231 +1385,16 @@ INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (126, '1111129', 'RECUPERAÇ�
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (127, '1111130', 'TEORIA DA PROVA');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (128, '1111131', 'TEORIA DOS GRAFOS');
 INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (129, '1111132', 'VISÃO COMPUTACIONAL');
-
-
-
---Inserindo dado na tabela titulos
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (1,'9788573074895','LAVILLE, Christian; DIONNE, Jean. A construção do saber: manual de metodologia da pesquisa em ciências humanas. Porto Alegre: Artmed, Belo Horizonte: Editora UFMG, 2008. 340 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (2,'8522440158','MARCONI, Marina de Andrade; LAKATOS, Eva Maria. Fundamentos de metodologia científica. 6.ed. São Paulo: Atlas, 2005. 315p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (3,'9788522457588','MARCONI, Marina de Andrade; LAKATOS, Eva Maria. Fundamentos de metodologia científica. 7. ed. São Paulo, SP: Atlas, 2010. xvi, 297 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (6,'8576050471','CERVO, Amado Luiz. Metodologia científica. 6. ed. São Paulo, SP: Prentice Hall, 2007. 162 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (7,'9788573937701','ALECRIM, Paulo Dias de. Simulação computacional para redes de computadores. Rio de Janeiro, RJ: Ciência Moderna, 2009. xii, 253 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (8,'9788573936506','VIANA, Eliseu Ribeiro Cherene. Virtualização de servidores linux para redes corporativas: guia prático. Rio de Janeiro, RJ: Ciência Moderna, 2008. 230 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (9,'9788522448395','PASSOS, Eduardo José Pedreira Franco dos. Programação linear como instrumento da pesquisa operaciona: Eduardo José Pedreira Franco dos Passos. São Paulo, SP: Atlas, 2008. xii, 451p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (10,'1595937537','SYMPOSIUM ON APPLIED COMPUTING 23rd., 2008, Fortaleza, CE); WAINWRIGHT, Roger L. Applied computing 2008 : the 23rd annual ACM Symposium on Applied Computing: proceedings of the 2008 ACM Symposium on Applied Computing, Fortaleza, March 16-20, 2008. Fortaleza, CE: ACM Press, 2008. 3v.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (11,'857631164X','(I: 2009, Brasília, Brasil). Artigos CONSEGI 2009: Congresso Internacional Software Livre e Governo Eletrônico. Rio de Janeiro, RJ: Fundação Alexandre de Gusmão, 2009. 172 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (12,'9780321117663','HASS, Anne Mette Jonassen. Configuration management: principles and practice. Boston, Massachusetts: Addison-Wesley, 2003. xlv, 370 p. (The Agile software development series)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (13,'857631293X','(III 2010, Brasília, Brasil). CONSEGI 2010: III Congresso Internacional Software Livre e Governo Eletrônico - Amãpytuna computação em nuvem: serviços livres para a sociedade do conhecimento.. Brasília, DF: Fundação Alexandre de Gusmão, 2010. 171 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (15,'8535215360','VELLOSO, Fernando de Castro. Informática: conceitos básicos . 7. ed. rev. atual. Rio de Janeiro, RJ: Campus, 2004. xiii, 407p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (16,'852160372X','GUIMARÃES, Ângelo de Moura; LAGES, Newton Alberto de Castilho. INTRODUÇÃO a ciencia da computacao. Rio de Janeiro: Livros Técnicos e Científicos, 1984. 165p. (Ciência da computação)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (17,'9788587918888','CAPRON, H. L.; JOHNSON, J. A. INTRODUÇÃO à informatica. 8. ed. São Paulo: Prentice Hall, Pearson, 2004. 350 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (18,'9788535222067','TURBAN, Efraim. Introdução a sistemas de informação: uma abordagem GERÊNCIAl. Rio de Janeiro, RJ: Elsevier, 2007. xi, 364 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (19,'9788522104999','SIPSER, Michael. Introdução à teoria da computação. 2. ed. São Paulo, SP: Cengage Learning, 2011. xxi, 459 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (20,'9788535235227','WAZLAWICK, Raul Sidnei. Metodologia de pesquisa para ciência da computação. Rio de Janeiro, RJ: Elsevier, 2008. 159 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (21,'8536302313','SCOTT, Kendall. O processo unificado explicado. Porto Alegre: Bookman, 2003. 160 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (22,'9788599593097','MORIMOTO, Carlos E. Redes, guia prático. Porto Alegre, RS: Sul Editores, 2009. 555 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (23,'97788599593196','MORIMOTO, Carlos E. Redes, guia prático. 2. ed. Porto Alegre, RS: Sul Editores, 2011. 573 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (27,'9783642112935','CHARRON-BOST, Bernadette; SCHIPER, André; PEDONE, Fernando. Replication: Theory and practice. Germany: Springer-Verlag Berlin Heidelberg, 2010. xv, 290p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (28,'9788577808243','DIVERIO, Tiarajú Asmuz. Teoria da computação: máquinas universais e computabilidade. 3. ed. Porto Alegre: Bookman, 2011. 288 p. (Livros didáticos. n.5)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (29,'9788576691884','ATUALIZAÇÕES em informática 2008. Rio de Janeiro: Editora PUC-Rio, 2008. 272 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (30,'8521614225','GERSTING, Judith L. Fundamentos matemáticos para a ciência da computação: um tratamento moderno de matemática discreta . 5. ed. Rio de Janeiro: Livros Técnicos e Científicos, c2004. xiv, 597 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (31,'8536304944','PREECE, Jennifer; ROGERS, Yvonne; SHARP, Helen. Design de interação: além da interação homem-computador . Porto Alegre, RS: Bookman, 2005. xvi, 548 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (32,'8575021389','OLIVEIRA NETTO, Alvim Antônio de. IHC - Interação Humano Computador: modelagem e gerência de interfaces com o usuário : sistemas de informações . Florianópolis: Visual Books, 2004. xiii, 120 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (33,'9788575022603','OLIVEIRA NETTO, Alvim Antônio de. IHC e a engenharia pedagógica. Florianópolis: Visual Books, 2010. 216 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (34,'9788535234183','BARBOSA, Simone D. J.; SILVA, Bruno Santana da. Interação humano-computador. Rio de Janeiro, RJ: Elsevier, 2010. 384 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (35,'9788575222034','ROGERS, Rick; LOMBARDO, John; MEDNIEKS, Zigurd R.; MEIKE, Blake. Desenvolvimento de aplicações Android. São Paulo, SP: Novatec, 2009. xvi, 376 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (36,'9788577803101','WEBER, Raul Fernando. Fundamentos de arquitetura de computadores. 3. ed. Porto Alegre, RS: Bookman, 2008. 306 p. (Série Livros Didáticos 8)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (37,'8535212280','CELES, Waldemar; CERQUEIRA, Renato; RANGEL, José Lucas. Introdução a estruturas de dados: com técnicas de programação em C. Rio de Janeiro, RJ: Elsevier: Campus, 2004. xi, 294 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (38,'8535211020','MENASCÉ, Daniel A.; ALMEIDA, Virgilio A. F. Planejamento de capacidade para serviços na Web: métricas, modelos e métodos. Rio de Janeiro, RJ: Campus, 2002.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (39,'9788522107971','STAIR, Ralph M.; REYNOLDS, George Walter; SILVA, Flávio Soares Corrêa da. Princípios de sistemas de informação. São Paulo, SP: Cengage Learning, 2011. xvii, 590 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (40,'9780262026499','BAIER, Christel; KATOEN, Joost-Pieter. Principles of model checking. Cambridge, Massachusetts: The Mit Press, 2008. xvii, 975 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (41,'9780262032704','CLARKE, E. M. Model checking. Cambridge: MIT Press, 1999. xiv, 314 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (42,'9788535223552','HENNESSY, John L; PATTERSON, David A. Arquitetura de computadores: uma abordagem quantitativa. 4. ed. Rio de Janeiro, RJ: Elsevier, 2008. 494 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (43,'9788535206845','MURDOCCA, Miles; HEURING, Vincent P. Introdução a arquitetura de computadores. Rio de Janeiro, RJ: Elsevier, 2000. xxii, 512p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (44,'9788521615439','MONTEIRO, Mario A. Introdução à organização de computadores. 5. ed. Rio de Janeiro, RJ: LTC, 2007. xii, 696p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (45,'9780471503361','JAIN, Raj. The art of computer systems perfomance analysis: techniques for experimental design, measurement, simulation, and modeling . New York, NY: John Wiley & Sons, 1991. xxvii, 685 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (46,'9788576055648','STALLINGS, William; VIEIRA, Daniel. Arquitetura e organização de computadores. 8. ed. São Paulo: Pearson Prentice Hall, 2010. xiv, 624 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (47,'8587918532','STALLINGS, William. Arquitetura e organização de computadores: projeto para o desempenho. 5. ed. São Paulo, SP: Prentice Hall, 2006. xix, 786 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (48,'9781935182481','HAY, Chris; PRINCE, Brian H. Azure in action. Stamford, Ct: Manning, 2011. xxx, 457 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (49,'9788574524238','TAURION, Cezar. Cloud computing: computação em nuvem, transformando o mundo da Tecnologia da Informação. Rio de Janeiro, RJ: Brasport, 2009. 205 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (50,'9780470506387','JENNINGS, Roger. Cloud computing with the Windows Azure Platform. Indianapolis, Indiana: Wiley Pub., 2009. xxvii, 331 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (51,'8560031498','COULOURIS, George F.; DOLLIMORE, Jean; KINDBERG, Tim. Sistemas distribuídos: conceitos e projeto. 4. ed. Porto Alegre: Bookman, 2007. viii, 784p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (52,'0132393085','COMER, Douglas. Automated network management sytems: current and future capabilities. New Jersey: Pearson/ Prentice Hall, 2007. xvi, 342 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (53,'9788535220179','COMER, Douglas. Interligação de redes com TCP/IP. 5. ed. rev. atual. Rio de Janeiro, RJ: Elsevier, 2006. v. 1','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (54,'9788522108459','FEDELI, Ricardo Daniel.; POLLONI, Enrico Giulio Franco; PERES, Fernando Eduardo. Introdução à ciência da computação. 2. ed. atual. São Paulo, SP: Cengage Learning, 2010. xvi, 250 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (55,'8588745887','HALLBERG, Bruce A. Networking: redes de computadores: teoria e prática. Rio de Janeiro, RJ: Alta Books, 2003. xvi, 292 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (56,'9788576083542','LIMA JUNIOR, Almir Wirth. Rede de computadores: tecnologia e convergência das redes. Rio de Janeiro, RJ: Alta Books, 2009. xiii, 592 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (57,'8535211853ISBN10','TANENBAUM, Andrew S. Redes de computadores. Rio de Janeiro, RJ: Elsevier: Campus, 2003. xx, 945p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (58,'9788576059240','TANENBAUM, Andrew S.; WETHERALL, D. Redes de computadores. São Paulo, SP: Pearson Prentice Hall, 2011. xvi, 582p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (59,'9788561893057','TORRES, Gabriel. Redes de computadores. Rio de Janeiro: Novaterra, 2009. xxiii, 805 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (60,'9788521615965','OLIFER, Natalia; OLIFER, Victor. Redes de computadores: princípios, tecnologias e protocolos para o projeto de redes . Rio de Janeiro: LTC, 2008. xvi, 576 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (61,'8576080567','OLIVEIRA, Gorki Starlin da Costa. Redes de computadores comunicações de dados TCP/IP: conceitos, protocolos e usos. Rio de Janeiro, RJ: Alta Books, 2004. xi, 224 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (62,'9788588639973','KUROSE, James F.; ROSS, Keith W. Redes de computadores e a Internet: uma abordagem top-down. 5. ed. São Paulo: Pearson Addison Wesley, 2010. xxii, 614 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (63,'8588639181','KUROSE, James F.; ROSS, Keith W. Redes de computadores e a Internet: uma abordagem top-down. 3. ed. São Paulo: Pearson/Addison Wesley, 2006. xx, 634 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (79,'9788560031368','COMER, Douglas. Redes de computadores e internet : abrange transmissão de dados, ligações inter-redes,web e aplicações. 4. ed. Porto Alegre: Bookman, 2007. 632 p. + 1 CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (80,'8536501383','TRONCO, Tania Regina. Redes de nova geração: a arquitetura de convergência do IP, telefonia e redes ópticas . 1. ed. São Paulo, SP: Érica, 2006. 164 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (81,'9780201485349','STALLINGS, William. SNMP. SNMPv2, SNMPv3, RMON 1 and 2. 3rd. ed. New Jersey: Addison-Wesley, 2009. xv, 619 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (82,'0471433012','BLUM, Richard. Network perfomance: open source toolkit, using netperf, tcptrace, NIST Net, and SSFNet. Indianapolis: Wiley Publishing, 2003. xxiii, 405 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (83,'9788576081876','DONAHUE, Gary A. Redes robustas. Rio de Janeiro, RJ: Alta Books, 2008. xx, 502 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (84,'8535215913','FARREL, Adrian. A internet e seus protocolos: uma análise comparativa . Rio de Janeiro, RJ: Elsevier, 2005. xxvii, 572 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (85,'9780123705488','PETERSON, Larry L.; DAVIE, Bruce S. Computer networks: a systems approach . 4th ed. Amsterdam; Boston, Massachusetts: Morgan Kaufmann, c2007. 806 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (92,'9780596008406','MAURO, Douglas R.; SCHMIDT, Kevin J. Essential SNMP. 2nd ed. Sebastopol: O´Reilly, 2005. xv, 442p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (93,'9788536500270','GASPARINI, Anteu Fabiano L. Infra-estrutura, protocolos e sistemas operacionais de LANs: redes locias . 3. ed. São Paulo: Érica, 2007. 334 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (94,'8536304707','STEVENS, W. Richard. Programação de rede UNIX: API para soquetes de rede. 3. ed. São Paulo, SP: Bookman, 2005. v. 1','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (95,'8535209220','SCRIMGER, Rob. TCP/IP: a bíblia. Rio de Janeiro: Elsevier, 2002. xix, 642 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (96,'9788536502137','SOUSA, Lindeberg Barros de. TCP/IP & conectividade em redes: guia prático. 5. ed. rev. atual e ampl. São Paulo: Érica, 2009. 192 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (97,'9788576051893','ERL, Thomas. SOA: princípios de design de serviços. São Paulo, SP: Pearson Prentice Hall, 2009. x, 320 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (98,'9788576081845','JOSUTTIS, Nicolai M. SOA na prática: a arte da modelagem de sistemas distribuídos. Rio de Janeiro, RJ: Alta Books, 2008. xiv, 265 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (99,'9788586804885','FOROUZAN, Behrouz A. Comunicação de dados e redes de computadores. 4.ed. São Paulo, SP: McGraw-Hill, 2008. xxxiv, 1134 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (100,'9788536306148','FOROUZAN, Behrouz A. Comunicação de dados e redes de computadores. 3.ed. São Paulo, SP: McGraw-Hill, 2006. xi, 840 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (104,'9788573935950','COSTA, Daniel Gouveia. Comunicações multimídia na internet: da teoria à prática. Rio de Janeiro, RJ: Ciência Moderna, 2007. xiii, 236 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (105,'9781430219422','VENNER, Jason. Pro Hadoop: build scalable, distributed applications in the cloud. New York, NY: Apress, 2009. xxvii, 407 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (106,'9788576083078','SCHRODER, Carla. Redes linux: livro de receitas. Rio de Janeiro, RJ: Alta Books, 2009. xxi, 566 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (107,'9788577802623','PEZZÈ, Mauro; YOUNG, Michal. Teste e análise de software: processo, princípios e técnicas. Porto Alegre, RS: Bookman, 2008. x, 512 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (108,'9788576082125','PILONE, Dan; MILES, Russ. Use a cabeça: desenvolvimento de software. Rio de Janeiro, RJ: Alta Books, 2008. xxxiv, 378 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (109,'9788576083092','GREENE, Jennifer; STELLMAN, Andrew. Use a cabeça: PMP. Rio de Janeiro, RJ: Alta Books, 2008. xxx, 594 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (110,'0321295358','KLEINBERG, Jon; TARDOS, Éva. Algorithm design. Boston: Pearson/Addison Wesley, c2006. 838 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (111,'0471383651','GOODRICH, Michael T.; TAMASSIA, Roberto. Algorithm design: foundations, analysis, and Internet examples . New York: John Wiley & Sons, 2002. xii, 708 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (112,'9788577260324','DASGUPTA, Sanjoy; PAPADIMITRIOU, Christos H.; VAZIRANI, Umesh. Algoritmos. São Paulo, SP: McGraw-Hill, 2009. xiv, 320 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (113,'8535209263','CORMEN, Thomas H. Algoritmos: teoria e prática. Rio de Janeiro: Elsevier, 2002. xvii , 916 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (114,'857522073X','MEDINA, Marco; FERTIG, Cristina. Algoritmos e programação: teoria e prática. 2. ed. São Paulo, SP: Novatec, 2006. 384 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (115,'0735619670','MCCONNELL, Steve. Code Complete: um guia prático para a construção de software . 2. ed. Porto Alegre, RS: Bookman, 2005. xv, 928 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (116,'8576082675','MARTIN, Robert C. Código limpo: habilidades práticas do Agile Software . Rio de Janeiro: Alta Books, 2011. xxi, 413 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (117,'8573934069','GIMENES, Itana Maria de Souza; HUZITA, Elisa Hatsue Moriya. Desenvolvimento baseado em componentes: conceitos e técnicas . Rio de Janeiro, RJ: Ciência Moderna, 2005. xvi, 282 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (118,'9788577808076','COHN, Mike; SILVA, Aldir José Coelho da. Desenvolvimento de software com scrum: aplicando métodos ágeis com sucesso . Porto Alegre: Bookman, 2011. xii, 496 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (119,'9788534602372','PRESSMAN, Roger S. Engenharia de software. São Paulo: Pearson/ Makron Books, 2009. xxxii, 1056 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (120,'8586804576','PRESSMAN, Roger S. Engenharia de software. 6.ed. São Paulo: McGraw-Hill, 2006. 720 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (125,'9788588639287','SOMMERVILLE, Ian, |d 1951-. Engenharia de software. 8. ed. São Paulo, SP: Pearson/ Prentice Hall, 2007. xiv, 552 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (126,'9788579361081','SOMMERVILLE, Ian, |d 1951-; OLIVEIRA, Kalinka; BOSNIC, Ivan. Engenharia de software. 9. ed. São Paulo, SP: Pearson/ Prentice Hall, 2011. xiii, 529 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (127,'9788521616504','PAULA FILHO, Wilson de Pádua. Engenharia de software: fundamentos, métodos e padrões . 3. ed. Rio de Janeiro, RJ: LTC, 2009. xiii, 1248 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (128,'9788587918314','PFLEEGER, Shari Lawrence. Engenharia de software: teoria e prática. 2. ed. São Paulo, SP: Pearson/ Prentice Hall, 2007. xix, 537 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (129,'9780073375977','PRESSMAN, Roger S. Engenharia de software: uma abordagem profissional . 7. ed. Porto Alegre: AMGH Ed., 2011. xxvii, 779 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (130,'9788536304571','COCKBURN, Alistair. Escrevendo casos de uso eficazes: um guia prático para desenvolvedores de software . Porto Alegre: Bookman, 2005. viii, 254 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (131,'3540287132','GORTON, Ian. Essential software architecture. Berlin: Springer, 2006. xviii, 283 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (132,'9783642191756','GORTON, Ian. Essential software architecture. 2. ed. Berlin: Springer, 2011. xvi, 242 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (137,'8521610149','SZWARCFITER, Jayme Luiz; MARKENZON, Lilian. Estruturas de dados e seus algoritmos. 2. ed. rev. Rio de Janeiro: Livros Técnicos e Científicos, c1994. 320 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (138,'8576051480','ASCENCIO, Ana Fernanda Gomes; CAMPOS, Edilene Aparecida Veneruchi de. Fundamentos da programação de computadores: algoritmos, Pascal, C/C++ e java. 2. ed. São Paulo, SP: Prentice Hall, 2007. viii, 434 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (139,'9788586804960','JOYANES AGUILAR, Luis. Fundamentos de programação: algoritmos, estrutura de dados e objetos. São Paulo, SP: McGraw-Hill, 2008. xxix, 690 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (140,'9788535234190','FEIJÓ, Bruno; CLUA, Esteban; SILVA, Flávio Soares Corrêa da. Introdução à ciência da computação com jogos: aprendendo a programar com entretenimento . Rio de Janeiro: Elsevier, c2010. 263 p. (Série campus ; Sociedade Brasileira de Computação)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (141,'8573932759','KRUCHTEN, Philippe; FELLOW, Rational. Introdução ao RUP. rational unified process . Rio de Janeiro, RJ: Ciência Moderna, 2003. (Addison-Wesley object technology)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (142,'9788576050247','FORBELLONE, André Luiz Villar; EBERSPÄCHER, Henri Frederico. Lógica de programação: a construção de algoritmos e estruturas de dados . 3. ed. São Paulo: Makron, 2005. xii, 218 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (143,'9780735623583','WIGLEY, Andy; MOTH, Daniel; FOOT, Peter. Microsoft mobile development handbook. Redmond, Wash.: Microsoft Press, 2007. xxix, 651 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (144,'9788577807000','HUNT, Andrew. O programador pragmático: de aprendiz a mestre. Porto Alegre, RS: Bookman, 2010. xvii, 343 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (145,'8576050676','TANENBAUM, Andrew S. Organização estruturada de computadores. 5. ed. São Paulo, SP: Prentice Hall, 2007. xii, 449 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (146,'8522105251','ZIVIANI, Nivio; BOTELHO, Fabiano Cupertino. Projeto de algoritmos: com implementações em java e C++. São Paulo, SP: Thomson Learning, 2007. vii, 620 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (147,'9780471684176','THAYER, Richard H.; CHRISTENSEN, M. J. Software engineering. 3rd. ed. Hoboken, NJ: IEEE Computer Society, 2005. 2 v.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (148,'9780471684183','THAYER, Richard H.; DORFMAN, M. Software engineering. 3rd. ed. Hoboken, NJ: IEEE Computer Society, 2 v.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (149,'9780471692089','BRAUDE, Eric J.; BERNSTEIN, Michael E. Software engineering: modern approaches. 2nd ed. Hoboken, New Jersey: J. Wiley & Sons, 2011. xvi, 782 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (150,'9780735623989','WITHALL, Stephen. Software requirement patterns. Redmond, Wash.: Microsoft Press, c2007. xvi, 366 p. (Best practices)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (151,'0735618798','WIEGERS, Karl Eugene. Software requirements: practical techniques for gathering and managing requirements throughout the product development cycle . 2. ed. Redmond: Microsoft, 2003. 516 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (152,'9788577802814','SANTOS, Clesio Saraiva dos; AZEREDO, Paulo Alberto de; UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL. Tabelas: organização e pesquisa. Porto Alegre, RS: Sagra Luzzato, 2008. 85 p. (n 10)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (153,'9788576081746','FREEMAN, Eric; FREEMAN, Elisabeth; SIERRA, Kathy; BATES, But. Use a cabeça!: padrões e projetos. 2. ed. rev. Rio de Janeiro, RJ: Alta Books, 2007. xxiv, 478 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (154,'9788576081456','MCLAUGHLIN, Brett; POLLICE, Gary; WEST, David. Use a cabeça: análise e projeto orientado ao objeto. Rio de Janeiro, RJ: Alta Books, 2007. xxviii, 441 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (155,'9780321205681','COHN, Mike. User stories applied: for agile software development . Boston: Addison-Wesley, 2004. 268 p. (Addison-Wesley signature series)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (156,'9780321269317','SALMRE, Ivo. Writing mobile code: essential software engineering for building mobile applications. New Jersey: Addison-Wesley, 2005. xviii, 771p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (157,'9780596510046','BEAUTIFUL code: leading programmers explain how they think. California: O´Reilly, 2007. xxi, 593 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (159,'8575221129','KOSCIANSKI, André; SOARES, Michel dos Santos. Qualidade de software. 2. ed. São Paulo, SP: Novatec, 2007. 395p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (160,'9788577802449','KERIEVSKY, Joshua. Refatoração para padrões. Porto Alegre: Bookman, 2008. xviii, 400 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (161,'9788574523088','MARTINS, José Carlos Cordeiro. Técnicas para GERÊNCIAmento de projetos de software. Rio de Janeiro, RJ: Brasport, 2007. xviii, 432p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (162,'9788576052074','PUGA, Sandra; RISSETTI, Gerson. Lógica de programação e estruturas de dados: com aplicações em Java. São Paulo, SP: Pearson, 2009. xiv , 262 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (163,'8536304030','SHALLOWAY, Alan; TROTT, James. Explicando padrões de projeto: uma nova perspectiva em projeto orientado a objeto . Porto Alegre: Bookman, 2004. xix, 328 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (164,'8575220470','TELES, Vinícius Manhães. Extreme programming: aprenda como encantar seus usuários desenvolvendo software com agilidade e alta qualidade. São Paulo, SP: Novatec, 2006. 316 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (165,'8573076100','GAMMA, Erich. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. Porto Alegre: Bookman, 2000. 364 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (166,'9788560031511','HORSTMANN, Cay S. Padrões e projeto orientados a objetos. 2. ed. Porto Alegre: Bookman, 2007. 423 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (167,'9788535216967','BEZERRA, Eduardo. Princípios de análise e projeto de sistemas com UML. 2. ed. rev. e atual. Rio de Janeiro: Elsevier: Campus, c2007. 369 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (168,'9788577808410','MARTIN, Robert C.; MARTIN, Micah. Princípios, padrões e práticas ágeis em C#. Porto Alegre: Bookman, 2011. 735 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (169,'8576050129','BARMES, David J.; KÖLLING, Michael. Programação orientada a objetos com Java: uma introdução prática usando o BLUEJ. São Paulo, SP: Pearson/ Prentice Hall, 2007. xxviii, 368 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (170,'9788576051879','BARNES, David J.; KÖLLING, Michael. Programação orientada a objetos com java: uma introdução prática usando o blueJ. 4.ed. São Paulo, SP: Pearson Prentice Hall, 2009. xxii , 444 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (171,'9788576082774','FERNANDEZ, Obie. Programando rails A biblia. Rio de Janeiro, RJ: Alta Books, 2008. xlviii, 671 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (172,'9788535217841','BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar. UML: guia do usuário. 2. ed. rev. e atual. Rio de Janeiro, RJ: Elsevier, 2005. xviii, 474 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (173,'8536304545','FOWLER, Martin. UML essencial: um breve guia para a linguagem-padrão de modelagem de objetos . 3. ed. Porto Alegre: Bookman, 2005. 160 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (174,'9788575221938','GUEDES, Gilleanes T. A. UML 2: uma abordagem prática. São Paulo, SP: Novatec, 2009. 485 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (175,'0471463612','ERIKSSON, Hans-Erik; PENKER, Magnus; LYONS, Brian. UML 2 toolkit. Indianapolis, Indiana: Wiley Publishing, 2004. xxvii, 511 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (176,'9788560031528','LARMAN, Craig. Utilizando UML e padrões: uma introdução à análise e ao projeto orientados a objetos e ao desenvolvimento iterativo. 3. ed. Porto Alegre: Bookman, 2007. 695 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (177,'9788574524061','SERSON, Roberto Rubinstein. A Bíblia: certificação JAVA 6. Rio de Janeiro: Brasport, 2009. 2v.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (178,'8534614597','DEITEL, Harvey M.; DEITEL, Paul J.; NIETO, T. R. C#: como programar . São Paulo: Pearson Education do Brasil, 2003. xxix, 1153 p. + 1 CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (179,'9788576081821','CASTELLANI, Marcelo Fontes. Certificação Sun Java Associado SCJA: exame CX-310-019 : guia de viagem para passar no exame. Rio de Janeiro, RJ: Alta Books, 2008. xxii, 152 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (180,'8536305398','HORSTMANN, Cay S. Conceitos de computação com o essencial C++. Porto Alegre: Bookman, 2005. 711 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (181,'8536301716','SEBESTA, Robert W. Conceitos de linguagens de programação. 5. ed. Porto Alegre: Bookman, 2003. ix, 638 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (182,'9788577807918','SEBESTA, Robert W. Conceitos de linguagens de programação. 9. ed. -. Porto Alegre, RS: Bookman, 2011. ix, 792 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (188,'9788578730871','MOREIRA NETO, Oziel. Entendendo e dominando o Java para a internet. 2. ed. São Paulo: Digerati Books, 2009. 318 + DVD','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (189,'8575220950','SÁ, Claudio Cesar de. Haskell: uma abordagem prática. São Paulo, SP: Novatec, 2006. 287 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (190,'8589579565','GONÇALVES, Enyo José Tavares; CARNEIRO, Domingos Sávio Silva. Linguagem de programação II. Fortaleza, CE: UECE, 2011. 97 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (191,'9788577260447','TUCKER, Allen B. |; NOONAN, Robert. Linguagens de programação: princípios e paradigmas. São Paulo, SP: McGraw-Hill, 2008. xxi, 599 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (192,'9788573936841','XAVIER, Fabrício S. V. PHP: do básico à orientação a objetos . Rio de Janeiro, RJ: Ciência Moderna, 2008. x, 234 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (193,'9788575222003','DALL´OGLIO, Pablo. PHP: programando com orientação a objetos. 2.ed.-. São Paulo, SP: Novatec, 2009. 574 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (194,'9788576081210','MONTGOMERY, Eduard. Programando com C: simples & prático. Rio de Janeiro, RJ: Alta Books, 2006. 157 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (195,'9780321573582','YAO, Paul. Programming. NET compact framework 3.5: Paul Yao, David Durant. 2nd. ed. New Jersey: Addison-Wesley, 2010. xxxvii, 694 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (196,'8536303956','FOWLER, Martin,. Refatoração: aperfeiçoando o projeto de código existente. Porto Alegre, RS: Bookman, 2008. xiv, 365 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (197,'9788576022101','BEIGHLEY, Lynn. Use a cabeça SQL. Rio de Janeiro, RJ: Alta Books, 2008. xxxiv, 454 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (198,'9788577804535','RAMOS, Marcus Vinícius Midena; JOSÉ NETO, João; VEGA, Ítalo Santiago. Linguagens formais: teoria, modelagem e implementação. Porto Alegre: Bookman, 2009. 656 p. (Livros didáticos ; n.3)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (199,'9788577802661','MENEZES, Paulo Blauth. Linguagens formais e autômatos. 5. ed. Porto Alegre: Bookman, 2008. 215 p. (Livros didáticos ; n.3 Série Livros Didáticos 3)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (200,'9788577807659','MENEZES, Paulo Blauth. Linguagens formais e autômatos. 6. ed. Porto Alegre: Bookman, 2011. 215 p. (Livros didáticos ; n.3 Série Livros Didáticos ; 3)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (205,'9788575222119','POWERS, Shelley. Aprendendo JavaScript. São Paulo, SP: Novatec, 2010. 407 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (206,'9788577800131','LUTZ, Mark; ASCHER, David. Aprendendo python. 2. ed. Porto Alegre: Bookman, 2008. 566 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (207,'8576050560','DEITEL, Harvey M.; DEITEL, Paul J. C++: como programar. 5. ed. São Paulo, SP: Prentice Hall, 2006. 1163 p. + cd-rom','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (208,'8534605955','SCHILDT, Herbert; MAYER, Roberto Carlos. C completo e total. 3. ed. rev. atual . São Paulo: Pearson/ Makron Books, c1997. xx, 827 p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (209,'8575220551','DELAMARO, Márcio. Como construir um compilador utilizando ferramentas Java : Márcio Delamaro. -. São Paulo, SP: Novatec, 2004. 308 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (210,'9788576053576','HORSTMANN, Cay S. Core Java: volume I - fundamentos. 8. ed. São Paulo, SP: Pearson, 2009. xiii, 383 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (211,'8576080621','HORSTMANN, Cay S.; CORNELL, Gary. Core Java 2: volume I : fundamentos . Rio de Janeiro, RJ: Alta Books, c2005. viii, 580 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (212,'8534615225','MUCHOW, John W. Core J2ME: tecnologia & MIDP. São Paulo, SP: Pearson/ Makron Books, 2004. xiv, 588 p. (Java)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (213,'9788575221884','SCHMITZ, Daniel Pace. Desenvolvendo sistemas com Flex e PHP. São Paulo, SP: Novatec, 2009. 294 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (214,'8575220500','NIEDERAUER, Juliano. Desenvolvendo websites com PHP: aprenda a criar websites dinâmicos e interativos com PHP e banco de dados. Ed. rev. e atual. São Paulo, SP: Novatec, 2008. 269 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (215,'9780757529740','CHEN, Yinong; TSAI, Wei-Tek. Introduction to programming languages: proggramming in C, C++, Scheme, Prolog, C#, and SOA. 2nd ed. xii, 383 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (216,'8576050196','DEITEL, Harvey M.; DEITEL, Paul J. Java: como programar. 6. ed. São Paulo: Pearson/ Prentice Hall, 2006. xl, 1110 p. + 1 CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (217,'8573077271','DEITEL, Harvey M.; DEITEL, Paul J. Java: como programar. 3. ed. Porto Alegre, RS: Bookman, 2001. xxix, 1201 p. + 1 CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (221,'9788576055631','DEITEL, Paul J.; DEITEL, Harvey M. Java: como programar. 8. ed. São Paulo: Pearson Prentice Hall, 2010. xxix, 1144 p. + 1 CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (222,'9780321349606','GOETZ, Brian. Java concurrency in practice. xx, 403 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (223,'9788574523361','COSTA, Daniel Gouveia. Java em rede: programação distribuída na internet . Rio de Janeiro: Brasport, 2008. xv, 288p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (224,'9788574523699','COSTA, Daniel Gouveia. Java em rede: recursos avançados de programação. Rio de Janeiro: Brasport, 2008. xiii, 324','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (225,'8573932104','KURNIAWAN, Budi. Java para a Web com Servlets, JSP e EJB: Budi Kurniawan; tradução Savannah Hartmann; revisão técnica Alfredo Dias da Cunha Júnior. Rio de Janeiro, RJ: Ciência Moderna, 2002. xxiv, 807 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (227,'1590592395','SEIBEL, Peter. Practical common lisp. Berkeley, Ca: Apress, 2005. xxv, 499 p. (The Expert’s voice in programming languages)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (228,'9780470563144','CIBRARO, Pablo. Professional WCF 4: Windows Communication Foundation with .NET 4. Indianapolis, Ind.: Wiley Publishing, 2010. xxvii, 451 p. (Guias Wrox profissional)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (229,'9788575221846','URUBATAN, Rodrigo. Ruby on rails: desenvolvimento fácil e rápido de aplicações Web. São Paulo, SP: Novatec, 2009. 285 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (230,'9788535224061','SILBERSCHATZ, Abraham; GALVIN, Peter B.; GAGNE, Greg. Sistemas operacionais com Java. 7. ed. rev. atual. Rio de Janeiro, RJ: Elsevier, 2008. xx, 673 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (231,'9788576085591','STELLMAN, Andrew; GREENE, Jennifer. Use a cabeça! C#: um guia de aprendizafem para a programação no mundo real com C# e .NET. 2.ed. Rio de Janeiro, RJ: Alta Books, 2011. 797p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (232,'9788576082118','STELLMAN, Andrew; GREENE, Jennifer. Use a cabeça! C#: um guia de aprendizagem para a programação no mundo real com C# e .NET. Rio de Janeiro, RJ: Alta Books, 2008. xxxvi, 618p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (233,'0596009208','SIERRA, Kathy; BATES, Bert. Use a cabeça! Java. 2. ed. Rio de Janeiro, RJ: Alta Books, 2007. xxvi, 470 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (234,'9788535226348','DELAMARO, Márcio; MALDONADO, Jose Carlos. Introdução ao teste de software. Rio de Janeiro, RJ: Elsevier: Campus, 2007. 394 p. (Sociedade brasileira de computação)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (235,'9788577807246','BECK, Kent. TDD desenvolvimento guiado por testes. Porto Alegre: Bookman, 2010. xiii, 240 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (236,'0646458418','REEKIE, John; MCADAM, Rohan. A software architecture primer. Sydney, Australia: Angophora Press, 2006. 179 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (237,'9780596521974','WHITE, Tom. Hadoop: the definitive guide. California: O´Reilly, 2009. xix, 501 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (238,'9812384251','GRUBB, Penny; TAKANG, Armstrong A. Software maintenance: concepts and practice. 2nd ed. New Jersey: World Scientfic, 2003. xix, 349 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (239,'9780470147078','APRIL, Alain; ABRAN, Alain, |. Software maintenance management: evaluation and continuous improvement. New Jersey: IEEE Computer Society, 2008. xx, 314 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (240,'9788575222447','LECHETA, Ricardo R. Google android: aprenda a criar aplicações para dispositivos móveis com o Android SDK. 2. ed. rev. ampl. São Paulo, SP: Novatec, 2010. 608 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (241,'9788573936742','GONÇALVES, Edson. Desenvolvendo aplicações Web com NetBeans IDE 6. Rio de Janeiro, RJ: Ciência Moderna, 2008. xix, 581 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (242,'9788576082941','BASHAM, Bryan; SIERRA, Kathy; BATES, Bert. Use a cabeça!: Servlets & JSP. 2. ed. Rio de Janeiro, RJ: Alta Books, 2008. xxxii, 879 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (243,'8576080850','BASHAM, Bryan. Use a cabeça!: Sevlets & JSP. Rio de Janeiro, RJ: Alta Books, 2004. xxi, 534 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (244,'8575022105','MOLINARI, Leonardo. Gerência de configuração: técnicas e práticas no desenvolvimento do software. Florianópolis: Visual Books, 2007. 208 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (245,'9788577807567','POPPENDIECK, Mary; POPPENDIECK, Thomas David. Implementando o desenvolvimento Lean de software: do conceito ao dinheiro. Porto Alegre, RS: Bookman, 2011. 279 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (246,'9788575221525','JARGAS, Aurélio Marinho. Shell script profissional. São Paulo, SP: Novatec, 2008. 480 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (247,'9780201774238','SMITH, Roderick W. Advanced linux networking. Boston, Massachusetts: Addison-Wesley, 2002. xviii, 752 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (248,'9780321447739','BUTOW, Eric. User interface design for mere mortals: a hands-on guide to user interface design software-independent approach. Boston, Massachusetts: Addison-Wesley, 2007. xxii, 286 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (249,'9788575022443','STATO FILHO, André. Linux: controle de redes. Florianópolis: Visual Books, 2009. 352 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (250,'978820332638','WILSON, Ed. Microsoft Windows PowerShell: step by step. Redmond, Wash.: Microsoft Press, 2007. xviii, 296 p. + 1 CD ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (251,'8575022202','VIGLIAZZI, Douglas. Redes locais com linux. 2. ed. Florianópolis: Visual Books, 2007. 160 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (252,'9788521615484','MACHADO, Francis B; MAIA, Luiz Paulo. Arquitetura de sistemas operacionais. 4. ed. Rio de Janeiro: LTC, 2007. 308 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (253,'9780596005955','ROBBINS, Arnold; BEEBE, Nelson H. F. Classic Shell Scripting. Sebastopol, Ca: c2005. xxii, 534 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (254,'9788577801473','ROBBINS, Arnold; BEEBE, Nelson H. F. Classic shell scripting: automatize suas tarefas com Unix . Porto Alegre: Bookman, 2008. xvii, 511p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (255,'9788573936476','CARDOSO, Paulo Roberto Sant´anna; SANTANA, Fabiano de; NAKANO, Vitor. Comandos Windows Server 2003: administração e suporte . Rio de Janeiro: Ciência Moderna, 2008. xxviii, 588 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (256,'9788577805525','NORTHRUP, Anthony; MACKIN, J. C. Configuração do Windows Server 2008: infraestrutura de rede : kit de treinamento MCTS (Exame 70-462). Porto Alegre, RS: Bookman, 2009. 679 p. + 1 DVD (Kit de treinamento Microsoft)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (257,'9788577807680','MCLEAN, Ian; THOMAS, Orin. Configuração do windows 7: kit de treinamento MCTS - Exame 70-680. Porto Alegre, RS: Bookman, 2011. 919 p. + 1 DVD (Kit de treinamento Microsoft.)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (258,'9788521617471','SILBERSCHATZ, Abraham; GALVIN, Peter B.; GAGNE, Greg. Fundamentos de sistemas operacionais. 8. ed. Rio de Janeiro, RJ: LTC, 2010. xvii , 515 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (259,'9788577804832','MACKIN, J. C.; DESAI, Anil. Kit de treinamento MCTS - Exame 70-643: configuração do Windows Server 2008 : infraestrutura de aplicativos. Porto Alegre, RS: Bookman, 2009. 695p. + 1 CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (260,'9788577805280','HOLME, Dan; RUEST, Nelson; RUEST, Danielle. Kit de treinamento MCTS (Exame 70-640): configuração do Windows Server 2008 : Active Directory . Porto Alegre, RS: Bookman, 2009. 989 p. + 1 CD-ROM (Kits de treinamento Microsoft.)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (261,'9788575221778','FERREIRA, Rubem E. Linux: guia do administrador do sistema. 2. ed. rev. e ampl. São Paulo, SP: Novatec, 2008. 716 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (262,'9788576051121','NEMETH, Evi; SNYDER, Garth; HEIN, Trent R. Manual completo do Linux: guia do administrador . São Paulo, SP: Pearson Education do Brasil, 2007. xiv, 684 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (263,'9780735626393','THERNSTRÖM, Tobias. MCTS self-paced training kit (Exam 70-433): Microsoft SQL Server 2008: database development . Redmond, Wash.: Microsoft, 2009. xxiii, 456 p. + 1 CD (Self-paced training kit Microsoft)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (264,'9780470891667','RANDOLPH, Nick; FAIRBAIRN, Christopher. Professional Windows Phone 7 application development: building applications and games using Visual Studio, Silverlight, and XNA. Indianapolis, Indiana: Wiley Publishing, 2011. xxiii, 594 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (265,'9788574523453','NEVES, Julio Cezar. Programação SHELL LINUX. 7. ed. Rio de Janeiro: Brasport, 2008. xxx, 450p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (266,'8576051109','BÄCK, Magnus. Servidor de e-mail Linux: guia de instalação, configuração e GERÊNCIAmento para pequenos escritórios. São Paulo, SP: Pearson Prentice Hall, 2007. xvii, 284p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (267,'9788577805211','OLIVEIRA, Rômulo Silva de; CARISSIMI, Alexandre da Silva; TOSCANI, Simão Sirineo; UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL. Sistemas operacionais. 4. ed. Porto Alegre: Bookman, 2010. 374 p. (Livros didáticos. 11)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (268,'9788577800575','TANENBAUM, Andrew S.; WOODHULL, Albert S. Sistemas operacionais: projeto e implementação. 3. ed. x, 990 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (269,'9788587918574','TANENBAUM, Andrew S. Sistemas operacionais modernos. 2. ed. São Paulo, SP: Prentice Hall, 2003. xii, 695 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (270,'9788576052371','TANENBAUM, Andrew S.; GONÇALVES, Ronaldo A. L. Sistemas operacionais modernos. 3. ed. São Paulo, SP: Prentice Hall, 2009, c2010. xvi, 653 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (271,'9788536305868','HOLME, Dan; THOMAS, Orin. Windows Server 2003: administração e manutenção do ambiente Microsoft : kit de treinamento. Porto Alegre: Bookman, 2006. 688 p. + 1 CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (272,'9788571949805','THOMPSON, Marco Aurélio. Windows server 2003: administração de redes . 5. ed. São Paulo: Érica, 2009. 370 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (273,'9788561893040','BATTISTI, Júlio; SANTANA, Fabiano de. Windows Server 2008: guia de estudos completo : implementação, administração e certificado . Rio de Janeiro, RJ: Novaterra, 2009. xxx, 1751p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (274,'9788576051428','TANENBAUM, Andrew S.; STEEN, Van Maarten; MARQUES, Arlete Simille. Sistemas distribuídos: princípios e paradigmas. 2. ed. São Paulo, SP: Prentice Hall, 2007. viii, 402 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (275,'9788522104222','LOUDEN, Kenneth C. Compiladores: princípios e práticas . São Paulo, SP: Cengage Learning, 2004. xiv, 569 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (276,'8522104220','LOUDEN, Kenneth C. Compiladores: princípios e práticas . São Paulo, SP: Thomson, c2004. xiv, 569 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (280,'9788588639249','AHO, Alfred V. et al. (). Compiladores :: príncípios, técnicas e ferramentas. 2. ed. São Paulo, SP: Pearson/Addison Wesley, 2007. 634 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (281,'9788574524344','COSTA, Daniel Gouveia. Administração de redes com scripts: Bash script, Python, VBscript. 2. ed. Rio de Janeiro, RJ: Brasport, 2010. 186 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (282,'0321197860','SHNEIDERMAN, Ben. Designing the user interface: strategies for effective human-computer interaction . 4th ed. Boston: Pearson/Addison Wesley, c2005. xviii, 652 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (283,'0321200683','HOHPE, Gregor; WOOLF, Bobby. Enterprise integration patterns: designing, building, and deploying messaging solutions . Boston, Massachusetts: Addison-Wesley, c2004. xlix, 683 p. (The Addison-Wesley signature series)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (284,'9788575221396','SILVA, Maurício Samy. Construindo sites com CSS e (X)HTML: sites controlados por folhas de estilo em cascata . São Paulo, SP: Novatec, 2008. 446p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (285,'9788576082713','KRUG, Steve. Não me faça pensar!: uma abordagem de bom senso à usabilidade na WEB. 2. ed. Rio de Janeiro, RJ: Alta Books, 2008. 201 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (286,'9788535221909','NIELSEN, Jakob, |. Usabilidade na web. Rio de Janeiro, RJ: Elsevier, 2007. xxiv, 406 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (287,'9780470383261','GOODRICH, Michael T.; TAMASSIA, Roberto. Data structures and algorithms in Java. 5th ed. New York, NY: J. Wiley & Sons, 2010. xxii, 714 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (288,'0201120372','MANBER, Udi. Introduction to algorithms: a creative approach . Reading: Addison-Wesley, c1989. xiv, 478 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (289,'139780072465631','RAMAKRISHNAN, Raghu. Database management systems. 3rd ed. Boston, Massachusetts: McGraw-Hill, 2003. xxxii, 1065 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (290,'9780132145374','KROENKE, David; AUER, David J. Database processing: fundamentals, design & implementation . 12. ed. Upper Saddle River, New Jersey: Pearson Prentice Hall, 2012. xvii, 612 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (291,'9788535211078','SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S. Sistema de banco de dados. Rio de Janeiro, RJ: Elsevier, 2006. xiii, 781 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (292,'9788588639171','ELMASRI, Ramez; NAVATHE, Shamkant B. Sistemas de banco de dados. 4. ed. São Paulo, SP: Pearson/Addison Wesley, 2009. xi, 724 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (293,'9788536500126','MACHADO, Felipe Nery Rodrigues. Tecnologia e projeto de data warehouse: uma visão multidimensional. 5. ed. São Paulo, SP: Érica, 2010. 314 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (294,'9788577803828','HEUSER, Carlos Alberto. Projeto de banco de dados. 6. ed. Porto Alegre: Bookman, 2009. 282 p. (Livros Didáticos Informática ; 4)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (295,'9788579360855','ELMASRI, Ramez; NAVATHE, Sham. Sistemas de banco de dados. 6. ed. -. São Paulo, SP: Pearson Education do Brasil, 2011. xviii, 788 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (296,'9788576082187','FREEMAN, Elisabeth; FREEMAN, Eric. Use a cabeça!: HTML com CCS e XHTML. 2. ed. Rio de Janeiro, RJ: Alta Books, 2008. xxxi, 580 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (297,'139780131587564','PERSISTENCE in the enterprise: a guide to persistence technologies . Boston: Pearson Education, Inc., 2008. xxxii, 430 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (298,'9781441988331','OZSU, M.Tamer. Principles of distributed database systems. 3nd. ed. New York: Springer, 2011. 666p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (299,'9788577260270','RAMAKRISHNAN, Raghu; GEHRKE, Johannes. Sistemas de GERÊNCIAmento de banco de dados. São Paulo, SP: McGraw-Hill, 2008. xxvii, 884 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (300,'9788576082989','COAR, Ken A. L. Apache: guia prático. Rio de Janeiro, RJ: Alta Books, 2009. xvii, 250 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (301,'8535210350','WELCH-ABERNATHY, Dameon D. Check point fire wall-1 essencial: um guia de instalação, configuração e solução de problemas. Rio de Janeiro, RJ: Campus, 2002. xvii, 537 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (302,'8536304294','CHESWICK, William R.; BELLOVIN, Steven M; RUBIN, Aviel D. Firewalls e segurança na Internet: repelindo o hacker ardiloso . 2.ed. Porto Alegre, RS: Bookman, 2005. 400 p. (Ciência da Computação/Redes)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (303,'9781590597842','DASWANI, Neil; KERN, Christoph; KESAVAN, Anita. Foundations of security: what every programmer needs to know . Berkeley, Ca: Apress, c2007. xxvii, 290 p. (The Expert’s voice in security)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (304,'9788575221365','NAKAMURA, Emilio Tissato; GEUS, Paulo Lício de. Segurança de redes em ambientes cooperativos. São Paulo: Novatec, c2007.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (305,'9788578730529','ULBRICH, Henrique Cesar; DELLA VALLE, James. Universidade H4CK3R: desvende todos os segredos do submundo dos hackers . 6. ed. São Paulo: Digerati Books, 2009. 348p. + DVD (Série Universidade)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (306,'9788576051190','STALLINGS, William. Criptografia e segurança de redes: princípios e práticas. 4. ed. São Paulo: Pearson/ Prentice Hall, 2008. xvii, 492 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (307,'9780470519462','WOOLDRIDGE, Michael J. An introduction to multiagent systems. 2nd ed. New York: J. Wiley & Sons, c2009. xxii, 461 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (308,'9788585490157','LÉVY, Pierre. As tecnologias da inteligência :: o futuro do pensamento na era da informática /. Rio de Janeiro: Editora 34, 2010. 206 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (309,'9788521617297','COPPIN, Ben. Inteligência artificial. Rio de Janeiro, RJ: LTC, 2010. xxv 636 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (310,'8535211772','RUSSELL, Stuart J. |q (Stuart Jonathan), |d 1962-; NORVIG, Peter, |d 1956-. Inteligência artificial. Rio de Janeiro: Elsevier, Campus, 2004. 1021 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (311,'9780521899437','SHOHAM, Yoav; LEYTON-BROWN, Kevin. Multiagent systems: algorithmic, game-theoretic, and logical foundations . New York, NY: Cambridge at the University Press, 2009. xx, 483 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (312,'0132733501','HAYKIN, Simon S. Redes neurais: princípios e prática. 2. ed. Porto Alegre: Bookman, 2001. xvii, 900 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (313,'8535212523','AZEVEDO, Eduardo.; CONCI, Aura. Computação gráfica: geração de imagens . Rio de Janeiro, RJ: Elsevier, Campus, 2003. 353 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (314,'9788521616290','AMMERAAL, L.; ZHANG, Kang. Computação gráfica para programadores Java. 2. ed. Rio de Janeiro, RJ: LTC, 2008. viii, 217 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (315,'97885352232193','CONCI, Aura; AZEVEDO, Eduardo.; LETA, Fabiana R. Computação gráfica, v.2: teoria e prática. Rio de Janeiro, RJ: Elsevier: Campus, 2008. 407 p., [8] p. de estampas + + 1 CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (316,'8524402008','GOMES, Jonas de Miranda; VELHO, Luiz. Fundamentos da computação gráfica. Rio de Janeiro, RJ: IMPA, 2008 603 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (317,'9788573939507','RIBEIRO, Marcello Marinho; MENEZES, Marco Antonio Figueiredo. Uma breve introdução à computação gráfica. Rui De Janeiro,Rj: Ciência Moderna, 2010. v, 73 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (318,'9780071748469','VAUGHAN, Tay. Multimedia: making it work. New York, NY: McGraw-Hill, 2011. ix 465 p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (319,'9788521612223','PAULA FILHO, Wilson de Pádua. Multimídia: conceitos e aplicações. Rio de Janeiro: LTC, 2000. 321 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (320,'9783642078880','ALONSO, Gustavo. Web services: concepts, architectures and applications. Berlin: Springer, 2010. xx, 354 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (321,'9783540440086','WEB services: concepts, architectures and applications. Berlin: Springer, 2004. xx, 354 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (322,'9780521865715','MANNING, Christopher D.; RAGHAVAN, Prabhakar. Introduction to information retrieval. New York, NY: Cambridge at the University Press, 2009. xxi, 482 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (323,'850808935X','CHAUÍ, Marilena de Sousa. Convite à filosofia. 13.ed. São Paulo: Ática, 1999. 424p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (324,'9788508134694','CHAUÍ, Marilena de Sousa. Convite à filosofia /. 14. ed. São Paulo: Ática, 2011. 520 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (325,'9781575866321','BARKER-PLUMMER, Dave; BARWISE, Jon; ETCHEMENDY, John. Language, proof and logic. New York, NY: CSLI, 2011. xiii 606 p. (CSLI lecture notes ; v 23)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (326,'9788531405754','MASIERO, Paulo Cesar. Ética em construção. São Paulo, SP: EDUSP, 2008. 213 p. (Acadêmica ;32)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (327,'9788521617761','BARGER, Robert N. Ética na computação: uma abordagem baseada em casos. Rio de Janeiro, RJ: LTC, 2011. xiv, 226 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (328,'9788577806553','YIN, Robert K. Estudo de caso: planejamento e métodos . 4. ed. Porto Alegre, RS: Bookman, 2010. xviii, 248 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (329,'8536304626','YIN, Robert K. Estudo de caso: planejamento e métodos. 3. ed. Porto Alegre: Bookman, 2005. 212 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (330,'9788573028638','FRIEDMAN, Thomas L. O mundo é plano: uma breve história do século XXI. Rio de Janeiro, RJ: Objetiva, 2007. 557 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (331,'9788574851471','SILVA, Delnise. Flores de um jardim: a narrativa de si em contexto de vulnerabilidade social - sociabilidades, sensibilidades e utopias entre os jovens do grupo Nosso espaço (Fortaleza). Fortaleza, CE: Imprensa Universitária - UFC, 2010. 150 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (332,'8572821295','CARLEIAL, Adelita Neto; BRAGA, Elza Maria Franco. América Latina: transformações econômicas e políticas. Fortaleza: Ed. UFC, 2003. 291 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (333,'8525036706','UCHOA, Pablo. A encruzilhada de Hugo Chávez. São Paulo, SP: Globo, 2003. 294 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (334,'9788535230062','GONÇALVES, Carlos Eduardo S. Gonçalves; GUIMARÃES, Bernardo. Economia sem truques: o mundo a partir das escolhas de cada um . 5.ed. Rio de Janeiro, RJ: Campus, 2008. 209 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (335,'8522438129','ROSSETTI, José Paschoal. Introdução a economia: livro de exercícios. 4. ed. São Paulo, SP: Atlas, 2004. 387 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (336,'8522104247','BRUE, Stanley L. História do pensamento econômico. São Paulo: Thomson Learning, 2006. 553p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (337,'8522434670','ROSSETTI, José Paschoal. Introdução à economia. 20. ed. São Paulo: Atlas, 2003. 922 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (338,'9788535242027','LEITE, Antonio Dias. A economia brasileira: de onde viemos e onde estamos. 2. ed., rev. e atual. Rio de Janeiro, RJ: Elsevier, 2011. 226p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (339,'8587062387','DUQUE, José Guimarães. Perspectivas nordestinas. 2. ed. Fortaleza: Banco do Nordeste do Brasil, 2004. 423 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (340,'8522438927','ALMEIDA, Guilherme Assis de; CHRISTMANN, Martha Ochsenhofer. Ética e direito: uma perspectiva integrada . 2. ed. São Paulo: Atlas, 2006. 185 p. ;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (341,'9788522445936','PAESANI, Liliana Minardi. O direito na sociedade da informação. São Paulo, SP: Atlas, 2007. xxx, 333 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (342,'9788522455072','ALMEIDA, Guilherme Assis de; CHRISTMANN, Martha Ochsenhofer. Ética e direito: uma perspectiva integrada . 3. ed. São Paulo: Atlas, 2009. 171 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (343,'8573484632','LIMBERGER, Têmis. O direito à intimidade na era da informática: a necessidade de proteção dos dados pessoais. Porto Alegre, RS: Livraria do Advogado, 2007. 250 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (344,'8588813297','CARBONI, Guilherme C. O direito de autor na multímidia: Guilherme C. Carboni. São Paulo, SP: Quartier Latin, 2003. 208 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (345,'9781558609327','BRACHMAN, Ronald J.; LEVESQUE, Hector J. Knowledge representation and reasoning. San Francisco [California, Estados Unidos]: Elsevier, 2004. xxix, 381 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (346,'8521904274','FREIRE, Paulo. Extensão ou comunicação. 13. ed. Rio de Janeiro: Paz e Terra, 2006. 93 p. ; (O Mundo Hoje ;24.)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (347,'9788572822855','HISTÓRIA da educação:. arquivos, documentos, historiografia, narrativas orais e outros rastros. Fortaleza, CE: Edições UFC, 2008. 176 p. (Diálogos intempestivos ; 58)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (348,'9788572823883','EPISTEMOLOGIAS e metodologias para avaliação educacional:. múltiplas visões e abordagens. Fortaleza, CE: Edições UFC, 2010. 252 p. (Nave , 8)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (349,'8530801172','KAMII, Constance; DECLARK, Georgia. Reinventando a aritmética: implicações da teoria de Piaget . 4.ed. Campinas, SP: Papirus, 1992. 308 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (350,'9788578261191','SANTOS, Deribaldo; SOUSA, Francisco Edisom Eugenio de; NASCIMENTO, Arnaldo Ricardo do. Caderno de pesquisas socioeducativas do Sertão Central. Quixadá: EdUECE, 2012. 150 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (351,'9788560031993','HAYKIN, Simon S. Sistemas modernos de comunicações wireless. Porto Alegre: Bookman, 2008. x, 579 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (352,'9788533623323','LEVINSON, Stephen C. Pragmática. São Paulo: Martins Fontes, 2007. xiv, 548 p. ;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (353,'8587214470','LONGMAN gramática escolar da língua inglesa: gramática de referências com exercícios e respostas . São Paulo, SP: Longman, 2004. 317 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (354,'9781405025263','MACMILLAN English dictionary for advanced learners. 2nd. ed. Oxford: MacMillan Education, 2007. xi, 1748 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (355,'052143680X','MURPHY, Raymond. English grammar in use: a self-study reference and practice book for intermediate students. 3rd. ed. Cambridge: Cambridge University Press, 2007. x, 379 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (356,'9788527409742','GALLO, Lígia Razerra. Inglês instrumental para informática: módulo I. São Paulo, SP: Ícone, 2008. 170 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (357,'97885752211226','MARINOTTO, Demóstene. Reading on info tech: inglês para informática. 2. ed. São Paulo, SP: Novatec, 2007. 176 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (358,'9788526275393','DE NICOLA, Jose. Língua, literatura e produção de textos: José de Nicola. São Paulo, SP: Scipione, 2009. 3 v.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (359,'9788535711738','CEREJA, William Roberto. Português: linguagens. 3. ed. São Paulo, SP: Atual Ed., 2009. 576 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (360,'9788535709988','CEREJA, William Roberto. Gramática: texto, reflexão e uso. 3. ed. reform. São Paulo, SP: Atual Ed., 2008. 495 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (361,'8533619758','FERREIRA, Reinaldo Mathias. Lições de português: para nunca mais esquecer. São Paulo, SP: Martins Fontes, 2004. viii, 159 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (362,'9788586368394','KURY, Adriano da Gama. Para falar e escrever melhor o português. Rio de Janeiro, RJ: Lexikon, 2008. 275 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (363,'8587484281','SCHLITTLER, José Maria Martins. Pensando em português: teoria e prática, assuntos e temas aplicados em concursos públlicos e vestibulares. Campinas, SP: Servanda, 2004. 392 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (364,'9788537800218','AZEREDO, José Carlos de. Ensino de português: fundamentos, percursos, objetos. Rio de Janeiro, RJ: Jorge Zahar, 2007. 214 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (365,'9788571107458','OLIVA, Alberto. Filosofia da ciência. 2. ed. Rio de Janeiro, RJ: J. Zahar, 2008. 74 p. (Passo-a-passo ; v. 31)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (369,'9788515019694','ALVES, Rubem. Filosofia da ciência:: introdução ao jogo e a suas regras. 15. ed. São Paulo, SP: Loyola, 2010. 223 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (370,'9788577804719','MENEZES, Paulo Blauth; TOSCANI, Laira V.; GARCÍA LÓPEZ, Javier. Aprendendo matemática discreta com exercícios. Porto Alegre, RS: Bookman, 2009. 356p. ((Livros didáticos informática ufrgs ; ; v. 19))','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (371,'9788521618102','HUNTER, David J. Fundamentos da matemática discreta. Rio de Janeiro, RJ: LTC, 2011. x 235 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (372,'8570562705','IEZZI, Gelson; MURAKAMI, Carlos. Fundamentos de matemática elementar: 1 : conjuntos, funções . 8. ed.,. São Paulo, SP: Atual, 2004. 374 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (373,'8535704620','IEZZI, Gelson; HAZZAN, Samuel; DEGENSZAJN, David Mauro. Fundamentos de matemática elementar: 11 : matemática comercial, matemática financeira, estatística descritiva . São Paulo, SP: Atual, 2004. 232 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (374,'8535704566','IEZZI, Gelson; DOLCE, Osvaldo; MURAKAMI, Carlos. Fundamentos de matemática elementar: 2 : logaritmos . 9. ed. São Paulo, SP: Atual, 2004. 198 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (375,'853704582','IEZZI, Gelson; HAZZAN, Samuel. Fundamentos de matemática elementar: 4 : seqüências, matrizes, determinantes, sistemas . 7. ed. São Paulo, SP: Atual, 2004. 232 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (376,'8535705465','IEZZI, Gelson. Fundamentos de matemática elementar: 7 : geometria analítica . 5. ed. São Paulo, SP: Atual, 2005. 282 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (377,'8535705473','IEZZI, Gelson; MURAKAMI, Carlos; MACHADO, Nílson José. Fundamentos de matemática elementar: 8 : limites, derivadas, noções de integral . 6. ed. São Paulo, SP: Atual, 2005. 263 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (378,'8535704612','HAZZAN, Samuel. Fundamentos de matemática elementar, 5: combinatória, probabilidade : 43 exercícios resolvidos, 439 exercícios propostos com resposta, 155 testes de vestibulares com resposta. 7. ed. São Paulo, SP: Atual, 2004. 184 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (379,'8535705481','IEZZI, Gelson. Fundamentos de matemática elementar, 6: complexos, polinômios, equações : 89 exercícios resolvidos, 422 exercícios propostos com resposta, 273 testes de vestibulares com resposta. 7. ed. São Paulo, SP: Atual, 2005. 250 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (380,'9788522107964','SCHEINERMAN, Edward R. Matemática discreta: uma introdução . São Paulo: Cengage Learning, 2011. xxiii, 573 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (381,'9788577260362','ROSEN, Kenneth H. Matemática discreta e suas aplicações. 6. ed. São Paulo, SP: McGraw-Hill, 2009. xxi, 982 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (382,'8571109168','ALBERTI, Leon Battista. Matemática lúdica. Rio de Janeiro, RJ: Jorge Zahar, 2006. 115 p. (Ciência e cultura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (383,'3540219439','MAJEWSKI, M. MuPAD Pro computing essentials. 2nd. ed. Berlin: Springer-Verlag, 2004. xi, 538 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (384,'9788502102033','SMOLE, Kátia Cristina Stocco; DINIZ, Maria Ignez de Souza Vieira. Matemática: ensino médio. São Paulo, SP: Saraiva, 2010. 3 v.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (385,'0122384520','ENDERTON, Herbert B. A mathematical introduction to logic. 2nd ed. San Diego, California: Harcourt/Academic Press, c2001. xii, 317 p. ;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (386,'9788571398979','CARNIELLI, Walter Alexandre; EPSTEIN, Richard L. Computabilidade,: funções computáveis, lógica e os fundamentos da matemática . 2. ed. rev. São Paulo: Ed. UNESP, 2009. 415 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (387,'8535210725','HOPCROFT, John E. Introdução à teoria de autômatos, linguagens e computação. Rio de Janeiro: Elsevier, 2002. 560 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (388,'9780321455369','HOPCROFT, John E.; MOTWANI, Rajeev. Introduction to automata theory, languages, and computation. Boston: Pearson Addison Wesley, c2007. xvii, 535 p. (Addison-Wesley series in computer science.)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (389,'9788535229615','SOUZA, João Nunes de. Lógica para ciência da computação: uma introdução concisa. 2. ed. rev. e atual. Rio de Janeiro: Elsevier, 2008. 220 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (390,'8522105170','SILVA, Flávio Soares Corrêa da; FINGER, Marcelo; MELO, Ana Cristina Vieira de. Lógica para computação. São Paulo, SP: Thomson Learning, 2006. 234 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (391,'9780521527149','BLACKBURN, Patrick; RIJKE, Maarten de; VENEMA, Yde. Modal logic. Cambridge: Cambridge Univ. Press, c2001. xxii, 554 p. (Cambridge tracts in theoretical computer science ; 53)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (392,'0201530821','PAPADIMITRIOU, Christos H. Computational complexity. Reading, Massachusetts [Estados Unidos]: Addison-Wesley, c1994. xv, 523 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (393,'8524401087','GONCALVES, Adilson. Introdução à álgebra. 5. ed. Rio de Janeiro, RJ: IMPA, 2005. 194 p. (Projeto Euclides)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (394,'9788588639379','DEMANA, Franklin D. Pré-cálculo. São Paulo: Addison-Wesley, 2009. xv, 380 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (395,'9780321356932','DEMANA, Franklin D. Precalculus graphical, numerical, algebraic: media update. 7th. ed. Boston: Addison-Wesley, 2010. xxiv, 1032 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (396,'8529400941','LEITHOLD, Louis; PATARRA, Cyro de Carvalho. O Cálculo com geometria analítica. 3. ed. São Paulo: Harbra, c1994. 2 v.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (397,'9780072988437','LAW, Averill M. Simulation modeling and analysis. 4th ed. Boston: McGraw-Hill, 2007. xix, 768 p. + + 1 CD-ROM (4 3/4 in.) (McGraw-Hill series in industrial engineering and management science)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (398,'8531406773','MAGALHÃES, Marcos Nascimento. Noções de probabilidade e estatística. 6. ed. rev. São Paulo: Editora da Universidade de São Paulo, 2005. xv, 392 p. (Acadêmica ; 40)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (399,'9788531406775','MAGALHÃES, Marcos Nascimento. Noções de probabilidade e estatística. 7. ed. rev. São Paulo, SP: Editora da Universidade de São Paulo, 2010. xv, 408 p. (Acadêmica ; 40)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (404,'9788576051992','WALPOLE, Ronald E. Probabilidade e estatística: para engenharia e ciências. 8. ed. São Paulo, SP: Pearson/ Prentice Hall, 2009. xiv, 491 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (405,'9788571931909','ALBUQUERQUE, José Paulo de Almeida e; FORTES, José Mauro Pedro; FINAMORE, Weiler Alves. Probabilidade, variáveis aleatórias e processos estocásticos. Rio de Janeiro, RJ: Editora PUC-Rio; Interciência, 2008. 334 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (406,'0262150417','OSBORNE, Martin J; RUBINSTEIN, Ariel. A course in game theory. London, England: Mit Press, 1998. 352 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (407,'9788535215205','GOLDBARG, Marco Cesar. Otimização combinatória e programação linear: modelos e algoritmos. Rio de Janeiro: Elsevier: Campus, 2005. xvi, 518 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (408,'8524106913','MENEZES, Paulo Blauth; UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL. Matemática discreta para computação e informática. 2. ed. Porto Alegre: Sagra Luzzato, 2005. 258p (Livros didáticos. 16)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (411,'9780471734406','GILAT, Amos; SUBRAMANIAM, Vish. Numerical methods for engineers and scientists: an introduction with applications using MATLAB . Massachusetts, [Estados Unidos]: J. Wiley & Sons, 2008. xx, 459 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (412,'9788587918567','HANSELMAN, Duane C.; LITTLEFIELD, Bruce. Matlab 6: curso completo. São Paulo, SP: Pearson Prentice Hall, 2007. xvi , 676 p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (413,'9788576053729','LARSON, Ron; FARBER, Betsy. Estatística aplicada. 4. ed. São Paulo, SP: Pearson/ Prentice Hall, 2010. 637 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (414,'9788587918598','LARSON, Ron; FARBER, Betsy. Estatística aplicada. 2. ed. São Paulo, SP: Pearson/ Prentice Hall, c2004. 476 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (415,'9788522459940','BARBETTA, Pedro Alberto; REIS, Marcelo Menezes; BORNIA, Antonio Cezar. Estatística para cursos de engenharia e informática. 3. ed. São Paulo, SP: Atlas, 2010. 410 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (416,'8536306882','DANCEY, Christine P.; REIDY, John. Estatística sem matemática para psicologia: usando SPSS para Windows. 3. ed. Porto Alegre, RS: Artmed, 2006. 608 p. (Biblioteca Artmed. Métodos de Pesquisa)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (417,'9788521615866','TRIOLA, Mario F. Introdução à estatística. 10. ed. Rio de Janeiro, RJ: LTC, 2008. 686 p. + 1 CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (418,'8529400925','STEVENSON, William J. Estatística aplicada à administração. São Paulo: Harbra, c1981. 495p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (419,'0471283665','WOLSEY, Laurence A. Integer programming. New York, NY: John Wiley & Sons, 1998. 264 p. (Wiley-Interscience series in discrete mathematics and optimization)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (420,'9788526258570','LUZ, Antônio Máximo Ribeiro da; ALVARES, Beatriz Alvarenga, Luz,A.M.R. Curso de física: Antônio Máximo Ribeiro da Luz, Beatriz Alvarenga Álvares. São Paulo, SP: Scipione, 2005. 3 v.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (421,'9788535711868','FERRARO, Nicolau Gilberto. Física básica. 3. ed. São Paulo, SP: Atual, 2009. 720 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (422,'9788573935707','COUTO, Ana Brasil. CMMI: integração dos modelos de capacitação e maturidade de sistemas. Rio de Janeiro: Ciência Moderna, 2007. xvi, 276 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (423,'9780470099254','HARPER, Brian D.; MERIAM, J. L; KRAIGE, L. G. Solving statics problems in MATLAB: engineering mechanics: statics. 6th ed. Massachusetts, [Estados Unidos]: J. Wiley & Sons, 2007. 139 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (424,'9788576051985','RAPPAPORT, Theodore S. Comunicações sem fio: principios e práticas. 2. ed. São Paulo, SP: Pearson/ Prentice Hall, 2009. 409 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (425,'85346154039','LEE, Valentino. Aplicações móveis: arquitetura, projeto e desenvolvimento. São Paulo, SP: Pearson Makron Books, 2005. xx, 328 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (426,'8574522147','FIORESE, Virgílio. Wireless: introdução às redes de telecomunicação móveis celulares . Rio de Janeiro: Brasport, 2005. xv, 343 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (427,'9788536502076','MARIN, Paulo S. Cabeamento estruturado: desvendando cada passo : do projeto à instalação . 3. ed. rev. e atual. São Paulo: Érica, 2009. 336 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (428,'9788535213041','PINHEIRO, José Maurício S. Guia completo de cabeamento de redes. Rio de Janeiro, RJ: Elsevier, 2003. xviii, 239p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (429,'8587062360','DUQUE, José Guimarães. O Nordeste e as lavouras xerófilas. 4. ed. Fortaleza, CE: Banco do Nordeste do Brasil, 2004. 329 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (430,'9788576058082','HONG, Yuh Ching.; MARQUES, Fernando. Contabilidade & finanças para não especialistas. 3. ed. São Paulo, SP: Pearson, 2010. vii, 337 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (431,'9788522462872','IUDICIBUS, Sérgio de; MARION, José Carlos. Curso de contabilidade para não contadores: para as áreas de administração, economia, direito e engenharia . 7. ed. São Paulo, SP: Atlas, 2011. 274 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (432,'8522430780','MOSCOVE, Stephen A.; SIMKIN, Mark G.; BAGRANOFF, Nancy A. Sistemas de informações contábeis. São Paulo, SP: Atlas, 2002. 451 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (433,'8522425353','LEONE, George Sebastiao Guerra. Custos: planejamento, implantação e controle . 3.ed. São Paulo, SP: Atlas, 2000. 518 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (434,'9788522450022','IMONIANA, Joshua Onome. Auditoria de sistemas de informação. 2. ed. São Paulo: Atlas, 2008. 207 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (435,'8576050261','CARAVANTES, Geraldo Ronchetti.; PANNO, Cláudia Caravantes.; KLOECKNER, Mônica Caravantes. Administração: teorias e processo. São Paulo, SP: Prentice Hall, 2005. 572p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (436,'9788577807451','FITZSIMMONS, James A; FITZSIMMONS, Mona J. Administração de serviços: operações, estratégia e tecnologia da informação. 6.ed. Porto Alegre, RS: Bookman, 2010. 583 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (437,'9788576800927','WEILL, Peter; ROSS, Jeanne W. Conhecimento em TI: o que os executivos precisam saber para conduzirem com sucesso TI em suas empresas . São Paulo: M. Books do Brasil, 2010. 162 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (438,'8560334009','CARVALHO, Isamir Machado de. Gestão do conhecimento: uma estratégia empresarial. Brasília, DF: J.J. Gráfica e Comunicações, 2006. 346 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (439,'8522413630','SILVA, Adelphino Teixeira da. Organizacao e tecnica comercial. 20. ed. rev. e atual. Sao Paulo: Atlas, 1996.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (440,'9788577803460','EMPREENDEDORISMO. 3. ed. Porto Alegre, RS: Bookman, 2009. x, 662 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (441,'8535213481','CHIAVENATO, Idalberto. Introdução à teoria geral da administração. 7. ed., totalmente rev. e atual. Rio de Janeiro: Elsevier: Campus, 2003. xxviii, 634 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (442,'9788522436934','ARAÚJO, Luís César G. de. Teoria geral da administração: aplicações e resultados nas empresas brasileiras. São Paulo, SP: Atlas, 2004. 291 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (443,'9788522460250','ARAÚJO, Luís César G. de; GARCIA, Adriana Amadeu. Teoria geral da administração: orientação para escolha de um caminho profissional. São Paulo: Atlas, 2010. 305 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (444,'9788536301174','COOPER, Donald R.; SCHINDLER, Pamela S. Métodos de pesquisa em administração. 7. ed. Porto Alegre: Bookman, 2008. ix, 640 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (445,'8574521914','FREITAS, Rogério Afonso de. Portais corporativos: uma ferramenta estratégica para a gestão do conhecimento. Rio de Janeiro, RJ: Brasport, 2004. xviii, 104 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (446,'8535215719','TURBAN, Efraim; RAINER, R. Kelly; POTTER, Richard E. Administração de tecnologia da informação. Rio de Janeiro, RJ: Elsevier, Campus, 2005. xvii, 618 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (447,'9788535217360','SALIM, César Simões. Construindo planos de negócios: todos os passos necessários para planejar e desenvolver negócios de sucesso. 3. ed. rev. e atual. Rio de Janeiro, RJ: Elsevier, 2005. xiv, 332 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (448,'8534607958','WESTON, J. Fred; BRIGHAM, Eugene F. Fundamentos da administração financeira. São Paulo, SP: Pearson Makron Books, 2004. xxxi, 1030 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (449,'8522426066','ROSS, Stephen A; WESTERFIELD, Randolph; JORDAN, Bradford D. Princípios de administração financeira. 2. ed. São Paulo, SP: Atlas, 2000. 523p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (450,'8572821856','SANTOS, Sandra Maria dos; PESSOA, Maria Naiula Monteiro; MACIEL, Terezinha de Jesus Pinheiro. Experiências recentes em controladoria. Fortaleza, CE: Edições UFC, 2005. 302p. (Estudos Contemporâneos em Controladoria ; 1)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (451,'9788522456932','PADOVEZE, Clóvis Luís. Sistemas de informações contábeis: fundamentos e análise. 6. ed. São Paulo, SP: Atlas, 2009. xvi, 331p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (452,'9788522449118','PADOVEZE, Clóvis Luís. Sistemas de informações contábeis: fundamentos e análise. 5. ed. São Paulo: Atlas, 2007. xvi, 331 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (455,'9788522461370','FERRONATO, Airto João. Gestão contábil-financeira de micro e pequenas empresas: sobrevivência e sustentabilidade . São Paulo: Atlas, 2011. 247 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (456,'852241422X','WELSCH, Glenn A. Orçamento empresarial. 4. ed. São Paulo: Atlas, 1983. 397 p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (457,'9788522451487','BRUNI, Adriano Leal; FAMÁ, Rubens. Gestão de custos e formação de preços: com aplicações na calculadora HP 12C e excel. 5. ed. São Paulo, SP: Atlas, 2008. 569 p. (Série Finanças na Prática)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (458,'8573123664','LIMONGI-FRANCA, Ana Cristina. As pessoas na organização. São Paulo, SP: Editora Gente, 2002. 306 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (459,'8572821872','ESTUDOS empíricos em gestão de recursos humanos e marketing. Fortaleza, CE: Edições UFC, 2005. 385 p. (Estudos Contemporâneos em Administração ; 1)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (460,'9788572822305','LIMA, Marcos Antonio Martins; MACIEL, Terezinha de Jesus Pinheiro. Avaliação, gestão e estratégias educacionais: projetos e processos inovadores em organizações. Fortaleza, CE: Edições UFC, 2008. 334 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (461,'9788573936032','ARAÚJO FILHO, Geraldo Ferreira de. Empreendedorismo criativo: a nova dimensão da empregabilidade . Rio de Janeiro: Ciência Moderna, 2007. 558 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (462,'9788522454174','ANDRADE, Adriana; ROSSETTI, José Paschoal. Governança corporativa: fundamentos, desenvolvimento e tendências. 4. ed. São Paulo, SP: Atlas, 2009. 584p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (463,'9788522448524','ANDRADE, Adriana; ROSSETTI, José Paschoal. Governança corporativa: fundamentos, desenvolvimento e tendências . 3. ed., atual. e ampl. São Paulo: Atlas, 2007. 584p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (464,'9788522462711','ROSSETTI, José Paschoal; ANDRADE, Adriana. Governança corporativa: fundamentos, desenvolvimento e tendências . 5. ed. atual. e ampl. São Paulo: Atlas, 2011. 596 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (465,'9780136107293','DECISION support and business intelligence systems. 9th. ed. New Jersey: Prentice Hall, 2011. xxii, 696 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (466,'0131986600','DECISION support and business intelligence systems. 8th. ed. New Jersey: Prentice Hall, 2007. xxviii, 772 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (467,'9788573937411','MANSUR, Ricardo. Balanced scorecard: revelando SEPV : estudos de casos brasileiros. Rio de Janeiro, RJ: Ciência Moderna, 2008. xi, 265p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (468,'9788535234176','FERRARI, Roberto. Empreendedorismo para computação: criando negócios em tecnologia. Rio de Janeiro, RJ: Elsevier, 2010. 164 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (469,'8522443955','BALLESTERO-ALVAREZ, María Esmeralda. Manual de organização, sistemas e métodos: abordagem teorica e prática da engenharia da informação. 3. ed. São Paulo, SP: Atlas, 2006. 329p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (470,'9788563308030','Hillier Frrederick S. INTRODUÇÃO a pesquisa operacional. 8.ed. Porto Alegre, RS: Bookman, 2010. 852p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (471,'8573034505','MEDEIROS, Elizabet M. Spohr de; SAUVÉ, Jácques Philippe. Avaliação do impacto de tecnologias da informação emergentes nas empresas. Rio de Janeiro, RJ: Qualitymark, 2003. 178 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (472,'9788535238990','MCAFEE, Andrew. Empresas 2.0: a força das mídias colaborativas para superar grandes desafios empresariais. Rio de Janeiro, RJ: Elsevier, 2010. 216 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (473,'9788535237061','ALBERTIN, Rosa Maria de Moura; ALBERTIN, Alberto Luiz. Estratégias de governança de tecnologia da informação: estrutura e práticas . Rio de Janeiro, RJ: Elsevier, 2010. 212 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (474,'9788573079784','PROBST, Gilbert; RAUB, Steffen; ROMHARDT, Kai. Gestão do conhecimento: os elementos construtivos do sucesso. Porto Alegre: Bookman, 2002. vii, 286 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (475,'8589384780','WEILL, Peter; ROSS, Jeanne W. Governança de TI: tecnologia da informação : como as empresas com melhor desempenho administram os direitos decisórios de TI na busca por resultados superiores. São Paulo, SP: M. Books do Brasil, 2006. 276p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (476,'852204816','STAIR, Ralph M.; REYNOLDS, George Walter. Princípios de sistemas de informação: uma abordagem GERÊNCIAl . São paulo: Cengage Learning, 2008. xxvi, 646 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (477,'8522104816','STAIR, Ralph M.; REYNOLDS, George Walter. Princípios de sistemas de informação: uma abordagem GERÊNCIAl . São Paulo: Cengage Learning, 2009. xxvi, 646 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (478,'9788502054424','FONTES, Edison Luiz Gonçalves. Segurança da informação: o usuário faz a diferença. São Paulo, SP: Saraiva, 2006. 172 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (479,'9788522440856','BEAL, Adriana. Segurança da informação: princípios e melhores práticas para a proteção dos ativos de informação nas organizações. São Paulo, SP: Atlas, 2008. xii, 175 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (480,'857605065X','OLIVEIRA, Fátima Bayma de FUNDAÇÃO DE AMPARO À PESQUISA DO ESTADO DO RIO DE JANEIRO; FUNDAÇÃO GETÚLIO VARGAS. Tecnologia da informação e da comunicação: desafios e propostas estratégicas para o desenvolvimento dos negócios. São Paulo, SP: Prentice Hall, 2006. 240p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (481,'9788536303413','TURBAN, Efraim. Tecnologia da informação para gestão: transformando os negócios na economia digital. 3. ed. Porto Alegre: Artmed, 2004. xiv, 660 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (482,'9788577805082','TURBAN, Efraim. Tecnologia da informação para gestão: transformando os negócios na economia digital. 6. ed. Porto Alegre: Bookman, 2010. xiii, 680 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (486,'9788522461226','REZENDE, Denis Alcides. Planejamento de sistemas de informação e informática: guia prático para planejar a tecnologia da informação integrada ao planejamento estratégico das organizações. 4. ed. São Paulo, SP: Atlas, 2011. 179 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (487,'9788576059233','LAUDON, Kenneth C.; LAUDON, Jane Price. Sistemas de informação GERÊNCIAis. 9. ed. São Paulo, SP: Pearson Education do Brasil, 2011. xxviii, 428 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (488,'9788576050896','LAUDON, Kenneth C.; LAUDON, Jane Price. Sistemas de informação GERÊNCIAis. 7. ed. São Paulo: Prentice Hall, 2007. xxi, 452 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (490,'9788522450039','REZENDE, Denis Alcides; Abreu. Tecnologia da informação aplicada a sistemas de informação empresariais: o papel estratégico da informação e dos sistemas de informação nas empresas. 5. ed. rev. e amp. São Paulo, SP: Atlas, 2008. 303 p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (491,'9788522465187','REZENDE, Denis Alcides; Abreu (Professora). Tecnologia da informação aplicada a sistemas de informação empresariais: o papel estratégico da informação e dos sistemas de informação nas empresas. 8. ed. rev. e amp. São Paulo, SP: Atlas, 2011. xxv, 335 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (492,'852243493X','SOUZA, Cesar Alexandre de.; SACCOL, Amarolinda Zanela. Sistemas ERP no Brasil: (enterprise resource planning); teoria e casos. São Paulo, SP: Atlas, 2003. 368p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (493,'9788574523237','DINSMORE, Paul C.; CABANIS-BREWIN, Jeannette. AMA: manual de GERÊNCIAmento de projetos. Rio de Janeiro, RJ: Brasport, 2009. xxii, 498p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (494,'9788574523750','VARGAS, Ricardo Viana. Análise de valor agregado em projetos: revolucionando o GERÊNCIAmento de custos e prazos . 4. ed. Rio de Janeiro: Brasport, 2008. xviii, 107p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (495,'8573035579','DINSMORE, Paul Campbell; BARBOSA, Adriane Monteiro Cavalieri. Como se tornar um profissional em GERÊNCIAmento de projetos: livro base de preparação para certificação PMP - Project Management Professional. 2. ed. Rio de Janeiro: Qualitymark, 2007. xxxvi, 342 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (502,'9788573039788','DINSMORE, Paul Campbell; BARBOSA, Adriane Monteiro Cavalieri. Como se tornar um profissional em Gerênciamento de projetos: livro-base de Preparação para certificação PMP® - Project management professional. 4. ed., rev. e ampl. Rio de Janeiro: Qualitimark, 2011. xxiv, 383p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (503,'9788535211832','PHILLIPS, Joseph. Gerência de projetos de tecnologia da informação: no caminho certo, do início ao fim. Rio de Janeiro, RJ: Elsevier, 2003. xviii, 449 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (504,'9788576084983','GREENE, Jennifer; STELLMAN, Andrew. Use a cabeça! PMP. Rio de Janeiro: Alta Books, 2010. xxxv, 794 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (505,'9781933890517','A GUIDE to the project management body of knowledge (PMBOK GUIDE). 4rd. ed. Newtown Square, Pa: Project Management Institute, c2008. xxvi, 467 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (506,'9788522106080','FARAH, Osvaldo Elias. Empreendedorismo estratégico. São Paulo: Cengage Learning, 2008. 251 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (507,'9788502067448','CHIAVENATO, Idalberto. Empreendedorismo: dando asas ao espírito empreendedor: empreendedorismo e viabilização de novas empresas, um guia eficiente para iniciar e tocar seu próprio negócio. 3. ed. rev. e atual. São Paulo, SP: Saraiva, 2008. xiv, 281 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (508,'9788576352600','JUSTUS, Roberto. O empreendedor: como se tornar um líder de sucesso. São Paulo, SP: Larousse do Brasil, 2007. 127 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (509,'9788535232707','DORNELAS, Jose Carlos Assis. Empreendedorismo: transformando idéiais em negócios . 3. ed. rev. atual. Rio de Janeiro: Elsevier, 2008. 232 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (510,'9788535247589','DORNELAS, Jose Carlos Assis. Empreendedorismo: transformando idéiais em negócios . 4. ed. rev. atual. Rio de Janeiro, RJ: Elsevier, 2012. 260 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (514,'9788575423387','DOLABELA, Fernando. O segredo de Luísa: uma idéia, uma paixão e um plano de negócios: como nasce o empreendedor e se cria uma empresa . Rio de Janeiro: Sextante, 2008. 299 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (515,'8535201772','NONAKA, Ikujiro; TAKEUCHI, Hirotaka. Criação de conhecimento na empresa: como as empresas japonesas geram a dinâmica da inovação . 19. ed. Rio de Janeiro: Campus; Elsevier, 1997. 358p. :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (516,'8573590963','CARUSO, Carlos A. A.; STEFFEN, Flávio Deny. Segurança em informática e de informações. 3. ed. rev. ampl. São Paulo: SENAC, 2006.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (517,'9788574523460','FERNANDES, Aguinaldo Aragon; ABREU, Vladimir Ferraz de. Implantando a governança de TI: da estratégia à gestão de processos e serviços . 2. ed. rev. ampl. Rio de Janeiro, RJ: Brasport, 2008. xxviii, 444 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (518,'9788520427422','CHIAVENATO, Idalberto. Planejamento e controle da produção. 2. ed.,rev., atual. São Paulo: Manole, 2008. 138 p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (519,'8521614004','MONTGOMERY, Douglas C. Introdução ao controle estatístico da qualidade. 4. ed. Rio de Janeiro: Livros Técnicos e Científicos, c2004. 513 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (520,'9788522456178','DIAS, Marco Aurélio P. Administração de materiais: princípios, conceitos e gestão. 6. ed. São Paulo, SP: Atlas, 2010. 346p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (521,'8587918095','TURBAN, Efraim; KING, David R. Comércio eletrônico: estratégia e gestão . São Paulo: Prentice Hall, 2004. xvii, 436 .p :','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (522,'9788522456857','ALBERTIN, Alberto Luiz.; MOURA, Rosa Maria de. Comércio eletrônico: modelo, aspectos e contribuições de sua aplicação. 6. ed. atual. e ampl. São Paulo, SP: Atlas, 2004. 306 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (523,'8573078758','KALAKOTA, Ravi; ROBINSON, Marcia. e-business: estratégias para alcançar o sucesso no mundo digital. 2. ed. Porto Alegre, RS: Bookman, 2002. 470p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (524,'0130323640','DEITEL, Harvey M.; DEITEL, Paul J.; STEINBUHLER, K. E-business & e-commerce for managers. New Jersey: Prentice Hall, 2001. xxxvii, 794 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (525,'8534613737','DEITEL, Harvey M.; DEITEL, Paul J.; STEINBUHLER, K. E-business e e-commerce para administradores. São Paulo: Makron Books, 2004. xxii, 456 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (526,'8561381000','LIMA, Roberto Galvão; OLIVEIRA, Almir Leal de; UNIVERSIDADE FEDERAL DO CEARÁ. A escola invisível: artes pláticas em Fortaleza 1928-1958. Fortaleza, CE: Quadricolor, 2008. 215 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (527,'9788522106387','BERTOMEU, João Vicente Cegato. Criação visual e multimídia. São Paulo, SP: Cengage Learning, 2010. 149 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (528,'9788577807383','LIDWELL, William; HOLDEN, Kritina; BUTLER, Jill. Princípios universais do design: 125 maneiras de aprimorar a usabilidade, influenciar a percepção, aumentar o apelo e ensinar por meio do design. Porto Alegre, RS: Bookman, 2010. 272 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (529,'9788574163871','WILLIAMS, Robin. Design para quem nao é designer: noções básicas de planejamento visual . 3. ed. São Paulo, SP: Callis, 2009. 191 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (530,'9788532305305','MOLETTA, Alex. Criação de curta-metragem em vídeo digital: uma proposta para produções de baixo custo. São Paulo, SP: Summus, 2009. 142 p. ((Biblioteca fundamental de cinema) ; 3)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (531,'8526214527','HAGGARD, H. Rider. As minas do Rei Salomão. 10. ed. São Paulo, SP: Scipione, 2000. 99 p. (Série Reencontro)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (532,'9789875665910','KEYES, Marian. Bajo el edredón. Buenos Aires, Argentina: DeBOLS!LLO, 2010. 414 p. (Coleção Best Seller)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (533,'8526211978','ROSTAND, Edmond,. Cyrano de Bergerac. 12. ed. São Paulo: Scipione Autores Editores, 1987. 88 p. (Série Reencontro Série Reencontro)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (534,'0689867220','HOPKINS, Cathy. Mates, dates and mad mistakes. New York, NY: Simon Pulse, 2004. 209 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (535,'8586796980','COLBERT, David. O mundo mágico de Harry Potter: mitos, lendas e histórias fascinantes. Rio de Janeiro, RJ: Sextante, 2001. 183 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (536,'852621733X','MALORY, Thomas Sir. O Rei Artur e os cavaleiros da Tavola Redonda. 12. ed. São Paulo, SP: Scipione, 2001. 80 p. (Série Reencontro)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (537,'0679801146','PIERCE, Tamora. Alanna: the first adventure. New York, NY: Random House, 1983.. 216 p. (Song of the lioness ; 1)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (538,'0763619582','MACKLER, Carolyn. The earth, my butt, and other big, round things. Cambridge, Massachusetts: Candlewick Press, 2003. 246 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (539,'0590476998','RUBY, Lois. Skin Deep. New York: Scholastic, 1994. 280p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (540,'0471138231','EPSTEIN, Richard G. The case of the killer robot: stories about the professional, ethical, and societal dimensions of computing. New York, NY: John Wiley & Sons, 1997. x, 242 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (541,'8526237284','SHAKESPEARE, William,. A megera domada. São Paulo, SP: Scipione, 2000. 120 p. (Coleção L & PM Pocket. v.95 Série Reencontro)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (542,'0521664772','SCOTT-MALDEN, Sarah. A Picture to remember. 1st ed. Cambridge, UK: Cambridge University Press, 1999. 48 p. (Cambridge english readers ; level 2.)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (543,'0194230678','DICKENS, Charles. Great expectations. 2. ed. Oxford [England]: Oxford University Press, 2000. 104 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (544,'0521656079','MALEY, Alan. He Knows too much. Austrália: Cambridge University Press, 1999. 112 p. (Cambridge english readers ; 6)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (545,'9788501053213','FIELDING, Helen. O diário de Bridget Jones. 25. ed. Rio de Janeiro, RJ: Record, 2007. 319p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (546,'9780140292817','KEYES, Marian. Sushi for beginners. England: Penguin Books, 2001. 563 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (547,'9788525419132','CHRISTIE, Agatha. testemunha ocular do crime. Porto Alegre, RS: L & PM, 2009. 254p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (548,'0435272705','GALSWORTHY, John. The man of property. Oxford [England]: Macmillan Heinemann, 1995. 95 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (549,'8525410349','FLEMING, Ian. Viva e deixe morrer. Porto Alegre, RS: L&PM, 1999. 326 p. (L&PM Pocket ; 193)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (550,'8500217588','CERVANTES SAAVEDRA, Miguel de. Dom Quixote. 22. ed. Rio de Janeiro, RJ: Ediouro, 2005. 186 p. (Coleção Clássicos para o jovem leitor)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (551,'8572821287','VIANA, Carlos Augusto. Drummond: a insone arquitetura. Fortaleza: Ed. UFC, 2003. 167p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (552,'8536800844','ALVES, Castro. Espumas flutuantes. São Paulo, SP: DCL, 2005. 95 p. (Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (553,'8536800801','GONZAGA, Tomás Antônio. Marília de Dirceu. São Paulo: DCL, 2005. 119 p. (Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (554,'857485042X','MAIA, Virgílio. Palimpsesto & outros sonetos. Fortaleza: Imprensa Universitária da Universidade Federal do Ceará, 2004. 99 p. (Coleção Literatura no Vestibular ; 3)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (555,'8572821708','BEZERRA, João Clímaco. A vinha dos esquecidos. Fortaleza: Ed. UFC, 2005. 227 p. (Coleção Literatura no Vestibular ; 6)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (556,'8536800887','AZEVEDO, Aluísio. Casa de pensão. São Paulo, SP: DCL, 2005. 175 p. (Serie Bom Livro Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (557,'8536800836','TAUNAY, Alfredo d´Escragnolle Taunay Visconde de,. Inocência. São Paulo: DCL, 2005. 104 p. (Serie Bom Livro Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (558,'8586375942','ALMEIDA, Manuel Antônio de. Memórias de um sargento de milícias. Fortaleza: DCL, 2001. 120 p. (Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (559,'8572821686','MONTE, Airton. Moça com flor na boca: crônicas escolhidas. Fortaleza: Ed. UFC, 2005. 130 p. (Coleção Literatura no Vestibular ; 4)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (560,'8536800771','AZEVEDO, Álvares de. Noite na taverna e Macário : Álvares de Azevedo . São Paulo, SP: DCL, 2005. 80 p. (Biblioteca de literatura brasileira)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (561,'8587791052','VIANCO, André. Os sete. São Paulo, SP: Novo Século, 2001. 380 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (562,'8536800704','BARRETO, Lima. Triste fim de Policarpo Quaresma. São Paulo, SP: DCL, 2005. 119 p. (Bom livro Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (563,'9788525409683','ASSIS, Machado de. Contos fluminenses. São Paulo, SP: DCL, 2005. 219p. (Coleção L&PM Pocket ; 151)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (564,'8587653334','ALENCAR, José de. Luciola. Fortaleza: ABC, 2002. 152p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (565,'8508004656','GÜIMARÃES, Bernardo,. A escrava Isaura. São Paulo, SP: DCL, 2005. 96 p. (Classicos da Literatura Brasileira Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (566,'8536800895','MACEDO, Joaquim Manuel de. A Moreninha. São Paulo, SP: DCL, 2005. 96 p. (Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (567,'8536800860','ASSIS, Machado de. Dom Casmurro. São Paulo: DCL, 2005. 120 p. (Serie Bom Livro Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (568,'8500005645','TAUNAY, Alfredo d´Escragnolle Taunay Visconde de,. Inocência. 2. ed. Rio de Janeiro, RJ: Ediouro, 2001. 216 p. (Serie Bom Livro Coleção Super Prestígio)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (569,'8536800828','ALENCAR, José de. Iracema: lenda do Ceará. São Paulo: DCL, 2005. 71 p. (Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (570,'853680081X','ALENCAR, José de. Lucíola. Fortaleza: DCL, 2005. 88 p. (Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (571,'8536800798','ASSIS, Machado de. Memórias Póstumas de Brás Cubas. São Paulo, SP: DCL, 2005. 112 p. (Coleção Nossa Literatura Clássica Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (572,'8536800763','POMPÉIA, Raul. O Ateneu. São Paulo, SP: DCL, 2005. 223 p. (Coleção Nossa Literatura Clássica Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (573,'8536800739','AZEVEDO, Aluísio. O Cortiço. São Paulo, SP: DCL, 2008. 136 p. (Coleção Nossa Literatura Clássica Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (574,'8536800720','ALENCAR, José de. Senhora. São Paulo: DCL, 2005. 144 p. (Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (575,'8572821406','CAMPOS, Natércia Maria Alcides. A casa. Fortaleza, CE: Ed. UFC, 2004. 89 p. (Coleção Literatura no Vestibular ; 2)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (576,'8536800747','BARRETO, Lima. Os Bruzundangas. Fortaleza: DCL, 2005. 88 p. (Coleção Literatura no Vestibular ; 1 Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (577,'8536800712','HERCULANO, Alexandre. Eurico, o presbítero. São Paulo, SP: DCL, 2005. 96 p. (O Monasticon ; v. 1 Grandes Nomes da Literatura)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (578,'0471314250','CHRISMAN, Nicholas. Exploring geographic information systems. 2nd. ed. New York, NY: John Wiley, 2002. xvi, 289 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (579,'9781589482609','ORMSBY, Tim. Getting to know ArcGIS desktop. 2nd. ed., atualizado para ArcGis 10. Redlands, Calif.: ESRI Press, 2010. xii, 584 p. + CD-ROM','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (580,'8508067712','POLIZZI, Valéria Piassa. Depois daquela viagem: diário de bordo de uma jovem que aprendeu a viver com AIDS. 18. ed. São Paulo, SP: Ática, 1999. 279 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (581,'8575631160','DUARTE, Ana Rita Fonteles UNIVERSIDADE FEDERAL DO CEARA. Carmen da Silva: o feminismo na imprensa brasileira . Fortaleza: Expressão Gráfica e Editora, 2005. 185p. (Historia e memória do jornalismo Série História e Memória do Jornalismo)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (582,'9788574851464','MAIA, Michelle Ferreira. Lembrança de alguém: a construção das memórias sobre a santidade de João das Pedras. Fortaleza, CE: Imprensa Universitária - UFC, 2010. 262 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (583,'9788574851457','GOMES, José Eudes Arrais Barroso. Um escandaloso theatro de horrores: a capitania do Ceará sob o espectro da violência. Fortaleza, CE: Imprensa Universitária - UFC, 2010. 283 p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (584,'999999505','SOMMERVILLE, I. Engenharia de software. 7.ed. SãoPaulo: Pearson Addison-Wesley, 2007','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (585,'999999506','INTERNATIONAL Network for Social Network Analysis. Disponível em: <http://www.insna.org.>. Acesso em: 23 jan. 2013','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (586,'999999507','VASCONCELOS, Davi Romero de; HAEUSLER, Edward Hermann. PONTIFÍCIA UNIVERSIDADE CATÓLICA DO RIO DE JANEIRO Departamento de Informática. Lógica modal de primeira-ordem para racionar sobre jogos. 2007. 241f. Tese(DoutoradoemInformática)-Pontifícia Universidade Católica do Rio de Janeiro, Rio de Janeiro, 2007','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (587,'9788563899156','FOWLER, F. J. Pesquisa de Levantamento. PortoAlegre:Pearson, 2011','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (588,'0321826620','FOWLER, M. NoSQL Distilled: a brief guide to the emerging world of poliglot persistence. SãoPaulo:Prentice-Hall, 2012','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (589,'9788577806812','MENEZES, Paulo Blauth; UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL. Matemática discreta para computação e informática. 3. ed. PortoAlegre, RS:Bookman, 2010. 350p(Livrosdidáticos. 16)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (590,'9788521304036','ALENCARFILHO, E. Iniciação à lógica matemática. 21. ed. SãoPaulo:Nobel, 2008. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (591,'3212935332011','AMBLER, ScottW. ;SADALAGE, PramondJ. Refactoring databases: evolutionary database design. NewJ ersey: Addison-Wesley, 2011. 350p. (The Addison Wesley signature series)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (592,'9780321712479','APPELO, J. Management3. 0:Leading agile developers, developing agile leaders. NewYork: Addison Wesley, 2010. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (593,'0321417461','BRATKO, Ivan. Prolog programming for artificial intelligence. 4. ed. Wokingham: Addison-Wesley, 2011. (International computer science series)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (594,'0452284392','BARABASI, Albert-Laszlo. Linked: how everything is connected to everything else and what it means for business, science, and everyday life. New York, :Plume Book, 2003. 294p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (595,'0321154959','BASS, Len; CLEMENTS, Paul; KAZMAN, Rick. Software architecture in practice. 2. ed. Boston: Addison-Wesley, 2003. 528p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (596,'9788580630534','BASTOS, Aderson et al. Base de conhecimento em teste de software. 3. ed. São Paulo: Martins Fontes, 2012. 263p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (597,'157586374X','BARWISE, Jon; ETCHEMENDY, John; ALLWEIN, Gerard; BARKER-PLUMMER, Dave;LIU, Albert. Language, proof and logic. Stanford:CSLI, 2008. 587p. ;(CSLI lecture notes;v23)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (598,'8535205624','BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar. UML: guia do usuário. 2. ed. Rio de Janeiro, RJ: Campus, 2005. 474p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (599,'0471958697','BUSCHMANN, Franketal. Pattern-oriented software architecture: volume4: a system of patterns. New York: John Wiley & Sons, 1996. 457p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (600,'9780131479415','COHN, Mike; HIGHSMITH, Jim. . Agile estimating and planning. Upper Saddle River, NJ: Prentice Hall PTR, 2006. 330p. (Robert C. Martin series)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (601,'1591392705','CROSS, RobertL. ;PARKER, Andrew. The hidden power of social networks: understanding how work really gets done in organizations. Boston: Harvard Business School, 2004. 213p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (602,'9780470542200','CROSS, RobertL. ; SINGER et al. The organizational network field book: best practices, techniques and exercises to drive organizational innovation and performance. New York: John Wiley, 2010. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (603,'9781580537919','COPELAND, Lee. A practitioners guide to software test design. Boston, Mass. ; London: Artech House, 2004. 294p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (604,'3540208798','DALEN, D. van. Logic and structure. 4. ed. Berlin: Springer-Verlag, 2004. 263p. (Universitext)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (605,'852210295','DROZDEK, Adam. Estrutura de dados e algoritmos em C++. São Paulo: Thomson, 2002. 579p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (606,'8535212736','DATE, C. J. Introdução a sistemas de banco de dados. 8. ed. Rio de Janeiro: Elsevier, 2004. 865p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (607,'9780321336385','DUVALL, PaulM. Continuous integration: improving software quality and reducing risk. Boston, MA: Addison-Wesley, 2007. 283p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (608,'8522430357','SILVA, Sebastiao Medeiros da; SILVA, Elio Medeiros da; SILVA, Ermes Medeiros da. Matemática básica para cursos superiores. São Paulo: Atlas, 2002. 227p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (609,'0471398195','MILI, Hafedh. Reuse-based software engineering: techniques, organization and measurement. New York: Wiley, 2002. 636p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (610,'9788575222386','LUCKOW, Décio Heinzelmann; MELO, Alexandre Altair. Programação Java para a web. São Paulo: Novatec Editora, 2010. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (611,'9788576086420','GEARY, David; HORSTMANN, Cay. Core Java Server Faces. 3. ed. Rio de Janeiro, RJ: AltaBooks, 2012','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (612,'020117782X','ZAHRAN, Sami. Software process improvement: practical guide lines for business success. Reading: Addison-Wesley, 1998447p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (613,'9780470093559','MAGEE, J. ;KRAMER, J. Concurrency: state models and Java programs. Michigan:Wiley, 2006. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (614,'1558603484','LYNCH, Nancy A. Distributed algorithms. San Francisco: Morgan Kaufmann, 1996. 872p. (The morgan kaufmann series in data management systems). ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (615,'0201633469','STEVENS, W. Richard. TCP/IP illustrated: v. 1. Reading, Mass.: Addison-Wesley, 1994. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (616,'8571948992','VAZQUEZ, Carlos Eduardo; SIMÕES, Guilherme Siqueira;ALBERT, RenatoMachado. Análise de pontos de função:medição, estimativas e gerenciamento de projetos de software. São Paulo: Érica, 2011. 222p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (617,'9780201699443','GARMUS, David; HERRON, David. Function point analysis: measurement practices for successful software projects. Boston: Addison-Wesley, 2001. (Addison-Wesley information technology series)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (618,'9780071483001','JONES, Capers. Estimating softwarecosts: bringing realism to estimating. 2. ed. New York: Mc Graw-Hill, 2007. 644p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (619,'9780071717915','HILL, P. Practical Software Project Estimation: a toolkit for estimating software development effort & duration. New York: McGraw-Hill Osborne Media, 2011. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (620,'9780735605350','MCCONNELL, Steve. Software estimation: demystifying the black art. Redmond, Wa.: MicrosoftPress, 2006. 308p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (621,'9788535232493','FEOFILOFF, Paulo. . Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. 208p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (622,'8575220241','OLIVEIRA, CelsoH. Poderosode. SQL: curso prático. São Paulo:Novatec, 2002. 272p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (623,'857001841X','RUMBAUGH, James. Modelagem e projetos baseados em objetos. Rio de Janeiro: Campus, 2006. 652p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (624,'0136291554','MEYER, Bertrand. Object-oriented software construction. 2nd. ed. New Jersey: Prentice Hall PTR, 1997. 1254p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (625,'9781412947152','PRELL, Christina. Social network analysis: history, theory and methodology. California: Sage Publications Ltd, 2011. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (626,'9788535246698','PIMENTEL, M. ;FURKS, Hugo. Sistemas Colaborativos. Rio de Janeiro: Elsevier-Campus-SBC, 2011. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (627,'9780471678359','MYERS, Glenford J. The Art of software testing. New York: J. Wiley, 2004. 177p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (628,'0321419499','ROBERTSON, Suzanne; ROBERTSON, James. Mastering the requirements process. 2. ed. Upper Saddle River, NJ: Addison-Wesley, 2006. 560p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (629,'0818677384','THAYER, RichardH. ; DORFMAN, M. ; BAILIN, Sidney C. Software requirements engineering. 2. ed. Los Alamitos, Calif. : IEEE Computer Society Press, 2000. 483p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (630,'9788536503622','MACHADO, Felipe Nery Rodrigues. Análise e gestão de requisitos de software: onde nascem os sistemas. São Paulo: Érica, 2011. 286p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (631,'0792386825','EXPERIMENTATION in software engineering: an introduction. Boston, MA: Kluwer Academic, 2000. 204p. (The Kluwer international series in software engineering; 6)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (632,'9781848000445','SHULL, Forrest;SINGER, Janice;SJÃ¸BERG, DagI. K SPRINGER LINK. Guide to advanced empirical software engineering. London: Springer-Verlag London Limited, 2008. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (633,'9788574524511','MARTINS, José Carlos Cordeiro. Gerenciando projetos de desenvolvimento de software com PMI, RUP E UML. 5. ed. Rio de Janeiro: Brasport, 2010. 290p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (635,'0131177052','FEATHERS, Michael C. Working effectively with legacy code. Upper Saddle River, NJ: Prentice Hall, 2005. 434p. (Robert C. Martin series)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (636,'9780321166074','SPINELLIS, Diomidis. Code Quality: the open source perspective. Boston: Addison-Wesley, 2006. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (637,'9788535243970','VELLOSO, Fernando de Castro. Informática: conceitos básicos. 8. ed. rev. atual. Rio de Janeiro, RJ: Campus, 2011. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (638,'9780137012893','GEARY, David M; HORSTMANN, Cay S. Core Java Server Faces. 3. ed. Boston: Prentice Hall, 2010. 636p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (639,'0137288743','WATT, David Anthony; FINDLAY, William; HUGHES, John. Programming language: concepts and paradigms. New York: Prentice Hall, 1990. 322p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (640,'9788521616108','HUTH, Michael; RYAN, Mark. Lógica em ciência da computação: modelagem e argumentação sobre sistemas. 2. ed. Rio de Janeiro: LTC, 2008. 322p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (641,'8535210938','SOUZA, João Nunes de. Lógica para ciência da computação: fundamentos de linguagem, semântica e sistemas de dedução. Rio de Janeiro: Elsevier, 2002. 309p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (642,'9780321601919','HUMBLE, Jez. ; FARLEY, David. Continuous delivery: reliable software releases through build, test, and deployment automation. Upper Saddle River, NJ: Addison-Wesley, 2011. 463p. (Addison-Wesley Signature Series. )','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (643,'0470856629','VÖLTER, Markus; KIRCHER, Michael;ZDUN, Uwe. Remoting patterns foundations of enterprise, internet and real time distributed object middleware. Chichester:John Wiley, 2005. 389p. (Wiley series in software design patterns)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (644,'0471606952','SCHMIDT, Douglas C. Pattern-oriented software architecture: volume 2. Chichester [England]; New York: John Wiley & Sons, 2000. 633p. (Wiley series in software design patterns)','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (645,'999999567','ALMEIDA, Eduardo Santana de et al. C.R.U.I.S.E: Component Reuse in Software Engineering. Recife: Gráfica Dom Bosco, 2007. Disponível em: <http://cruise.cesar.org.br/index.html> Acesso em: 14 set. 2008','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (646,'999999568','ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. ABNT NBR ISO/IEC 27001-Tecnologia da informação - técnicas de segurança-sistemas de gestão de segurança da informação-requisitos. Rio de Janeiro,RJ,2006.34p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (647,'999999569','AIELLO, R.; SACHS, L. Configuration management best practices: practical methods that work in the real world. Upper Saddle River, NJ: Addison-Wesley, 2011. 229p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (648,'999999570','ABRAN, Alain (Ed.).Guide to the software engineering body of knowledge: trial version. Washington: Computer society, 2001. 205p. Disponível em: <http://www.computer.org/portal/web/swebok>. Acesso em: 23 jan. 2013','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (649,'999999571','BEN-ARI. Principles of concurrent and distributed programming. 2. ed. SãoPaulo: Prentice-Hall, 2006','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (650,'999999572','CHRISSIS, Mary Beth; KONRAD, Mike; SHRUM, Sandy. CMMI for Development®: guidelines for process integration and product improvement. 3. ed. Upper Saddle River:Addison-Wesley,2011','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (651,'999999573','CLEMENTS, Paul et al. Documenting software architectures: views and beyond. 2. ed. Massachusetts: Addison-Wesley Professional. 2010. 592p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (652,'999999574','DELGADO, José; RIBEIRO, Carlos. Arquitetura de computadores. 4. ed. rev. atual. Lisboa: FCA, 2010','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (653,'999999575','KANG, K. C.; SUGUMARAN, V.;PARK, S. Applied software product line engineering. Boca Raton, Florida: CRC Press,2010','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (654,'999999576','EZRAN, M. ; MORISIO, M. ; TULLY, C. Practical software reuse. Berlim: Springer, 200','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (655,'999999577','POHL, K.; BÖCKLE, G.; LINDEN, F. J. Software product line engineering: foundations, principles and techniques. Berlim: Springer, 2005','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (656,'999999578','GUIA MPS-BR: Melhoria do processo de software brasileiro. Disponível em:<http://www.softex.br/mpsbr/_home/default.asp>. Acesso em: 23 jan. 2013','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (657,'999999579','FIPA. Especificações FIPA. Disponível em: <http://www.fipa.org>. Acesso em: 24 jan. 2013','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (658,'999999580','EVANS, Eric. Domain-driven design: atacando as complexidades no coração do software. Rio de Janeiro, RJ: Alta Books, 2009. 499p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (659,'999999581','MEIRA, Silvio R. L. et al. The Emerging Web of Social Machines. COMPSAC/IEEE, 2011. p. 26-27. Disponível em: <http://arxiv.org/abs/1010.3045>. Acesso em: 23 jan. 2013','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (660,'999999582','UM GUIA para o corpo de conhecimento de análise de negócios: guia BABOK: versão 2.0. Toronto: IIBA International Institutute of Business Analysis, 2011. Disponível em: <http://books.google.com.br/books?id=wZvSEEg39N4C&printsec=frontcover&hl=pt-BR&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false>. Acesso em: 07 nov. 2012','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (661,'999999583','SHAW, Mary; GARLAN, David. Software architecture: perspectives on an emerging discipline. São Paulo: Prentice Hall. 1996. 242p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (662,'999999584','TAYLOR, R. N.; MEDVIDOVIC, N. ; DASHOFTY, E. M. Software architecture: Foundations, Theory, and Practice. Wiley, 2009. 750p','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (663,'999999585','ULLMAN,J.D.;WIDOW,J.First Course in database systems. 3. ed. São Paulo: Prentice Hall, 2007','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (664,'999999586','HAMBRICK, G. et al. Persistence in the enterprise: a guide to persistence technologies. Boston: IBM Press, 2008','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (665,'999999587','Travassos, G. et. al. Introdução a Engenharia de Software Experimental. Rio de Janeiro: COPPE/UFRJ, 2002. Relatório Técnico ES-590/02','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (666,'999999588','KITCHENHAM, B. Procedures for Performing Systematic Reviews. Australia: Joint Technical Report Keele University/NICTA Technical/Keele University/ NICTA, 2004','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (667,'999999589','ERIKSSON,Hans-Erik. UML 2 toolkit. New York: Wiley, 2004','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (668,'999999590','GUEDES, Gilleanes T. A. UML 2: uma abordagem prática. São Paulo: Novatec, 2009','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (669,'999999591','FOWLER, F.J. Pesquisa de Levantamento. Porto Alegre: Pearson, 2011','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (670,'999999592','MOREIRA, Mario E. Adapting configuration management for agile teams: balancing sustainability and speed. New York: John Wiley & Sons, 2009','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (671,'999999593','SOFTEX Brasil. Guias MPS.BR. Disponível em: <http://www.softex.br/mpsbr/_home/default.asp>. Acesso em: 23 jan. 2013','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (672,'999999594','THAYER, Richard H. ; DORFMAN, M. ; BAILIN, Sidney C. Software requirements engineering. 2. ed. Los Alamitos, Calif.: IEEE Computer Society Press, 2000. 483p.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (673,'079237990X','JURISTO, Natalia; MORENO, Ana M. Basics of software engineering experimentation. Boston: Kluwer Academic Publishers, 2001. 395p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (674,'9788560031498','COULOURIS, GeorgeF.; DOLLIMORE, Jean; KINDBERG, Tim. Sistemas distribuídos: conceitos e projeto. 4. ed. Porto Alegre: Bookman, 2007. viii, 784p. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (675,'97885739366742','GONÇALVES, Edson. Desenvolvendo aplicações Web com NetBeans IDE 6. Rio de Janeiro, RJ: Ciência Moderna, 2008. xix, 581p. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (676,'8535206841','MURDOCCA, Miles; HEURING, Vincent P. Introdução a arquitetura de computadores. Rio de Janeiro, RJ: Elsevier, 2000. xxii, 512p. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (678,'9780471433019','BLUM, R. Network Performance: Tool kit Using Open Source Testing Tools. Wiley, 2003.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (679,'9788535246711','CHIAVENATO, I. Introdução à teoria geral da administração. 8ed. Campus, 2011.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (680,'9788539900459','MANSUR, Ricardo. Governança de ti verde: o ouro verde da nova TI. Rio de Janeiro: Ciência Moderna, 2011. 212p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (681,'9788577807253','MOHER, M.; HAYKIN, S. Sistemas de Comunicação. Bookman, 2011.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (682,'9788599593110','MORIMOTO, C. E. Redes: guiaprático. GDHP ress, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (683,'853522273','VIEIRA, Marconi Fábio. Gerenciamento de projetos de tecnologia da informação. 2.ed., Rio de Janeiro, RJ, Elsevier, 2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (684,'978020148534','STALLINGS, W. SNMP, SNMP V2, SNMP V3 AND RMON 1 AND 2. 3ed. Addison Wesley, 1999.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (685,'9788535211856','TANENBAUM, Andrew S. Redes de computadores. 4. ed. Rio de Janeiro: Elsevier, Campus, 2003. 945p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (686,'978852245507','ALMEIDA, G. A.; CHRISTMANN, M. O. Ética e direito: uma perspectiva integrada. 3ed. Atlas, 2009','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (687,'9788577260881','FOROUZAN, B. A. Comunicação de dados e redes de computadores. Bookman, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (688,'0471333417','Trivedi, K. S. Probability & Statistics with Reliability, Queueing, and Computer Science Applications. JohnWilley, 2002.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (689,'9788532636904','VON BERTALANFFY, L. Teoria Geral dos Sistemas. Vozes, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (690,'0135259657','STALLINGS, W. High Speed Networks TCP IP and ATM Design Principles, 1ed Prentice Hall, 1998,','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (691,'999999614','Into Statistics; Smith, PeterJ. ; Springer. 2001','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (692,'999999615','LIPSCHUTZ, S.; LIPSONM. Matemática Discreta 2ed. Bookman, 2004.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (693,'999999616','SERSON, R. R. A Bíblia: certificação Java v.1. Brasport, 2009.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (694,'999999617','FORBELLONE, A. L. V.; EBERSPACHER, H. F. Lógica de programação: aconstrução de algoritmos. 3ed. Prentice Hall, 2005 ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (695,'999999618','VIEIRA, Marconi Fábio. Gerenciamento de projetos de tecnologia da informação. 2. ed., Rio de Janeiro, RJ, Elsevier,2007.853522273 ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (696,'999999619','DINSMORE, Paul Campbell; CAVALIERI, Adriane(Coord.) Como se tornar um profissional em gerenciamento de projetos: livro base de preparação para certificação PMP Project Management Professional. 2.ed. Rio de Janeiro: Qualitymark, 2007. 342p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (697,'999999620','CHOWDHURY, D. D. PROJETOS AVANÇADOS DE REDES IP: ROTEAMENTO, QUALIDADE DE SERVIÇO E VOZ SOBRE IP. Campus, 2002. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (698,'999999621','VIEIRA, F. M. TRABALHANDO EM REDES. ÉRICA, 2002.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (699,'999999622','GASPARINI, Anteu Fabiano Lúcio. Infraestrutura, protocolos e sistemas operacionais de LANs: redes locais. São Paulo: Érica, 2004. 334p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (700,'999999623','ALONSO, G.; CASATI, F.; KUNO, K.; MACHIRAJU, V. Web Services: Concepts, Architectures and Applications. Springer, 2004. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (701,'999999624','RAMAKRISHNAN, R.; GEHRKE, J. Sistemas de gerenciamento de banco de dados. Mc GrawHill, 2008','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (702,'999999625','DATE, C. J. Introdução a Sistemas de Banco de Dados. 8ed. Campus, 2004.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (703,'999999626','KROENKE, D. M. Database Processing. 8.ed. Prentice Hall, 2001.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (704,'999999627','SILBERSCHATZ, A.; SUDARSHAN, S. Sistema de banco de dados. Campus, 2006. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (705,'999999628','PMI: A guide to the project management body of knowledge. 4ed. PMI, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (706,'999999629','PHILLIPS, Joseph. Gerência de projetos de tecnologia da informação. Rio de Janeiro: Campus, 2003. 449p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (707,'999999630','COSTA, Daniel Gouveia. DNS: um guia para administradores de redes. Rio de Janeiro, RJ: Brasport, c2007. xiii, 121p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (708,'999999631','COMER, D. Automated network management systems. Pearson, 2006.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (709,'999999632','MAURO, D. R. SNMP essencial. Campus, 2001.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (710,'999999633','PARKER, S. Shell Scripting Professional: Expert Recipes for Lixux, Bashandmore. John Willey,2011. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (711,'999999634','ROBBINS, A.; BEEBE, N. H. F. CLASSIC SHELL SCRIPTING. Bookman, 2005.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (712,'9788574524405','NEVES, J. C. ProgramaÃ§Ã£o Shell Linux. 8ed. Brasport, 2010.','FÃ­sico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (713,'999999636','HISRICH, R. D. Empreendedorismo. 3ed. Bookman, 2009','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (714,'999999637','LEVY, P. Tecnologias da inteligência: futuro do pensamento. PrenticeHall, 1995.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (715,'999999638','ALMEIDA, G.A.; CHRISTMANN, M. O. Ética e direito: uma perspectiva integrada. 3ed. Atlas, 2009','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (716,'999999639','MASIERO, P.C.Ética em computação. EDUSP, 2008','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (717,'999999640','COMER, D. Interligação de redes com TCP/IP v.2. 3ed. (vol.2). Campus, 1998','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (718,'999999641','Edward D. Lazowska, John Zahorjan, G. Scott Graham, Kenneth C. Sevcik. Quantitative System Performance Computer System Analysis Using Queueing Network Models, 1984, Editora Prentice Hall','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (719,'999999642','Mahbub Hassan, Raj Jain. High Performance TCP/IP Networking –Concepts, Issues and Solutions. 2004, Pearson Prentice Hall','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (720,'999999643','JOHNSON, T. M. S. M. e Coutinho, M. M. Avaliação de Desempenho de Sistemas Computacionais, 1ªEdição, 2011. Editora LTC.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (721,'999999644','MENASCÉ, D. A., ALMEIDA, V, Performance by Design: Computer Capacity Planning By Example., 1ªEdição, 2004, Prentice Hall Inc. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (722,'999999645','CHUAH, Moi Choo; ZHANG, Qinqing. Design and perfomance of 3G wirelss networks and wireless lans. New York: 2006','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (723,'999999646','ALI, NAJAHABU, LTE, LTE - Advanced And Wimax,JOHN WILEY PROFESSIONAL, 2011','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (724,'999999647','OSBORNE-MCGRAW-HIL, Wireless Network Security, PEARSON, BROCK, 2011','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (725,'999999648','STALLINGS, W. HIGH SPEED NETWORKS AND INTERNETS - PERFORMANCE AND QUALITY OF SERVICE. 2ed. Prentice Hall,2002.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (726,'999999649','SOARESNETO, V; SILVA, A. P.; BOSCATO JUNIOR, M. TELECOMUNICAÇÕES REDES DE ALTA VELOCIDADE, CABEAMENTO ESTRUTURADO. 3.ed. ÉRICA, 1999. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (727,'999999650','FILIPPETTI, Marco Aurélio. CCNA4.1: guia completode estudo exame 640-802). Florianópolis: Visual Books, 2008. 478p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (728,'9788576081883','ODOM, W. CCNA I CND2-Guia oficial de certificação do exame. 2ed. STARLIN ALTA, CONSULT,2008.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (729,'999999652','IDOETA, Ivan Valeije; CAPUANO, Francisco Gabriel. Elementos de eletrônica digital. 40. ed. SãoPaulo: Érica, 2007. 524p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (730,'999999653','TORRES, Gabriel. Fundamentos de eletrônica. Rio de Janeiro.: Axcel Books, 2002. 229p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (731,'999999654','ENGLANDER, I. A Arquitetura de Hardware Computacional, Software de Sistema e Computação e Comunicação em Rede. 4oEdição. 2011. Editora LTC.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (732,'999999656','ULBRICH, Henrique Cesar. Universidade hacker:exercícios práticos para desvendar os segredos do submundo hacker!.2.ed. São Paulo: Digerati Books,2009. 381p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (733,'999999657','BEAL, Adriana. Segurança da informação: princípios e melhores práticas para a proteção dos ativos de informação nas organizações. SãoPaulo: Atlas, 2005. 175p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (734,'999999658','NIELSEN,Jakob; LORANGER, Hoa. Usabilidade na web. Rio de Janeiro: Campus, 2007. 406p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (735,'999999659','MANSUR, Ricardo. Governança de TI: metodologias, frameworks, melhores práticas. Rio de Janeiro: Brasport, 2007. xviii, 200p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (736,'999999660','SIQUEIRA, Luciano Antonio.C ertificação LPI-1. 3.ed. São Paulo: Linux New Media,2009. 252p. (Coleção LinuxPro)','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (737,'999999661','SIQUEIRA, Luciano Antonio. Certificação LPI-2. 2.ed. São Paulo: Linux New Media do Brasil, 2009. 303p. (Coleção LinuxPro)','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (738,'999999662','MORIMOTO, Carlos E. Servidores Linux: guiaprático. Porto Alegre: SulEditores, 2010. 735p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (739,'999999663','SILBERSCHATZ, Abraham; GAGNE, Greg; GALVIN, Peter; Fundamentos de Sistemas Operacionais. Rio de Janeiro. 6ªEdição. LTC. 2004','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (740,'999999664','ANDREWS. TANENBAUM. Redes de Computadores. Editora Campus. 4ªedição.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (741,'999999665','STALLINGS, W. High Speed Networks and Internets - Performance and Quality of Service. 2ªedição. Prentice Hall','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (742,'999999666','CHOWDHURY, DHIMAND. Projetos Avançados de Redes Ip: Roteamento, Qualidade De Serviço E Voz Sobre Ip. CAMPUS. 1ª edição','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (743,'999999667','TULLOCH, M. INTRODUCING WINDOWS SERVER 2008. MICROSOFT PRESS,2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (744,'999999668','MACKIN, J. C. ENORTHRUP, TONY. KIT DE TREINAMENTOM CTS(EXAME70-642)','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (745,'999999669','CONFIGURAÇÃO DO WINDOWS SERVER 2008: INFRAESTRUTURA DE REDE. Bookman, 2010.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (746,'999999670','THOMPSON, M. A. Microsoft Windows Server 2012 - Instalação, Configuração e Administração De Redes. 1a Edição. ÉRICA. 2012.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (747,'999999671','PETERSON, L. L.; DAVIE, B. S. REDES DE COMPUTADORES: UMA ABORDAGEM SISTÊMICA. 2ed. LTC, 2004.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (748,'9788535223293','AZEVEDO,E.; CONCI,A.;LETA,F. Computaçao Grafica, V.2 - Teoria E Pratica. Campus, 2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (749,'999999674','TURBAN, E.; WETHERBE, James C. Tecnologia da informação para gestão. 3 ed. Bookman, 2004.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (750,'999999675','POTTER, R. E.; RAINER JR, R. K.; TURBAN, E.Introdução a sistemas de informação: uma abordagem gerencial. Campus 2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (751,'999999676','STAIR, R. M.; REYNOLDS, G. W.Princípios de sistemas de informação: uma abordagem gerencial. reimpr. 2008 e 2009. Cengage, 2006.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (752,'999999677','ALVES, R. Introdução à Filosofia da ciência. 12 ed. Loyola, 2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (753,'999999678','ALBERTIN, Alberto Luiz. Administração de informática: funções e fatores criticos de sucesso; 2.ed, São Paulo, Atlas, p. 152, 1999.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (754,'999999679','MANAS, Antonio Vico. Administração de sistemas de informação; São Paulo, Erica, p. 282, 1999.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (755,'999999680','BRAGA, Roberto. Fundamentos e técnicas de administração financeira. São Paulo: Atlas, 1995.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (756,'999999681','DIAS, MARCO AURELIO PEREIRA , Administração de Materiais: Princípios, Conceitos e Gestão, Atlas, 5 ed., 2006.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (757,'999999682','ALBERTIN, ALBERTO LUIZ. Administração de informática: funções e fatores críticos de sucesso. 2.ed. São Paulo: Atlas, 2006.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (758,'999999683','REZENDE, Denis Alcides, Abreu, Aline Franca, Tecnologia da informação: integrada à inteligência empresarial. Alinhamento estratégico e análise da prática nas organizações.São Paulo : Atlas, 2002.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (759,'999999684','CHIAVENATO, Idalberto. Introdução à teoria geral da administração, São Paulo: Makron , 2006.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (760,'999999685','SINCLAYR LUIZ, Organização e Técnica Comercial - Introdução a Administração,Saraiva, Ed. 21, 2005.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (761,'999999686','SOBRAL, F.; PECI, A. Administração: teoria e prática no contexto brasileiro. São Paulo: Pearson – Prentice Hall, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (762,'999999687','RIBEIRO, O.M. Contabilidade geral fácil. 7ª ed. Editora Saraiva, 2010.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (763,'999999688','BRITO, O. Controladoria De Risco-Retorno Em Instituiçoes. Ed. Saraiva, 2002.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (764,'999999689','IUDICIBUS,S.; MARION,J.C. Curso de Contabilidade para nao Contadores. 6ª ed. Editora Atlas, 2009.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (765,'999999690','SARAIVA, E. Licitações e contratos em adminisração pública. 13ª edição. Editora Saraiva, 2010.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (766,'999999691','KROETZ, César Eduardo S.. Apostilha Contabilidade de Custos. UNIJUI, RS, 2001.  http://apostilas.netsaber.com.br/apostilas/1029.pdf','Virtual');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (767,'9788522459407','MARTINS, E. Contabilidade de custos. Editora Atlas. 10ª ed. 2010.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (768,'9788522459353','MARTINS, E. Contabilidade de custos - Livro de Exercícios. Editora Atlas. 10ª ed.  2010.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (769,'999999694','PADOVEZE, C.  Sistemas de informações contábeis. 5ª ed. Editra Atlas, 2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (770,'999999695','LEONE, G. Custos: planejamento, implantação e controle. Editora Atlas. 3ª ed. 2000.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (771,'999999696','EFRAIM, T. Decision support and business. 8 ed. Prentice Hall, 2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (772,'8521613385','STAIR, Ralph M.; REYNOLDS, George W. Princípios de sistemas de informação. 9. ed. Rio de Janeiro: LTC, 2011. 590 p.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (773,'9780471138235','EPSTEIN, R. G. The case of the killer robot: STORIES ABOUT THE PROFESSIONAL, ETHICAL, AND SOCIETAL DIMENSIONS OF COMPUTING. John Willey, 1996.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (774,'9780130323644','DEITEL, H. M.; DEITEL, P. J.; STEINBUHLER, K. E-busines e E-commerce para administradores. Pearson, 2004.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (775,'9788574524382','FREITAS, M.A.S. Fundamentos do Gerenciamento de Serviços de TI. Brasport. 2010.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (776,'9780130648396','KROENKE, D. M. Database Processing. 8. Ed. Prentice Hall, 2001. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (777,'999999777','BEZERRA, E. Princípios de análise e projeto de sistemas com UML. 2. ed. rev. e atual. Rio de Janeiro: Campus, 2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (778,'0521779111','A. S. Troelstra, H. Schwichtenberg. Basic Proof Theory. Inseries Cambridge Tracts in Theoretical Computer Science, Cambridge University Press, Second Edition, 2000,','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (779,'0982106017','Al Sweigart. Invent Your Own Computer Games with Python, 2nd Edition. Creative Commons licenced.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (780,'9780201530827','PAPADIMITROU, C. Computational complexity. Addison Wesley, 1994.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (781,'0471056693','Pattern Classification, 2nd edition, Wiley- Interscience, 2000. -R.O.Duda, P. E. Hart, D. G. Stork.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (782,'9788522104994','SIPSER, M. Introdução à teoriada computação. 2ed. Thompson Learning, 2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (783,'0470853204','WATT, D. A. Programming language design concept. IE-Wiley, 2004.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (784,'999999711','Seymour Lipschutz; Marc Lipson; Álgebra Linear; Coleção Schaum; Editora Bookman; 20112;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (785,'999999712','TOSCANI, L. V.; VELOSO, P.A.S. Complexidade de Algoritmos.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (786,'999999713','TOSCANI, S. S., Implementação de Ling. de Progr. – Compiladores,  1 ed, 2008 Bookman','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (787,'999999714','The Elements of Statistical Learning: Data Mining, Inference, and Prediction (2nd. Ed.) Springer, 2009. - T. Hastie, R. Tibshirani, J. Friedman','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (788,'999999715','Tom M. Apostol; Cálculo, Volume 2; 1079','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (789,'999999716','Um Curso de Cálculo, Guidorizzi Hamilton Luiz, volumes 3 e 4, 5-edição, 2001, Editora LTC','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (790,'999999717','Valéria Zuma Medeiros, André Machado Caldeira, Luiza Maria Oliveira da Silva e Maria Augusta Soares Machado; PRÉ-CÁLCULO; 2ª edição revista e atualizada, 2010, Editora Cengage','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (791,'999999718','WEBER, Raul Fernando. . Fundamentos de arquitetura de computadores. 3. ed. Porto Alegre, RS: Sagra Luzzatto, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (792,'999999719','ZIVIANI, N. Projeto de Algoritmos com Implementações em Java e C++, Editora Cengage Learning, 2006.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (793,'999999720','COLLINS. COLLINS: dicionário escolar. Martins Fontes, 2009.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (794,'999999721','EFRAIM, T. Decision support and business. 9 ed. Prentice Hall, 2010.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (795,'999999722','MURPHY, R. English Grammar in use.3 ed. Cambridge University, 2004.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (796,'999999723','PHILIPS, D. Longman Preparation Course for the TOEFL Test Ibt. Longman do Brasil, 2007.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (797,'999999724','COLLINS. COLLINS: dicionário escolar. Martins Fontes, 2009.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (798,'999999725','KLEINBERG, J.; TARDOS, E. Algorithm Design, Addison Wesley, 2005. 9780321295354','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (799,'999999726','LEISERSON, C.E., STEIN, C., RIVEST, R.L. & CORMEN T.H. Algoritmos: teoria e prática, Editora Campus, 3ª. Edição, 2012.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (800,'999999727','LEVINE, J., Flex & Bison: Text Processing Tools. O Reilly Media, 2009.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (801,'999999728','MAK, Ronald, Writing Compilers and Interpreters: A Software Engineering Approach, Wiley, 3rd Edition, 2009.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (802,'9781584885511','Jonathan Katz; Yehuda Lindell. Introduction to Modern Cryptography: Principles And Protocols, Chapman and Hall/CRC, 1 edition, 2007','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (803,'9781608454402','Y.C. Tay, Analytical Performance Modeling for Computer Systems, Morgan and Claypool Publishers, 2010 ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (804,'857780402X','Joseph F. Hair, Bill Black, Barry Babin, Rolph E. Anderson, Ronald L. Tatham. Análise Multivariada de Dados - 6ª Edição - Anderson Tatham','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (805,'0131877151','Richard A. Johnson, Dean W. Wichern. Applied Multivariate Statistical Analysis (6th Edition, 2007), Pearson','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (806,'9780262042208','SOUZA, C.S. Semiotic Engineering of Human Computer Interaction. MIT Press, 2005. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (807,'999999734','SILVA, Sebastião Medeiros da, et al.; Matemática Básica para Cursos Superiores, 2006, Atlas.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (808,'999999735','JACQUES BOUCHARA, Anna Catarina Pontone Hellmeister, Reinaldo Salvitti, Vera Lucia Carrara Zanetic, ANA CATARINA PONTONE HELLMEISTER; Cálculo Integral Avançado; EdUSP; 1996;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (809,'999999736','IEZZI, GELSON et al; Fundamentos de matemática elementar v.3: Trigonometria, 8 ed., 2004, Saraiva.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (810,'999999737','IEZZI, G. Fundamentos de matemática elementar v.10: Geometria Espacial. 6 ed. Atual, 2005.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (811,'999999738','Humberto José Bortolossi; Cálculo diferencial a várias variáveis; Edicoes Loyola, 2003;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (812,'999999739','Howard Anton,Chris Rorres; Algebra Linear com Aplicacoes; Editora Bookman 2002;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (813,'999999740','HINES, W.W., MONTGOMERY, D.C., GOLDSMAN, D.M., BORROR, C.M. Estatística Aplicada e Probabilidade para Engenheiros. Editora LTC, 2003.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (814,'999999741','HENNESSY, J.L.; PATTERSON, D.A. Arquitetura de Computadores: uma abordagem Quantitativa. 4 ed. Elsevier, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (815,'999999742','HAMILTON PRADO BUENO; Álgebra Linear; Sociedade Brasileira de Matemática-SBM;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (816,'999999743','GRUNE, D.,Jacobs, C., Parsing Techniques: A Practical Guide (Monographs in Computer Science), Springer, 2nd Edition, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (817,'8522447071','Análise Multivariada - Para os Cursos de Administração , Ciências Contábeis e Economia - Edilson Paulo ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (818,'999999745','Fundamentos da Física, Halliday, Resnick, Walker; Volume 1- MECÂNICA; 9.-Edição; 2012; Editora LTC','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (819,'999999746','Elon Lages Lima, A Matemática no Ensino Médio, SBM','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (820,'999999747','Dennis G. Zill; Michael R. Cullen; Equações Diferenciais; Cengage Learning Editores;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (821,'999999748','Data Mining: Concepts and Techniques, Morgan Kaufmann, 2nd Edition, 2007. - J. Han and M. Kamber.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (822,'0123748569','Data Mining: Practical Machine Learning Tools and Techniques, Third Edition (The Morgan Kaufmann Series in Data Management Systems) - Ian H. Witten, Eibe Frank, Mark A. Hall','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (823,'999999750','DEMANA, Franklin et al. Pré-cálculo Vol. Único. 7a Ed. São Paulo 2009','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (824,'999999751','Cálculo, Stewart, James, V-2, 6.-Edição, 2009, Editora Cengage','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (825,'999999752','Cálculo,, Thomas, George, Volume-2, B., 11.-Edição, 2008, Editora Addison Wesley Brasil','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (826,'999999753','CAIO SERGIO CALÇADA, JOSE LUIZ SAMPAIO; Física Clássica; Volume 1-Cinemática; ATUAL EDITORA;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (827,'999999754','Barbieri Filho, Plinio; Biscolla, Laura M. Da Cunha C. O.; Espinosa, Isabel C. O. N.; Fundamentos de Informática - Álgebra Linear para Computação; Editora LTC;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (828,'999999755','BERTOMEU, J.V.C. Criaçao visual e multimidia. Cengage, 2009.(tem no banco com o ano 2010)','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (829,'999999756','BARROSO, CAMPOS FILHO, CARVALHO, MAIA; CALCULO NUMERICO (COM APLICAÇOES); Editora HARBRA, 2a edição.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (830,'999999757','An Introduction to Support Vector Machines, Cambridge Univ. Press, 2000. - N. Cristianini and J. Shawe-Taylor','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (831,'8529402022','Algebra Linear; Jose Luiz Boldrini; 3. Edição; Editora Harbra;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (832,'999999759','Alfredo Steinbruch; Introduçao à Algebra Linear; Makron Books Editora; 1990;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (833,'999999760','MONTEIRO, M. A. Introdução à Organização de Computadores. LTC, Rio de Janeiro, 2008. 5ª Ed.(No banco existe com o ano de 2007)','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (834,'999999761','MOSCA, GENE e TIPLER, PAUL A.; FISICA, V.1, PARA CIENTISTAS E ENGENHEIROS (MECANICA, OSCILAÇOES, ONDAS, TERMODINAMICA); Editora: LTC;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (835,'999999762','MOZGOVOY, Maxim, Algorithms, Languages, Automata, & Compilers: A Practical Approach, Jones and Bartlett Publishers, Inc., 2009.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (836,'999999763','MÁRCIA A. GOMES RUGGIERO E VERA LÚCIA DA ROCHA LOPES; CÁLCULO NUMÉRICO - ASPECTOS TEÓRICOS E COMPUTACIONAIS; Editora Pearson Education, 2ª Edição; 1996;','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (837,'999999764','PAULA FILHO, W. P. Multimídia: conceitos e aplicações. LTC, 2011.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (838,'999999765','PRADO, D. Teoria das Filas e da Simulação. 2a. Ed. IDNG, 2004.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (839,'999999766','Pyle D. (2003) Business Modeling and Data Mining. The Morgan Kaufmann Series in Data Management Systems. Morgan Kaufmann Publisher.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (840,'8573937610','Introdução ao Data Mining - Mineração de Dados - Vipin Kumar, Michael Steinbach, Pang-ning Tan ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (841,'8573937076','Inteligência Analítica: Mineração de Dados e Descoberta de Conhecimento - Carlos André Reis Pinheiro ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (842,'999999772','LOPES, R. V.	Melhores Práticas para Gerência de Redes de Computadores. Campus, 2003','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (843,'999999773','CERVO, A.; BERVIAN, P.A.; SILVA, R. Metodologia Científica. 6ª ed, Pearson, 2006.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (844,'999999774','FREIRE, P. Extensão ou Comunicação. 12ª ed. Paz e Terra.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (845,'0471503363','Raj Jain, The Art of Computer System Performance Analysis, John Wiley & Sons, 1991','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (846,'999999776','Virgilio Almeida, Daniel , Menascé, Planejamento de Capacidade para Serviços na Web,  1ª Edição, 2003, Campus – Elsevier','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (847,'9781587202834','OPPENHEIMER, P. Top-Down Network Design.  Cisco Press;  2010. 3oedição.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (848,'999999779','Elon Lages Lima, A Matemática no Ensino Médio, SBM','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (849,'999999780','IEZZI, GELSON et al; Fundamentos de matemática elementar v.3: Trigonometria, 8 ed., 2004, Saraiva.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (850,'9780471314257','CHRISMAN, N.	Exploring geographical information. 2 ed. Wiley, 2001.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (851,'8524400889','GOMES, J. M.; VELHO, L. Fundamentos de computação gráfica. IMPA, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (852,'9788573078756','ROBINSON, M. E-busines. 2. Ed. Artmed, 2002.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (853,'999999784','SHNEIDERMAN, Ben. Designing the user interface: strategies for effective human-computer interaction . 4 ed. Boston: Pearson/Addison Wesley, c2005.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (854,'999999785','REZENDE, Denis Alcides, Abreu, Aline Franca, Tecnologia da Informação Aplicada a Sistemas de Informação Empresariais , Atlas, 2008.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (855,'999999786','COOPER, D. R.  Métodos de pesquisa em administração. 7 ed. Bookman, 2002.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (856,'999999788','Database: Principles, Programming and Performance, Patrick O’Neil and Elizabeth O’Neil, 2rd edition, Morgan Kaufmann, 2001.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (857,'999999789','SQL: Guia Prático. COSTA, Rogério Luis de C. Editora: Brasport, 2004.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (858,'999999790','Implementação de Sistemas de Bancos de DadosGarcia-Molina, H., Ullman, Jeffrey D., Widom, Jennifer. Campus. 1ª. 2001','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (859,'999999791','ELMASRI, R.; NAVATHE, S. B.; Sistemas de Banco de Dados, Elsevier, 4a Edição, 2009.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (860,'999999792','BREGALDA, P.F., BORNSTEIN, C.T. & OLIVEIRA, A.A.F - Introdução à Programação Linear. Campus, 1981.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (861,'999999793','GOLBARG, M. C., LUNNA. H. P. L. Otimização Combinatória e Programação Linear - Modelos e Algoritmos. Editora Campus, 2000.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (862,'999999794','BERTSIMAS, D., TSITSIKLIS, J.N. Introduction to Linear Optimization. Athena Scientific, 1997. ','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (863,'999999795','BAZARAA, M., JARVIS, A. & SHERALI, H. - Linear Programming and Network Flows. John Wiley, 2a. Ed., 1990.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (864,'999999796','ANDRADE, E.L. - Introdução à Pesquisa Operacional: métodos e técnicas para análise de decisão. LTC, 1990.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (865,'999999797','MAYER, R. E. Multimedia: making it work. McGrawHill, 2010.','Fisico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (866,'0073294411','LAW, Averill M. Simulation Modeling and Analysis. McGraw-Hill. 4th ed., 2006. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (867,'1597492728','THEODORIDIS, SERGIOS; KOUTROUMBAS, KONSTANTINOS. PATTERN RECOGNITION. ACADEMIC PRESS. 4a edição, 2008.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (868,'0387310738','BISHOP, CHRISTOPHER M. PATTERN RECOGNITION AND MACHINE LEARNING. SPRINGER VERLAG, 2006.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (869,'999999801','HASTIE, TREVOR; TIBSHIRANI, ROBERT; FRIEDMAN, JEROME. ELEMENTS OF STATISTICAL LEARNING, THE DATA MINING, INFERENCE, AND PREDICTION. SPRINGER VERLAG. 2a edição, 2008.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (870,'0262018020','MURPHY, KEVIN P. MACHINE LEARNING: A PROBABILISTIC PERSPECTIVE. MIT PRESS, 2012. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (871,'999999804','The Elements of Statistical Learning: Data Mining, Inference, and Prediction (2nd. Ed.) Springer, 2009. - T. Hastie, R. Tibshirani, J. Friedman','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (872,'999999805','An Introduction to Support Vector Machines, Cambridge Univ. Press, 2000. - N. Cristianini and J. Shawe-Taylor','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (873,'999999806','R. Schalkoff. Pattern Recognition: Statistical, Structural and Neural Approaches. John Wiley and Sons, 1992.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (874,'9780201648652','Grama, Ananth and Karypis, George and Kumar, Vipin and Gupta, Anshul; Introduction to Parallel Computing; Second Edition, Editora Addison-Wesley; ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (875,'9780123742605','Pacheco, Peter; An Introduction to Parallel Programming; First Edition; Editora Morgan Kaufmann; ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (876,'9783642048173','Rauber, Thomas and Rünger Gudula; Parallel Programming: for Multicore and Cluster Systems; First Edition; Editora Springer; ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (877,'9780124159921','Kirk, David and Hwu Wen-mei; Programming Massively Parallel Processors A Hands-on Approach; Second Edition; Editora Morgan Kaufmann.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (878,'9788574523729','Pitanga, Marcos; Construindo Supercomputadores com Linux; Terceira Edição; Editora Brasport','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (879,'9780321228116','Mattson, Timothy G. and Sanders Beverly A. and Massingill Berna L.; Patterns for Parallel Programming; First Edition; Editora Addison-Wesley Professional;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (880,'9781423901983','Kaminsky, Alan; Building Parallel Programs: SMPs, Clusters & Java; First Edition; Editora Course Technology;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (881,'999999816','Um Curso de Cálculo, Guidorizzi Hamilton Luiz, volumes 3 e 4, 5-edição, 2001, Editora LTC','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (882,'999999817','Tom M. Apostol; Cálculo, Volume 2; 1079;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (883,'999999818','JACQUES BOUCHARA, Anna Catarina Pontone Hellmeister, Reinaldo Salvitti, Vera Lucia Carrara Zanetic, ANA CATARINA PONTONE HELLMEISTER; Cálculo Integral Avançado; EdUSP; 1996;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (884,'999999819','Dennis G. Zill; Michael R. Cullen; Equações Diferenciais; Cengage Learning Editores;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (885,'999999820','BARROSO, CAMPOS FILHO, CARVALHO, MAIA; CALCULO NUMERICO (COM APLICAÇOES); Editora HARBRA, 2a edição.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (886,'999999821','MÁRCIA A. GOMES RUGGIERO E VERA LÚCIA DA ROCHA LOPES; CÁLCULO NUMÉRICO - ASPECTOS TEÓRICOS E COMPUTACIONAIS; Editora Pearson Education, 2ª Edição; 1996;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (887,'8587918745','SPERANDIO, DECIO; MENDES, JOAO TEIXEIRA; SILVA, LUIZ HENRY MONKEN. CALCULO NUMERICO - CARACTERISTICAS MATEMATICAS E COMPUTACIONAIS. PRENTICE HALL BRASIL, 2003.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (888,'999999826','Fundamentos da Física, Halliday, Resnick, Walker; Volume 1- MECÂNICA; 9.-Edição; 2012; Editora LTC','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (889,'999999827','CAIO SERGIO CALÇADA, JOSE LUIZ SAMPAIO; Física Clássica; Volume 1-Cinemática; ATUAL EDITORA;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (890,'999999828','MOSCA, GENE e TIPLER, PAUL A.; FISICA, V.1, PARA CIENTISTAS E ENGENHEIROS (MECANICA, OSCILAÇOES, ONDAS, TERMODINAMICA); Editora: LTC;','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (891,'0521527147','Blackburn, P.; de Rijke, Maarten; Venema, Yde, Modal logic, Cambridge University Press, 2002','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (892,'0792353358','M. Fitting, Richard L. Mendelsohn. First-Order Modal Logic. Springer. 1st ed. 1998 edition','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (893,'1107010527','Robert Goldblatt. Quantifiers, Propositions and Identity: Admissible Semantics for Quantified Modal and Substructural Logics (Lecture Notes in Logic). Cambridge University Press (August 22, 2011).','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (894,'999999832','Edmund M. Clarke, Jr.; Orna Grumberg and Doron A. Peled. Model Checking, MIT Press','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (895,'9788574524726','DONDA, Daniel. Administração do windows server 2008 R2:server core. xvi, 428 p. Rio de Janeiro: Brasport, 2011.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (896,'9788576085140','FREDERICK, Gail Rahn; LAL, Rajesh. Dominando o desenvolvimento web para smartphone:construindo aplicativos baseados em JavaScript, CSS, HTML e Ajax para iPhone, Android, Palm Pre, BlackBerry, Windows Mobile e Nokia S60. 344 p. Rio de Janeiro: Alta Books, 2011.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (897,'9788564574168','ASCENCIO, Ana Fernanda Gomes; CAMPOS, Edilene Aparecida Veneruchi de. Fundamentos da programação de computadores:  algoritmos, Pascal, C/C++ e java. x, 569p. 3.ed. São Paulo, SP: Pearson Education do Brasil, 2012.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (898,'9788536303611','LIPSCHUTZ, Seymour; LIPSON, Marc. Teoria e problemas de matemática discreta. 511p. (Coleção Schaum) 2. ed.  Porto Alegre, RS: Bookman, 2004.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (899,'9788536501383','TRONCO, Tania Regina. Redes de nova geração: arquitetura de convergência das redes: IP, telefônica e óptica. 164 p.2.ed. São Paulo, SP: Érica, 2011.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (900,'9788579150432','A REVOLUÇÃO dos monólitos:  pioneirismo e trajetória do desenvolvimento sustentável em Quixadá. 97,[15]p. Fortaleza, CE: LCR, 2010. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (901,'8570564112','DOLCE, Osvaldo; POMPEO, José Nicolau. Fundamentos de matemática elementar, 10:  geometria espacial, posição e métrica.  440 p. 5. ed. São Paulo, SP: Atual, 1993.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (902,'853570549X','DOLCE, Osvaldo; POMPEO, José Nicolau.  Fundamentos de matemática elementar 10 : geometria espacial, posição e métrica. 440p. 6.ed. São Paulo, SP: Atual, 2005.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (903,'8570560478','HAZZAN, Samuel. Fundamentos de matematica elementar, 5: combinatória, probabilidade : 43 exercícios resolvidos, 439 exercícios propostos com resposta, 152 testes de vestibulares com resposta. 174p. 6.ed. Sao Paulo: Atual, 1993','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (904,'8570564392','IEZZI, Gelson; MURAKAMI, Carlos; MACHADO, Nílson José. Fundamentos de matematica elementar, 8: limites, derivadas, noções de integral : 62 exercícios resolvidos, 264 exercícios propostos com resposta, 156 testes de vestibulares com resposta. 267p. 5.ed. Sao Paulo: Atual, 1993.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (905,'857056046X','IEZZI, Gelson. Fundamentos de matematica elementar , 7 geometria analítica : 86 exercícios resolvidos, 392 exercícios propostos com resposta, 263 testes de vestibulares com resposta. 273p. 4.ed. Sao Paulo: Atual, 1993.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (906,'0521474655','Rajeev Motwani, Prabhakar Raghavan. Randomized Algorithms. Cambridge University Press, 1995.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (907,'0521835402','Michael Mitzenmacher, Eli Upfal. Probability and Computing: Randomized Algorithms and Probabilistic Analysis. Cambridge University Press, 2005.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (908,'3642084699','Vijay V. Vazirani. Approximation Algorithms. Springer, 2010.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (909,'9788507006480','ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. ABNT NBR ISO/IEC 27002 - Tecnologia da informação - técnicas de segurança - código de prática para a gestão da segurança da informação. RiodeJaneiro, RJ, 2005. 120p. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (910,'9788521617501','SZWARCFITER , Jayme; MARKENZON, Lilian. Estruturas de Dados e Seus Algoritmos. LTC, 3a edição, 2010.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (911,'032157351X','SEDGEWICK, Robert, WAYNE, Kevin. Algorithms (4th Edition). Addison-Wesley Professional; 4 edition, 2011.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (912,'1468108867','KARUMANCHI, NARASIMHA. DATA STRUCTURES AND ALGORITHMS MADE EASY. CREATESPACE PUB, 2011.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (913,'8522106150','Paul Schuytema. Design de Games: Uma Abordagem Prática. Cengage. 2008.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (914,'8522106320','Jeannie Novak. Desenvolvimento de Games. Cengage.2010.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (915,'158450580X','Brenda Brathwaite e Ian Schreiber. Challenges for Game Designers. Charles River Media. 2008.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (916,'1932111972','Raph Koster. A Theory of Fun for Game Design. Paraglyph Press. 2004.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (917,'0123694965','Jesse Schell. The Art of Game Design: A book of lenses. CRC Press. 2008.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (918,'1584505710','Mark DeLoura. Best of Game Programming Gems. Charles River Media. 2008.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (919,'1568814135','Jason Gregory, Jeff Lander e Matt Whiting. Game Engine Architecture. A K Peters. 2009.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (920,'1848829345','Richard Szeliski. Computer Vision: Algorithms and Applications. Springer, 2010.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (921,'1107011795','PRINCE, SIMON J. COMPUTER VISION - MODELS, LEARNING, AND INFERENCE. WILLIAM MORROW, 2012.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (922,'8576054019','GONZALEZ, RAFAEL C.; WOODS, RICHARD E. PROCESSAMENTO DIGITAL DE IMAGENS. ADDISON WESLEY. 3a edição, 2010.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (923,'1439840458','RUSS, JOHN C. THE IMAGE PROCESSING HANDBOOK. TAYLOR & FRANCIS. 6a edição, 2010.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (924,'8535257160','Marco Cesar. Goldbarg, Elizabeth Goldbarg. Grafos - Conceitos, Algoritmos e Aplicações. ELSEVIER - CAMPUS, 2012','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (925,'8521206801','PAULO OSWALDO BOAVENTURA NETTO. Grafos - Teoria, Modelos, Algoritmos - 5ª Edição - 2012. Editora Edgard Blucher.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (926,'0486247759','Gary Chartrand. Introductory Graph Theory. Dover Publications, 1984.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (927,'3540693181','WOLFRAM POHLERS. PROOF THEORY: THE FIRST STEP INTO IMPREDICATIVITY. IN UNIVERSITEXT. SPRINGER VERLAG POD. FIRST EDITION. 2008. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (928,'1402003684','JEAN GOUBAULT-LARRECQ, IAN MACKIE. PROOF THEORY AND AUTOMATED DEDUCTION. KLUWER ACADEMIC. 2002.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (929,'3540212027','LEONID LIBKIN. ELEMENTS OF FINITE MODEL THEORY. SPRINGER VERLAG NY. FIRST EDITION. 2004.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (930,'0521865719','Christopher D. Manning, Prabhakar Raghavan, Hinrich Schütze. Introduction to Information Retrieval. Cambridge University Press; 1 edition, 2008.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (931,'1558605703','MOFFAT, ALISTAIR; WITTEN, IAN H. MANAGING GIGABYTES - COMPRESSING AND INDEXING DOCUMENTS AND IMAGES. MORGAN KAUFMANN. 2a ed., 1999.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (932,'0136072240','Bruce Croft, Donald Metzler, Trevor Strohman. Search Engines: Information Retrieval in Practice. Addison-Wesley; 1 edition, 2009.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (933,'1558603530','SHERMAN, WILLIAM L.; CRAIG, ALAN. UNDERSTANDING VIRTUAL REALITY - INTERFACE, APPLICATION, AND DESIGN. ACADEMIC PRESS, 2002.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (934,'1568815808','GOMES, JONAS; VELHO, LUIZ; COSTA SOUSA, MARIO. COMPUTER GRAPHICS - THEORY AND PRACTICE. TAYLOR & FRANCIS USA, 2010.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (935,'1118036638','MULLEN, TONY. PROTOTYPING AUGMENTED REALITY. SYBEX, 2011. ','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (936,'9788536503745','MANZANO, José Augusto N. G.; COSTA Jr., Roberto Affonso da. Java 7 - Programação de Computadores - Guia Prático de Introdução, Orientação e Desenvolvimento. 1. ed. Editora Érica, 2011.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (937,'0486478831','MICHAELSON, Greg. An Introduction to Functional Programming Through Lambda Calculus. Dover Publications, 2011.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (938,'0521576814','COUSINEAU, Guy; MAUNY, Michel; CALLAWAY, K. The Functional Approach to Programming. Cambridge University Press; English edition, 1998.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (939,'9788575223161','WAMPLER, Dean. Programação Funcional Para Desenvolvedores Java: Ferramentas para Melhor Concorrência, Abstração e Agilidade. Novatec. 1a ed., 2012.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (940,'0470643854','PARKER, J. R. ALGORITHMS FOR IMAGE PROCESSING AND COMPUTER VISION. JOHN WILEY. 2a edição, 2010.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (941,'0486402584','Christos H. Papadimitriou, Kenneth Steiglitz. Combinatorial Optimization: Algorithms and Complexity. Dover Publications, 1998.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (942,'013617549X','Ravindra K. Ahuja, Thomas L. Magnanti, James B. Orlin. Network Flows: Theory, Algorithms, and Applications. Prentice Hall; 1 ed. 1993.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (943,'8580551188','HILLIER, FREDERICK S.; LIEBERMAN, GERALD J. INTRODUÇAO A PESQUISA OPERACIONAL. MCGRAW HILL. 9a edição.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (945,'8521615590','COLIN, EMERSON CARLOS. PESQUISA OPERACIONAL - 170 APLICAÇOES EM ESTRATEGIA, FINANÇAS, LOGISTICA, PRODUÇAO, MARKETING E VENDAS. LTC, 2007.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (946,'0471359432','Laurence A. Wolsey, George L. Nemhauser. Integer and Combinatorial Optimization. Wiley-Interscience; 1 edition, 1999.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (947,'3642244874','Korte, Bernhard and Vygen, Jens. Combinatorial Optimization: Theory and Algorithms. Springer; 5th ed. 2012 edition (January 10, 2012).','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (948,'9788531406683','CAPOVILLA, Fernando. C; RAPHAEL, Walkyria. D. Dicionário Enciclopédico Ilustrado Trilingue da Língua de Sinais. 3ª Ed. São Paulo: EDUSP, 2008','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (949,'8599091018','Felipe, Tanya A.Libras em Contexto : Curso Básico : Livro do Estudante / Tanya A.Felipe. 8ª. edição- Rio de Janeiro : WalPrint Gráfica e Editora,2007.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (950,'857123440X','LABORIT, Emmanuelle. O Vôo da Gaivota. Best Seller, 1994.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (951,'8536303085','QUADROS, Ronice Muller; KARNOPP, Lodenir B. Língua de Sinais Brasileira: estudos lingüísticos. Porto Alegre: ArtMed, 2004.','Físico');
-INSERT INTO titulos(id_t, isbn, nome_titulo, tipo_titulo)  VALUES (952,'9788536503660','MARIN, Paulo S. Data Centers - Desvendando cada passo: conceitos, projeto, infraestrutura física e eficiência energética. São Paulo, SP : Érica, 2011.','Físico');
-
-
-
-
-
-
-
---Inserindo dado na tabela curso
-INSERT INTO curso(id_curso, cod_c, nome_c, sigla) VALUES (1, '401', 'Sistemas de Informação', 'SI');
-INSERT INTO curso(id_curso, cod_c, nome_c, sigla) VALUES  (2, '402', 'Engenharia de Software', 'ES');
-INSERT INTO curso(id_curso, cod_c, nome_c, sigla) VALUES  (3, '403', 'Redes de Computadores', 'RC');
-INSERT INTO curso(id_curso, cod_c, nome_c, sigla) VALUES  (4, '404', 'Ciência da Computação', 'CC');
-
-
-
---Inserindo dados na tabela curriculo 
--- Sistemas de Informação
-INSERT INTO curriculo(
-            ano_semestre, cod_curso)
-    VALUES ('2007.1','401' );
---Engenharia de Software
-INSERT INTO curriculo(
-            ano_semestre, cod_curso)
-    VALUES ('2010.1', '402');
---Redes de computadores
-INSERT INTO curriculo(
-            ano_semestre, cod_curso)
-    VALUES ('2010.1', '403');
---Ciência da Computação
-INSERT INTO curriculo(
-            ano_semestre, cod_curso)
-    VALUES ('2013.1', '404');
-
-
---Inserindo dados na tabela integração curricular
---Dados de Sistema de informação
---1 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(2, 1,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(57, 1,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(3, 1,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(5, 1,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(96, 1,50,1);
-
---2 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(7, 1,50,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(9, 1,50,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(6, 1,50,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(10, 1,50,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(8, 1,50,2);
-
---3 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(14, 1,50,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(13, 1,50,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(12, 1,50,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(11, 1,50,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(33, 1,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(31	, 1,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(50, 1,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(36, 1,30,3);
-
-
---4 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(17, 1,50,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(18, 1,50,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(15, 1,50,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(16, 1,50,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(27, 1,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(44, 1,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(39, 1,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(37, 1,30,4);
-
-
-
---5 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(19, 1,50,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(20, 1,50,5);	
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(22, 1,50,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(21, 1,30,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(30, 1,30,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(25, 1,30,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(47, 1,30,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(41, 1,30,5);
-
-
---6 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(23, 1,50,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(24, 1,50,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(43, 1,30,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(42, 1,30,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(29, 1,30,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(32, 1,30,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(34, 1,30,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(72, 1,30,6);
-
-
---7 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(89, 1,30,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(94, 1,30,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(40, 1,30,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(38, 1,30,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(28, 1,30,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(49, 1,30,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(93, 1,30,7);
-
-
---8 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES( 48, 1,30,8);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES( 73, 1,30,8);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES( 26, 1,30,8);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES( 45, 1,30,8);
-
-
-
-
---Inserindo dados na tabela integração curricular
---Dados de Engenharia de Software
---1 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(56, 2,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(55, 2,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(2, 2,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(57, 2,50,1);
-
-
---2 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(58, 2,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(8, 2,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(6, 2,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(9, 2,50,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(13, 2,40,2);
-
-
---3 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(30, 2,40,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(15, 2,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(17, 2,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(14, 2,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(11, 2,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(50, 2,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(108, 2,20,3);
-
-
-
---4 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(39, 2,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(59, 2,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(60, 2,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(73, 2,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(12, 2,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(41, 2,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(18, 2,30,4);	
-
-
---5 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(64, 2,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(61, 2,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(62, 2,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(21, 2,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(70, 2,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(42, 2,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(47, 2,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(105, 2,20,5);
-
-
---6 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(65, 2,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(43, 2,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(72, 2,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(68, 2,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(90, 2,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(26, 2,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(35, 2,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(38, 2,20,6);
-
-
---7 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(63, 2,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(69, 2,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(67, 2,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(66, 2,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(71, 2,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(36, 2,20,7);
-
-
---8 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(91, 2,20,8);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(37, 2,20,8);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(100, 2,20,8);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(101, 2,20,8);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(102, 2,20,8);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(106, 2,20,8);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(107, 2,20,8);
-
-
-
-
---Inserindo dados na tabela integração curricular
---Dados de Redes de Computadores
---1 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(2, 3,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(74, 3,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(5, 3,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(75, 3,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(76, 3,50,1);
-
-
-
---2 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(8, 3,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(14, 3,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(30, 3,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(22, 3,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(13, 3,40,2);
-
-
-
---3 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(12, 3,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(79, 3,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(77, 3,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(78, 3,30,3);
-
-
-
---4 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(92, 3,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(44, 3,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(83, 3,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(80, 3,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(81, 3,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(82, 3,30,4);
-
-
-
---5 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(35, 3,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(84, 3,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(49, 3,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(34, 3,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(89, 3,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(85, 3,20,5);
-
-
-
---6 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(21, 3,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(87, 3,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(86, 3,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(88, 3,20,6);
-
-
-
-
---Inserindo dados na tabela integração curricular
---Dados de Ciência da Computação
---1 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(1, 4,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(2, 4,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(6, 4,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(57, 4,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(55, 4,50,1);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(96, 4,50,1);
-
-
-
---2 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(8, 4,50,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(14, 4,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(11, 4,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(7, 4,40,2);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(9, 4,40,2);
-
-
-
---3 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(41, 4,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(18, 4,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(13, 4,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(108, 4,30,3);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(109, 4,30,3);
-
-
-
---4 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(12, 4,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(17, 4,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(42, 4,30,4);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(15, 4,30,4);
-
-
-
---5 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(26, 4,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(40, 4,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(75, 4,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(22, 4,20,5);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(21, 4,20,5);
-
-
-
---6 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(20, 4,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(39, 4,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(44, 4,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(38, 4,20,6);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(47, 4,20,6);
-
-
-
---7 semestre
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(89, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(30, 4,40,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(98, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(99, 4,20,7);	
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(104, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(19, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(105, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(36, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(37, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(45, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(70, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(72, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(73, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(110, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(111, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(112, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(113, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(114, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(115, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(116, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(117, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(118, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(119, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(120, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(121, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(122, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(123, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(124, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(125, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(126, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(127, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(128, 4,20,7);
-INSERT INTO integracao_curricular(id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES(129, 4,20,7);
-
-
-
-
-
-
-
---Inserindo dados na tabela exemplares
-
+INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (31, 'QXD0030', 'ÉTICA, DIREITO E LEGISLAÇÃO');
+INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (89, 'QXD0096', 'PROJETO DE PESQUISA CIENTÍFICA E TECNOLÓGICA');
+INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (130, 'QXD114', 'MATEMÁTICA COMPUTACIONAL');
+
+
+--
+-- TOC entry 1965 (class 0 OID 17502)
+-- Dependencies: 165 1972
+-- Data for Name: exemplares; Type: TABLE DATA; Schema: public; Owner: postgres
+--
 
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1, 1, '14054423');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2, 1, '14054424');
@@ -2453,13 +2260,9 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (861, 176, '13985448');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (862, 176, '13985449');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (863, 176, '14051502');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (864, 176, '14051504');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (865, 177, '13983756');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (866, 177, '13983758');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (867, 177, '13983754');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (868, 177, '13983752');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (869, 177, '13983759');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (870, 177, '13983753');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (871, 177, '13983757');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (872, 178, '14057159');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (873, 178, '14057160');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (874, 178, '14057161');
@@ -2531,6 +2334,8 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (939, 200, '14031887');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (940, 200, '14055062');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (941, 200, '14031888');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (942, 205, '14012451');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (871, 693, '13983757');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (869, 693, '13983759');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (943, 205, '14012449');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (944, 205, '14012450');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (945, 205, '14012448');
@@ -3938,11 +3743,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2346, 475, '14058502');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2347, 475, '14058504');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2348, 475, '14058501');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2349, 475, '14058503');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2350, 476, '13934045');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2351, 476, '13934043');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2352, 476, '13934044');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2353, 476, '13934042');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2354, 477, '13976366');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2355, 478, '14019174');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2356, 478, '14019175');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2357, 478, '14019173');
@@ -5176,871 +4976,1255 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3584, 727, '14098110');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3585, 727, '14098111');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3586, 727, '14098113');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3587, 727, '14098114');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (865, 693, '13983756');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (866, 693, '13983758');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3588, 177, '13983755');
 
 
--- Tabela de Bibliografia
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (1,'637','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (1,'54','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (1,'42','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (1,'791','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (1,'16','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (1,'44','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (1,'741','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (2,'37','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (2,'694','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (2,'138','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (2,'693','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (2,'177','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (2,'208','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (2,'207','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (2,'114','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (3,'36','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (3,'750','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (3,'481','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (3,'814','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (3,'39','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (3,'16','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (3,'54','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (3,'637','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (4,'589','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (4,'370','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (4,'380','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (4,'30','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (4,'608','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (4,'372','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (4,'381','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (4,'590','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (4,'394','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (5,'435','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (5,'330','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (5,'457','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (5,'518','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (5,'443','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (5,'679','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (5,'689','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (5,'456','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (6,'44','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (6,'54','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (6,'36','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (6,'42','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (6,'652','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (6,'43','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (6,'47','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (6,'145','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (7,'810','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (7,'377','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (7,'396','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (7,'394','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (8,'210','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (8,'233','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (8,'623','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (8,'624','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (8,'207','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (8,'170','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (8,'936','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (8,'221','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (9,'608','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (9,'590','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (9,'381','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (9,'589','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (9,'30','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (9,'371','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (9,'380','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (9,'370','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (10,'771','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (10,'435','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (10,'488','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (10,'477','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (10,'689','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (10,'432','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (10,'481','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (10,'750','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (10,'476','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (11,'138','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (11,'137','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (11,'146','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (11,'605','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (11,'621','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (11,'37','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (11,'113','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (11,'139','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (12,'291','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (12,'606','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (12,'622','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (12,'197','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (12,'299','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (12,'295','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (12,'290','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (12,'294','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (13,'413','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (13,'398','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (13,'404','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (13,'423','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (13,'417','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (13,'416','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (13,'378','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (13,'415','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (13,'418','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (14,'270','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (14,'230','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (14,'261','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (14,'252','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (14,'38','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (15,'120','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (15,'172','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (15,'173','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (15,'167','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (15,'176','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (15,'668','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (15,'667','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (15,'125','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'754','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'473','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'462','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'517','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'753','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'775','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'475','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'437','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'680','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (16,'735','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'191','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'207','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'280','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'387','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'597','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'199','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'170','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'229','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'182','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (17,'639','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'40','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'640','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'390','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'641','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'586','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'391','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'597','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'385','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'30','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'604','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (18,'41','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (19,'197','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (19,'294','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (19,'298','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (19,'744','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (19,'292','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (19,'291','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (19,'289','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (20,'160','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (20,'107','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (20,'108','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (20,'119','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (20,'126','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (20,'176','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (20,'164','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (20,'244','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (20,'234','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'242','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'285','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'296','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'229','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'241','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'214','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'188','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'611','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'225','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (21,'610','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (22,'79','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (22,'59','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (22,'99','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (22,'61','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (22,'53','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (22,'62','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (22,'685','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (22,'682','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'306','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'646','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'732','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'909','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'516','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'434','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'304','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'302','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'303','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (23,'63','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (24,'505','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (24,'504','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (24,'502','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (24,'633','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (24,'503','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (24,'493','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (24,'118','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (24,'592','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (25,'31','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (25,'486','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (25,'471','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (25,'853','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (25,'131','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (25,'236','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (25,'446','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (25,'34','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (26,'786','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (26,'801','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (26,'209','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (26,'280','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (26,'816','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (26,'275','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (26,'800','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (26,'835','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (27,'762','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (27,'764','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (27,'373','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (27,'455','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (27,'765','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (27,'432','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (27,'763','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (27,'769','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (28,'525','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (28,'445','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (28,'713','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (28,'436','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (28,'852','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (28,'522','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (28,'521','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (29,'751','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (29,'689','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (29,'432','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (29,'774','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (29,'435','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (29,'750','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (29,'488','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (30,'440','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (30,'506','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (30,'509','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (30,'447','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (30,'330','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (30,'507','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (30,'468','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (30,'514','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (31,'686','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (31,'714','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (31,'341','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (31,'344','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (31,'343','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (31,'773','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (31,'327','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (31,'326','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (32,'1','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (32,'752','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (32,'323','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (32,'365','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (32,'855','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (32,'776','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (32,'346','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (32,'3','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (33,'759','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (33,'758','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (33,'854','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (33,'756','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (33,'449','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (33,'492','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (33,'757','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (33,'761','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (33,'760','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (34,'685','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (34,'682','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (34,'850','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (34,'281','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (34,'708','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (34,'684','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (34,'92','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (34,'62','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (35,'683','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (35,'125','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (35,'494','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (35,'633','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (35,'495','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (35,'109','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (35,'493','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (36,'353','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (36,'795','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (36,'356','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (36,'796','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (36,'357','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (36,'793','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (36,'794','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (36,'354','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (37,'795','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (37,'356','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (37,'793','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (37,'357','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (37,'794','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (37,'796','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (37,'353','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (37,'354','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (38,'406','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (38,'307','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (38,'345','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (38,'593','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (38,'312','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (38,'310','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (38,'309','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (38,'311','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (38,'466','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (39,'32','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (39,'31','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (39,'34','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (39,'806','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (39,'853','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (39,'125','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (39,'734','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (39,'248','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (40,'528','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (40,'860','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (40,'850','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (40,'317','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (40,'579','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (40,'314','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (40,'748','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (40,'313','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (41,'199','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (41,'19','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (41,'783','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (41,'191','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (41,'387','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (41,'181','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (41,'386','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (41,'280','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (41,'198','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (42,'792','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (42,'381','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (42,'589','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (42,'30','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (42,'785','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (42,'110','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (42,'799','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (43,'159','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (43,'584','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (43,'107','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (43,'234','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (43,'235','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (43,'596','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (44,'269','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (44,'237','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (44,'97','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (44,'304','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (44,'700','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (45,'344','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (45,'529','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (45,'837','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (45,'528','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (45,'104','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (45,'530','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (45,'833','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (47,'28','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (47,'19','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (47,'386','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (47,'387','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (47,'385','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (47,'392','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (48,'858','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (48,'859','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (48,'289','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (48,'704','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (48,'856','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (48,'702','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (48,'865','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (48,'857','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (48,'622','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (49,'740','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (49,'105','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (49,'8','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (49,'741','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (49,'56','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (49,'49','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (49,'697','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (49,'80','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (56,'126','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (56,'16','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (56,'129','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (56,'42','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (56,'637','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (56,'18','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (56,'54','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (56,'128','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (57,'30','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (57,'608','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (57,'372','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (57,'394','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (57,'589','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (57,'381','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (57,'590','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (57,'370','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (57,'380','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (58,'150','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (58,'159','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (58,'21','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (58,'129','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (58,'128','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (58,'629','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (58,'126','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (58,'151','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (58,'672','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (59,'658','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (59,'163','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (59,'115','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (59,'166','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (59,'168','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (59,'165','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (59,'160','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (59,'153','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (59,'176','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (60,'62','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (60,'274','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (60,'615','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (60,'97','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (60,'614','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (60,'79','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (60,'57','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (60,'51','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (61,'21','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (61,'650','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (61,'141','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (61,'159','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (61,'656','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (61,'422','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (61,'126','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (61,'612','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'628','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'141','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'150','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'130','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'126','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'155','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'630','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'660','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'629','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'672','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (62,'151','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (63,'115','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (63,'160','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (63,'196','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (63,'239','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (64,'234','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (64,'125','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (64,'596','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (64,'107','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (64,'627','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (64,'603','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (64,'129','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (64,'235','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (65,'661','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (65,'595','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (65,'651','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (65,'662','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (65,'167','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (65,'236','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (65,'131','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (65,'584','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (67,'12','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (67,'671','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (67,'642','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (67,'670','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (67,'607','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (67,'244','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (67,'647','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (67,'650','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (68,'635','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (68,'157','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (68,'196','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (68,'115','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (68,'144','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (68,'116','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (68,'636','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (69,'655','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (69,'653','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (69,'584','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (69,'120','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (69,'165','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (69,'645','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (69,'609','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (69,'654','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'646','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'479','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'306','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'434','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'305','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'249','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'304','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'62','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'909','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (70,'303','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (71,'649','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (71,'51','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (71,'221','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (71,'222','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (71,'613','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (72,'594','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (72,'602','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (72,'625','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (72,'601','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (72,'515','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (72,'472','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (72,'626','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (72,'659','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (72,'585','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (73,'624','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (73,'623','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (73,'307','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (73,'221','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (73,'310','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (73,'173','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (73,'657','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (74,'36','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (74,'732','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (74,'737','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (74,'731','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (74,'44','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (74,'55','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (74,'145','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (74,'46','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (74,'730','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (75,'767','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (75,'380','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (75,'113','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (75,'30','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (75,'590','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (75,'589','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (75,'732','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (77,'106','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (77,'261','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (77,'251','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (77,'247','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (77,'739','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (77,'738','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (77,'262','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (77,'738','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (78,'271','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (78,'746','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (78,'273','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (78,'255','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (78,'260','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (78,'743','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (78,'259','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (78,'250','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (78,'272','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (79,'96','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (79,'685','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (79,'717','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (79,'61','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (79,'84','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (79,'62','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (79,'79','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (80,'428','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (80,'621','698');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (80,'682','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (80,'80','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (80,'697','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (81,'281','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (81,'82','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (81,'229','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (81,'246','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (81,'710','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (81,'206','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (81,'712','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (81,'711','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (82,'57','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (82,'80','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (82,'727','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (82,'726','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (82,'728','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (82,'690','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (82,'63','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (82,'725','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (83,'722','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (83,'725','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (83,'351','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (83,'264','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (83,'723','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (83,'425','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (83,'681','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (83,'426','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (83,'424','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (84,'434','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (84,'733','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (84,'516','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (84,'302','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (84,'301','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (84,'306','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (84,'304','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (84,'732','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (85,'271','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (85,'266','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (85,'106','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (85,'895','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (85,'104','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (85,'262','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (85,'685','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (85,'738','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (86,'7','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (86,'846','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (86,'721','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (86,'720','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (86,'688','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (86,'719','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (86,'82','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (86,'845','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (87,'473','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (87,'437','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (87,'480','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (87,'680','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (87,'462','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (87,'735','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (87,'517','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (87,'475','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (88,'952','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (88,'427','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (88,'60','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (88,'56','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (88,'717','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (88,'99','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (88,'43','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (88,'847','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (89,'843','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (89,'328','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (89,'844','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (89,'587','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (89,'444','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (89,'323','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (89,'20','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (89,'1','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (89,'2','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (90,'197','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (90,'292','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (90,'591','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (90,'237','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (90,'588','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (90,'664','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (90,'663','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (90,'291','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (92,'327','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (92,'343','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (92,'676','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (92,'714','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (92,'344','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (92,'341','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (92,'716','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (92,'326','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (93,'475','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (93,'517','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (94,'862','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (94,'860','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (94,'863','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (94,'864','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (94,'861','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (96,'807','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (96,'790','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (96,'394','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (96,'372','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (96,'849','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (96,'374','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (96,'857','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (96,'379','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (97,'444','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (97,'328','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (97,'843','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (97,'844','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (97,'20','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (97,'2','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (97,'587','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (97,'1','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (97,'323','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (98,'950','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (98,'949','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (98,'948','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (98,'951','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'2','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'1','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'20','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'323','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'346','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'669','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'444','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'6','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'328','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'161','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'118','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'125','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'167','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'244','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'225','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'638','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'120','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (99,'598','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (100,'97','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (100,'98','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (100,'644','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (100,'599','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (100,'320','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (100,'283','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (100,'643','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (101,'235','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (101,'161','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (101,'244','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (101,'294','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (101,'648','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (101,'595','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (101,'144','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (102,'616','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (102,'617','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (102,'618','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (102,'619','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (102,'620','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (102,'630','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (103,'632','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (103,'631','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (103,'666','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (103,'673','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (103,'665','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (104,'118','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (104,'638','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (104,'120','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (104,'172','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (104,'161','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (104,'225','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (104,'125','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (104,'167','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (105,'779','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (105,'915','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (105,'914','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (105,'913','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (105,'919','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (105,'917','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (105,'918','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (105,'916','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (108,'939','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (108,'937','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (108,'938','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (109,'911','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (109,'910','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (109,'37','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (109,'912','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (109,'287','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (109,'381','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (109,'112','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (109,'113','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (110,'906','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (110,'907','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (110,'113','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (110,'908','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (111,'45','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (111,'405','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (111,'813','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (111,'838','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (111,'397','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (111,'803','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (112,'870','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (112,'867','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (112,'869','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (112,'781','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (112,'873','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (112,'787','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (112,'830','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (112,'868','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (113,'876','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (113,'874','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (113,'879','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (113,'880','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (113,'875','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (113,'878','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (113,'613','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (113,'877','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (114,'306','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (114,'802','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (115,'824','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (115,'789','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (115,'884','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (115,'811','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (115,'396','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (115,'825','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (115,'883','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (115,'788','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (116,'836','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (116,'887','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (116,'885','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (117,'805','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (117,'804','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (117,'817','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (118,'377','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (118,'818','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (118,'889','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (118,'394','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (118,'396','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (118,'890','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (119,'40','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (119,'893','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (119,'604','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (119,'892','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (119,'891','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (119,'894','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (120,'821','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (120,'839','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (120,'787','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (120,'873','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (120,'840','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (120,'841','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (120,'822','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (121,'45','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (121,'838','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (121,'405','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (121,'397','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (121,'813','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (122,'942','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (122,'945','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (122,'946','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (122,'947','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (122,'9','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (122,'943','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (122,'941','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (123,'943','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (123,'945','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (123,'9','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (123,'946','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (123,'942','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (123,'941','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (124,'940','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (124,'923','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (124,'922','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (125,'934','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (125,'935','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (125,'933','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (126,'931','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (126,'930','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (126,'932','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (127,'928','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (127,'929','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (127,'927','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (127,'778','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (128,'926','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (128,'925','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (128,'924','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (129,'923','Complementar');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (129,'921','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (129,'920','Básica');
-INSERT INTO bibliografias(id_disciplina, id_titulo, tipo_bibliografia)VALUES (129,'922','Complementar');
+--
+-- TOC entry 1966 (class 0 OID 17508)
+-- Dependencies: 166 1972
+-- Data for Name: integracao_curricular; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (2, 1, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (57, 1, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (3, 1, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (5, 1, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (96, 1, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (7, 1, 50, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (9, 1, 50, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (6, 1, 50, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (10, 1, 50, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (8, 1, 50, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (14, 1, 50, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (13, 1, 50, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (12, 1, 50, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (11, 1, 50, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (33, 1, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (31, 1, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (50, 1, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (36, 1, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (17, 1, 50, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (18, 1, 50, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (15, 1, 50, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (16, 1, 50, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (27, 1, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (44, 1, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (39, 1, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (37, 1, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (19, 1, 50, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (20, 1, 50, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (22, 1, 50, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (21, 1, 30, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (30, 1, 30, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (25, 1, 30, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (47, 1, 30, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (41, 1, 30, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (23, 1, 50, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (24, 1, 50, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (43, 1, 30, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (42, 1, 30, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (29, 1, 30, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (32, 1, 30, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (34, 1, 30, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (72, 1, 30, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (94, 1, 30, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (40, 1, 30, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (38, 1, 30, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (28, 1, 30, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (49, 1, 30, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (93, 1, 30, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (48, 1, 30, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (73, 1, 30, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (26, 1, 30, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (45, 1, 30, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (56, 2, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (55, 2, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (2, 2, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (57, 2, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (58, 2, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (8, 2, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (6, 2, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (9, 2, 50, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (13, 2, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (30, 2, 40, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (15, 2, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (17, 2, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (14, 2, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (11, 2, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (50, 2, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (108, 2, 20, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (39, 2, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (59, 2, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (60, 2, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (73, 2, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (12, 2, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (41, 2, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (18, 2, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (64, 2, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (61, 2, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (62, 2, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (21, 2, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (70, 2, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (42, 2, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (47, 2, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (105, 2, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (65, 2, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (43, 2, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (72, 2, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (68, 2, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (90, 2, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (26, 2, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (38, 2, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (63, 2, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (69, 2, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (67, 2, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (66, 2, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (71, 2, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (36, 2, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (91, 2, 20, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (37, 2, 20, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (100, 2, 20, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (101, 2, 20, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (102, 2, 20, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (106, 2, 20, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (107, 2, 20, 8);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (2, 3, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (74, 3, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (5, 3, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (75, 3, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (76, 3, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (8, 3, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (14, 3, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (30, 3, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (22, 3, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (13, 3, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (12, 3, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (79, 3, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (77, 3, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (78, 3, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (92, 3, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (44, 3, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (83, 3, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (80, 3, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (81, 3, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (82, 3, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (35, 3, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (84, 3, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (49, 3, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (34, 3, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (89, 3, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (85, 3, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (21, 3, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (87, 3, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (86, 3, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (88, 3, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (1, 4, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (2, 4, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (6, 4, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (57, 4, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (55, 4, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (96, 4, 50, 1);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (8, 4, 50, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (14, 4, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (11, 4, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (7, 4, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (9, 4, 40, 2);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (41, 4, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (18, 4, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (13, 4, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (108, 4, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (109, 4, 30, 3);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (12, 4, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (17, 4, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (42, 4, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (15, 4, 30, 4);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (26, 4, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (40, 4, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (130, 4, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (22, 4, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (21, 4, 20, 5);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (20, 4, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (39, 4, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (44, 4, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (38, 4, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (47, 4, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (30, 4, 40, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (98, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (99, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (104, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (19, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (105, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (36, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (37, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (45, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (70, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (72, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (73, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (110, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (111, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (112, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (113, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (114, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (115, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (116, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (117, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (97, 1, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (118, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (119, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (120, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (121, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (122, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (123, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (124, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (125, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (126, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (127, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (128, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (129, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (24, 2, 20, 6);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (97, 2, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (97, 4, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (98, 1, 20, 9);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (98, 2, 20, 9);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (103, 2, 20, 7);
+INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, semestre_oferta) VALUES (105, 1, 20, 7);
 
 
+--
+-- TOC entry 1984 (class 0 OID 0)
+-- Dependencies: 169
+-- Name: seq_id_curriculo; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seq_id_curriculo', 4, true);
 
 
+--
+-- TOC entry 1985 (class 0 OID 0)
+-- Dependencies: 170
+-- Name: seq_id_disciplina; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
 
--- View para contagem de exeplares por titulos
-CREATE VIEW quantidade_exemplares_view AS
-SELECT titulos.id_t AS id_titulo, COUNT(exemplares.id_titulo)  AS quant_exemplares
-FROM titulos LEFT JOIN exemplares ON  titulos.id_t=exemplares.id_titulo
-GROUP BY titulos.id_t
-HAVING (((COUNT(exemplares.id_titulo))>=0)) 
-ORDER BY (titulos.id_t);
+SELECT pg_catalog.setval('seq_id_disciplina', 130, true);
+
+
+--
+-- TOC entry 1986 (class 0 OID 0)
+-- Dependencies: 171
+-- Name: seq_id_exemplar; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seq_id_exemplar', 3588, true);
+
+
+--
+-- TOC entry 1987 (class 0 OID 0)
+-- Dependencies: 172
+-- Name: seq_id_titulo; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seq_id_titulo', 968, true);
+
+
+--
+-- TOC entry 1967 (class 0 OID 17513)
+-- Dependencies: 167 1972
+-- Data for Name: titulos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (1, '9788573074895', 'LAVILLE, Christian; DIONNE, Jean. A construção do saber: manual de metodologia da pesquisa em ciências humanas. Porto Alegre: Artmed, Belo Horizonte: Editora UFMG, 2008. 340 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (2, '8522440158', 'MARCONI, Marina de Andrade; LAKATOS, Eva Maria. Fundamentos de metodologia científica. 6.ed. São Paulo: Atlas, 2005. 315p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (3, '9788522457588', 'MARCONI, Marina de Andrade; LAKATOS, Eva Maria. Fundamentos de metodologia científica. 7. ed. São Paulo, SP: Atlas, 2010. xvi, 297 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (6, '8576050471', 'CERVO, Amado Luiz. Metodologia científica. 6. ed. São Paulo, SP: Prentice Hall, 2007. 162 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (7, '9788573937701', 'ALECRIM, Paulo Dias de. Simulação computacional para redes de computadores. Rio de Janeiro, RJ: Ciência Moderna, 2009. xii, 253 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (8, '9788573936506', 'VIANA, Eliseu Ribeiro Cherene. Virtualização de servidores linux para redes corporativas: guia prático. Rio de Janeiro, RJ: Ciência Moderna, 2008. 230 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (9, '9788522448395', 'PASSOS, Eduardo José Pedreira Franco dos. Programação linear como instrumento da pesquisa operaciona: Eduardo José Pedreira Franco dos Passos. São Paulo, SP: Atlas, 2008. xii, 451p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (10, '1595937537', 'SYMPOSIUM ON APPLIED COMPUTING 23rd., 2008, Fortaleza, CE); WAINWRIGHT, Roger L. Applied computing 2008 : the 23rd annual ACM Symposium on Applied Computing: proceedings of the 2008 ACM Symposium on Applied Computing, Fortaleza, March 16-20, 2008. Fortaleza, CE: ACM Press, 2008. 3v.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (11, '857631164X', '(I: 2009, Brasília, Brasil). Artigos CONSEGI 2009: Congresso Internacional Software Livre e Governo Eletrônico. Rio de Janeiro, RJ: Fundação Alexandre de Gusmão, 2009. 172 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (12, '9780321117663', 'HASS, Anne Mette Jonassen. Configuration management: principles and practice. Boston, Massachusetts: Addison-Wesley, 2003. xlv, 370 p. (The Agile software development series)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (13, '857631293X', '(III 2010, Brasília, Brasil). CONSEGI 2010: III Congresso Internacional Software Livre e Governo Eletrônico - Amãpytuna computação em nuvem: serviços livres para a sociedade do conhecimento.. Brasília, DF: Fundação Alexandre de Gusmão, 2010. 171 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (15, '8535215360', 'VELLOSO, Fernando de Castro. Informática: conceitos básicos . 7. ed. rev. atual. Rio de Janeiro, RJ: Campus, 2004. xiii, 407p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (16, '852160372X', 'GUIMARÃES, Ângelo de Moura; LAGES, Newton Alberto de Castilho. INTRODUÇÃO a ciencia da computacao. Rio de Janeiro: Livros Técnicos e Científicos, 1984. 165p. (Ciência da computação)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (17, '9788587918888', 'CAPRON, H. L.; JOHNSON, J. A. INTRODUÇÃO à informatica. 8. ed. São Paulo: Prentice Hall, Pearson, 2004. 350 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (18, '9788535222067', 'TURBAN, Efraim. Introdução a sistemas de informação: uma abordagem GERÊNCIAl. Rio de Janeiro, RJ: Elsevier, 2007. xi, 364 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (19, '9788522104999', 'SIPSER, Michael. Introdução à teoria da computação. 2. ed. São Paulo, SP: Cengage Learning, 2011. xxi, 459 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (20, '9788535235227', 'WAZLAWICK, Raul Sidnei. Metodologia de pesquisa para ciência da computação. Rio de Janeiro, RJ: Elsevier, 2008. 159 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (21, '8536302313', 'SCOTT, Kendall. O processo unificado explicado. Porto Alegre: Bookman, 2003. 160 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (22, '9788599593097', 'MORIMOTO, Carlos E. Redes, guia prático. Porto Alegre, RS: Sul Editores, 2009. 555 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (23, '97788599593196', 'MORIMOTO, Carlos E. Redes, guia prático. 2. ed. Porto Alegre, RS: Sul Editores, 2011. 573 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (27, '9783642112935', 'CHARRON-BOST, Bernadette; SCHIPER, André; PEDONE, Fernando. Replication: Theory and practice. Germany: Springer-Verlag Berlin Heidelberg, 2010. xv, 290p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (28, '9788577808243', 'DIVERIO, Tiarajú Asmuz. Teoria da computação: máquinas universais e computabilidade. 3. ed. Porto Alegre: Bookman, 2011. 288 p. (Livros didáticos. n.5)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (29, '9788576691884', 'ATUALIZAÇÕES em informática 2008. Rio de Janeiro: Editora PUC-Rio, 2008. 272 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (30, '8521614225', 'GERSTING, Judith L. Fundamentos matemáticos para a ciência da computação: um tratamento moderno de matemática discreta . 5. ed. Rio de Janeiro: Livros Técnicos e Científicos, c2004. xiv, 597 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (31, '8536304944', 'PREECE, Jennifer; ROGERS, Yvonne; SHARP, Helen. Design de interação: além da interação homem-computador . Porto Alegre, RS: Bookman, 2005. xvi, 548 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (32, '8575021389', 'OLIVEIRA NETTO, Alvim Antônio de. IHC - Interação Humano Computador: modelagem e gerência de interfaces com o usuário : sistemas de informações . Florianópolis: Visual Books, 2004. xiii, 120 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (33, '9788575022603', 'OLIVEIRA NETTO, Alvim Antônio de. IHC e a engenharia pedagógica. Florianópolis: Visual Books, 2010. 216 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (34, '9788535234183', 'BARBOSA, Simone D. J.; SILVA, Bruno Santana da. Interação humano-computador. Rio de Janeiro, RJ: Elsevier, 2010. 384 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (35, '9788575222034', 'ROGERS, Rick; LOMBARDO, John; MEDNIEKS, Zigurd R.; MEIKE, Blake. Desenvolvimento de aplicações Android. São Paulo, SP: Novatec, 2009. xvi, 376 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (36, '9788577803101', 'WEBER, Raul Fernando. Fundamentos de arquitetura de computadores. 3. ed. Porto Alegre, RS: Bookman, 2008. 306 p. (Série Livros Didáticos 8)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (37, '8535212280', 'CELES, Waldemar; CERQUEIRA, Renato; RANGEL, José Lucas. Introdução a estruturas de dados: com técnicas de programação em C. Rio de Janeiro, RJ: Elsevier: Campus, 2004. xi, 294 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (38, '8535211020', 'MENASCÉ, Daniel A.; ALMEIDA, Virgilio A. F. Planejamento de capacidade para serviços na Web: métricas, modelos e métodos. Rio de Janeiro, RJ: Campus, 2002.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (39, '9788522107971', 'STAIR, Ralph M.; REYNOLDS, George Walter; SILVA, Flávio Soares Corrêa da. Princípios de sistemas de informação. São Paulo, SP: Cengage Learning, 2011. xvii, 590 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (40, '9780262026499', 'BAIER, Christel; KATOEN, Joost-Pieter. Principles of model checking. Cambridge, Massachusetts: The Mit Press, 2008. xvii, 975 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (41, '9780262032704', 'CLARKE, E. M. Model checking. Cambridge: MIT Press, 1999. xiv, 314 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (42, '9788535223552', 'HENNESSY, John L; PATTERSON, David A. Arquitetura de computadores: uma abordagem quantitativa. 4. ed. Rio de Janeiro, RJ: Elsevier, 2008. 494 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (43, '9788535206845', 'MURDOCCA, Miles; HEURING, Vincent P. Introdução a arquitetura de computadores. Rio de Janeiro, RJ: Elsevier, 2000. xxii, 512p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (44, '9788521615439', 'MONTEIRO, Mario A. Introdução à organização de computadores. 5. ed. Rio de Janeiro, RJ: LTC, 2007. xii, 696p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (45, '9780471503361', 'JAIN, Raj. The art of computer systems perfomance analysis: techniques for experimental design, measurement, simulation, and modeling . New York, NY: John Wiley & Sons, 1991. xxvii, 685 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (46, '9788576055648', 'STALLINGS, William; VIEIRA, Daniel. Arquitetura e organização de computadores. 8. ed. São Paulo: Pearson Prentice Hall, 2010. xiv, 624 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (47, '8587918532', 'STALLINGS, William. Arquitetura e organização de computadores: projeto para o desempenho. 5. ed. São Paulo, SP: Prentice Hall, 2006. xix, 786 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (48, '9781935182481', 'HAY, Chris; PRINCE, Brian H. Azure in action. Stamford, Ct: Manning, 2011. xxx, 457 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (49, '9788574524238', 'TAURION, Cezar. Cloud computing: computação em nuvem, transformando o mundo da Tecnologia da Informação. Rio de Janeiro, RJ: Brasport, 2009. 205 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (50, '9780470506387', 'JENNINGS, Roger. Cloud computing with the Windows Azure Platform. Indianapolis, Indiana: Wiley Pub., 2009. xxvii, 331 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (51, '8560031498', 'COULOURIS, George F.; DOLLIMORE, Jean; KINDBERG, Tim. Sistemas distribuídos: conceitos e projeto. 4. ed. Porto Alegre: Bookman, 2007. viii, 784p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (52, '0132393085', 'COMER, Douglas. Automated network management sytems: current and future capabilities. New Jersey: Pearson/ Prentice Hall, 2007. xvi, 342 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (53, '9788535220179', 'COMER, Douglas. Interligação de redes com TCP/IP. 5. ed. rev. atual. Rio de Janeiro, RJ: Elsevier, 2006. v. 1', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (54, '9788522108459', 'FEDELI, Ricardo Daniel.; POLLONI, Enrico Giulio Franco; PERES, Fernando Eduardo. Introdução à ciência da computação. 2. ed. atual. São Paulo, SP: Cengage Learning, 2010. xvi, 250 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (55, '8588745887', 'HALLBERG, Bruce A. Networking: redes de computadores: teoria e prática. Rio de Janeiro, RJ: Alta Books, 2003. xvi, 292 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (56, '9788576083542', 'LIMA JUNIOR, Almir Wirth. Rede de computadores: tecnologia e convergência das redes. Rio de Janeiro, RJ: Alta Books, 2009. xiii, 592 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (58, '9788576059240', 'TANENBAUM, Andrew S.; WETHERALL, D. Redes de computadores. São Paulo, SP: Pearson Prentice Hall, 2011. xvi, 582p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (59, '9788561893057', 'TORRES, Gabriel. Redes de computadores. Rio de Janeiro: Novaterra, 2009. xxiii, 805 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (60, '9788521615965', 'OLIFER, Natalia; OLIFER, Victor. Redes de computadores: princípios, tecnologias e protocolos para o projeto de redes . Rio de Janeiro: LTC, 2008. xvi, 576 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (61, '8576080567', 'OLIVEIRA, Gorki Starlin da Costa. Redes de computadores comunicações de dados TCP/IP: conceitos, protocolos e usos. Rio de Janeiro, RJ: Alta Books, 2004. xi, 224 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (62, '9788588639973', 'KUROSE, James F.; ROSS, Keith W. Redes de computadores e a Internet: uma abordagem top-down. 5. ed. São Paulo: Pearson Addison Wesley, 2010. xxii, 614 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (63, '8588639181', 'KUROSE, James F.; ROSS, Keith W. Redes de computadores e a Internet: uma abordagem top-down. 3. ed. São Paulo: Pearson/Addison Wesley, 2006. xx, 634 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (79, '9788560031368', 'COMER, Douglas. Redes de computadores e internet : abrange transmissão de dados, ligações inter-redes,web e aplicações. 4. ed. Porto Alegre: Bookman, 2007. 632 p. + 1 CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (80, '8536501383', 'TRONCO, Tania Regina. Redes de nova geração: a arquitetura de convergência do IP, telefonia e redes ópticas . 1. ed. São Paulo, SP: Érica, 2006. 164 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (81, '9780201485349', 'STALLINGS, William. SNMP. SNMPv2, SNMPv3, RMON 1 and 2. 3rd. ed. New Jersey: Addison-Wesley, 2009. xv, 619 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (82, '0471433012', 'BLUM, Richard. Network perfomance: open source toolkit, using netperf, tcptrace, NIST Net, and SSFNet. Indianapolis: Wiley Publishing, 2003. xxiii, 405 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (83, '9788576081876', 'DONAHUE, Gary A. Redes robustas. Rio de Janeiro, RJ: Alta Books, 2008. xx, 502 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (84, '8535215913', 'FARREL, Adrian. A internet e seus protocolos: uma análise comparativa . Rio de Janeiro, RJ: Elsevier, 2005. xxvii, 572 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (85, '9780123705488', 'PETERSON, Larry L.; DAVIE, Bruce S. Computer networks: a systems approach . 4th ed. Amsterdam; Boston, Massachusetts: Morgan Kaufmann, c2007. 806 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (92, '9780596008406', 'MAURO, Douglas R.; SCHMIDT, Kevin J. Essential SNMP. 2nd ed. Sebastopol: O´Reilly, 2005. xv, 442p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (93, '9788536500270', 'GASPARINI, Anteu Fabiano L. Infra-estrutura, protocolos e sistemas operacionais de LANs: redes locias . 3. ed. São Paulo: Érica, 2007. 334 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (94, '8536304707', 'STEVENS, W. Richard. Programação de rede UNIX: API para soquetes de rede. 3. ed. São Paulo, SP: Bookman, 2005. v. 1', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (95, '8535209220', 'SCRIMGER, Rob. TCP/IP: a bíblia. Rio de Janeiro: Elsevier, 2002. xix, 642 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (96, '9788536502137', 'SOUSA, Lindeberg Barros de. TCP/IP & conectividade em redes: guia prático. 5. ed. rev. atual e ampl. São Paulo: Érica, 2009. 192 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (97, '9788576051893', 'ERL, Thomas. SOA: princípios de design de serviços. São Paulo, SP: Pearson Prentice Hall, 2009. x, 320 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (98, '9788576081845', 'JOSUTTIS, Nicolai M. SOA na prática: a arte da modelagem de sistemas distribuídos. Rio de Janeiro, RJ: Alta Books, 2008. xiv, 265 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (99, '9788586804885', 'FOROUZAN, Behrouz A. Comunicação de dados e redes de computadores. 4.ed. São Paulo, SP: McGraw-Hill, 2008. xxxiv, 1134 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (100, '9788536306148', 'FOROUZAN, Behrouz A. Comunicação de dados e redes de computadores. 3.ed. São Paulo, SP: McGraw-Hill, 2006. xi, 840 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (104, '9788573935950', 'COSTA, Daniel Gouveia. Comunicações multimídia na internet: da teoria à prática. Rio de Janeiro, RJ: Ciência Moderna, 2007. xiii, 236 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (105, '9781430219422', 'VENNER, Jason. Pro Hadoop: build scalable, distributed applications in the cloud. New York, NY: Apress, 2009. xxvii, 407 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (106, '9788576083078', 'SCHRODER, Carla. Redes linux: livro de receitas. Rio de Janeiro, RJ: Alta Books, 2009. xxi, 566 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (107, '9788577802623', 'PEZZÈ, Mauro; YOUNG, Michal. Teste e análise de software: processo, princípios e técnicas. Porto Alegre, RS: Bookman, 2008. x, 512 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (108, '9788576082125', 'PILONE, Dan; MILES, Russ. Use a cabeça: desenvolvimento de software. Rio de Janeiro, RJ: Alta Books, 2008. xxxiv, 378 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (109, '9788576083092', 'GREENE, Jennifer; STELLMAN, Andrew. Use a cabeça: PMP. Rio de Janeiro, RJ: Alta Books, 2008. xxx, 594 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (110, '0321295358', 'KLEINBERG, Jon; TARDOS, Éva. Algorithm design. Boston: Pearson/Addison Wesley, c2006. 838 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (111, '0471383651', 'GOODRICH, Michael T.; TAMASSIA, Roberto. Algorithm design: foundations, analysis, and Internet examples . New York: John Wiley & Sons, 2002. xii, 708 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (112, '9788577260324', 'DASGUPTA, Sanjoy; PAPADIMITRIOU, Christos H.; VAZIRANI, Umesh. Algoritmos. São Paulo, SP: McGraw-Hill, 2009. xiv, 320 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (113, '8535209263', 'CORMEN, Thomas H. Algoritmos: teoria e prática. Rio de Janeiro: Elsevier, 2002. xvii , 916 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (114, '857522073X', 'MEDINA, Marco; FERTIG, Cristina. Algoritmos e programação: teoria e prática. 2. ed. São Paulo, SP: Novatec, 2006. 384 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (115, '0735619670', 'MCCONNELL, Steve. Code Complete: um guia prático para a construção de software . 2. ed. Porto Alegre, RS: Bookman, 2005. xv, 928 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (116, '8576082675', 'MARTIN, Robert C. Código limpo: habilidades práticas do Agile Software . Rio de Janeiro: Alta Books, 2011. xxi, 413 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (117, '8573934069', 'GIMENES, Itana Maria de Souza; HUZITA, Elisa Hatsue Moriya. Desenvolvimento baseado em componentes: conceitos e técnicas . Rio de Janeiro, RJ: Ciência Moderna, 2005. xvi, 282 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (118, '9788577808076', 'COHN, Mike; SILVA, Aldir José Coelho da. Desenvolvimento de software com scrum: aplicando métodos ágeis com sucesso . Porto Alegre: Bookman, 2011. xii, 496 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (119, '9788534602372', 'PRESSMAN, Roger S. Engenharia de software. São Paulo: Pearson/ Makron Books, 2009. xxxii, 1056 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (120, '8586804576', 'PRESSMAN, Roger S. Engenharia de software. 6.ed. São Paulo: McGraw-Hill, 2006. 720 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (125, '9788588639287', 'SOMMERVILLE, Ian, |d 1951-. Engenharia de software. 8. ed. São Paulo, SP: Pearson/ Prentice Hall, 2007. xiv, 552 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (126, '9788579361081', 'SOMMERVILLE, Ian, |d 1951-; OLIVEIRA, Kalinka; BOSNIC, Ivan. Engenharia de software. 9. ed. São Paulo, SP: Pearson/ Prentice Hall, 2011. xiii, 529 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (127, '9788521616504', 'PAULA FILHO, Wilson de Pádua. Engenharia de software: fundamentos, métodos e padrões . 3. ed. Rio de Janeiro, RJ: LTC, 2009. xiii, 1248 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (128, '9788587918314', 'PFLEEGER, Shari Lawrence. Engenharia de software: teoria e prática. 2. ed. São Paulo, SP: Pearson/ Prentice Hall, 2007. xix, 537 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (129, '9780073375977', 'PRESSMAN, Roger S. Engenharia de software: uma abordagem profissional . 7. ed. Porto Alegre: AMGH Ed., 2011. xxvii, 779 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (130, '9788536304571', 'COCKBURN, Alistair. Escrevendo casos de uso eficazes: um guia prático para desenvolvedores de software . Porto Alegre: Bookman, 2005. viii, 254 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (131, '3540287132', 'GORTON, Ian. Essential software architecture. Berlin: Springer, 2006. xviii, 283 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (132, '9783642191756', 'GORTON, Ian. Essential software architecture. 2. ed. Berlin: Springer, 2011. xvi, 242 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (137, '8521610149', 'SZWARCFITER, Jayme Luiz; MARKENZON, Lilian. Estruturas de dados e seus algoritmos. 2. ed. rev. Rio de Janeiro: Livros Técnicos e Científicos, c1994. 320 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (138, '8576051480', 'ASCENCIO, Ana Fernanda Gomes; CAMPOS, Edilene Aparecida Veneruchi de. Fundamentos da programação de computadores: algoritmos, Pascal, C/C++ e java. 2. ed. São Paulo, SP: Prentice Hall, 2007. viii, 434 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (140, '9788535234190', 'FEIJÓ, Bruno; CLUA, Esteban; SILVA, Flávio Soares Corrêa da. Introdução à ciência da computação com jogos: aprendendo a programar com entretenimento . Rio de Janeiro: Elsevier, c2010. 263 p. (Série campus ; Sociedade Brasileira de Computação)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (141, '8573932759', 'KRUCHTEN, Philippe; FELLOW, Rational. Introdução ao RUP. rational unified process . Rio de Janeiro, RJ: Ciência Moderna, 2003. (Addison-Wesley object technology)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (142, '9788576050247', 'FORBELLONE, André Luiz Villar; EBERSPÄCHER, Henri Frederico. Lógica de programação: a construção de algoritmos e estruturas de dados . 3. ed. São Paulo: Makron, 2005. xii, 218 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (143, '9780735623583', 'WIGLEY, Andy; MOTH, Daniel; FOOT, Peter. Microsoft mobile development handbook. Redmond, Wash.: Microsoft Press, 2007. xxix, 651 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (144, '9788577807000', 'HUNT, Andrew. O programador pragmático: de aprendiz a mestre. Porto Alegre, RS: Bookman, 2010. xvii, 343 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (145, '8576050676', 'TANENBAUM, Andrew S. Organização estruturada de computadores. 5. ed. São Paulo, SP: Prentice Hall, 2007. xii, 449 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (146, '8522105251', 'ZIVIANI, Nivio; BOTELHO, Fabiano Cupertino. Projeto de algoritmos: com implementações em java e C++. São Paulo, SP: Thomson Learning, 2007. vii, 620 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (149, '9780471692089', 'BRAUDE, Eric J.; BERNSTEIN, Michael E. Software engineering: modern approaches. 2nd ed. Hoboken, New Jersey: J. Wiley & Sons, 2011. xvi, 782 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (150, '9780735623989', 'WITHALL, Stephen. Software requirement patterns. Redmond, Wash.: Microsoft Press, c2007. xvi, 366 p. (Best practices)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (151, '0735618798', 'WIEGERS, Karl Eugene. Software requirements: practical techniques for gathering and managing requirements throughout the product development cycle . 2. ed. Redmond: Microsoft, 2003. 516 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (152, '9788577802814', 'SANTOS, Clesio Saraiva dos; AZEREDO, Paulo Alberto de; UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL. Tabelas: organização e pesquisa. Porto Alegre, RS: Sagra Luzzato, 2008. 85 p. (n 10)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (153, '9788576081746', 'FREEMAN, Eric; FREEMAN, Elisabeth; SIERRA, Kathy; BATES, But. Use a cabeça!: padrões e projetos. 2. ed. rev. Rio de Janeiro, RJ: Alta Books, 2007. xxiv, 478 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (154, '9788576081456', 'MCLAUGHLIN, Brett; POLLICE, Gary; WEST, David. Use a cabeça: análise e projeto orientado ao objeto. Rio de Janeiro, RJ: Alta Books, 2007. xxviii, 441 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (155, '9780321205681', 'COHN, Mike. User stories applied: for agile software development . Boston: Addison-Wesley, 2004. 268 p. (Addison-Wesley signature series)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (156, '9780321269317', 'SALMRE, Ivo. Writing mobile code: essential software engineering for building mobile applications. New Jersey: Addison-Wesley, 2005. xviii, 771p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (159, '8575221129', 'KOSCIANSKI, André; SOARES, Michel dos Santos. Qualidade de software. 2. ed. São Paulo, SP: Novatec, 2007. 395p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (160, '9788577802449', 'KERIEVSKY, Joshua. Refatoração para padrões. Porto Alegre: Bookman, 2008. xviii, 400 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (161, '9788574523088', 'MARTINS, José Carlos Cordeiro. Técnicas para GERÊNCIAmento de projetos de software. Rio de Janeiro, RJ: Brasport, 2007. xviii, 432p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (162, '9788576052074', 'PUGA, Sandra; RISSETTI, Gerson. Lógica de programação e estruturas de dados: com aplicações em Java. São Paulo, SP: Pearson, 2009. xiv , 262 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (163, '8536304030', 'SHALLOWAY, Alan; TROTT, James. Explicando padrões de projeto: uma nova perspectiva em projeto orientado a objeto . Porto Alegre: Bookman, 2004. xix, 328 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (217, '8573077271', 'DEITEL, Harvey M.; DEITEL, Paul J. Java: como programar. 3. ed. Porto Alegre, RS: Bookman, 2001. xxix, 1201 p. + 1 CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (157, '9780596510046', 'RAM, Andy; WILSON, Greg. BEAUTIFUL code: leading programmers explain how they think. California: O´Reilly, 2007. xxi, 593 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (147, '9780471684176', 'THAYER, Richard H.; CHRISTENSEN, M. J. Software Engineering, Volume 1,  The Development Process, 3rd Edition', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (681, '9788577807253', 'MOHER, M.; HAYKIN, S. Sistemas de Comunicação. Bookman, 2011.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (164, '8575220470', 'TELES, Vinícius Manhães. Extreme programming: aprenda como encantar seus usuários desenvolvendo software com agilidade e alta qualidade. São Paulo, SP: Novatec, 2006. 316 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (165, '8573076100', 'GAMMA, Erich. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. Porto Alegre: Bookman, 2000. 364 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (166, '9788560031511', 'HORSTMANN, Cay S. Padrões e projeto orientados a objetos. 2. ed. Porto Alegre: Bookman, 2007. 423 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (167, '9788535216967', 'BEZERRA, Eduardo. Princípios de análise e projeto de sistemas com UML. 2. ed. rev. e atual. Rio de Janeiro: Elsevier: Campus, c2007. 369 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (168, '9788577808410', 'MARTIN, Robert C.; MARTIN, Micah. Princípios, padrões e práticas ágeis em C#. Porto Alegre: Bookman, 2011. 735 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (169, '8576050129', 'BARMES, David J.; KÖLLING, Michael. Programação orientada a objetos com Java: uma introdução prática usando o BLUEJ. São Paulo, SP: Pearson/ Prentice Hall, 2007. xxviii, 368 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (170, '9788576051879', 'BARNES, David J.; KÖLLING, Michael. Programação orientada a objetos com java: uma introdução prática usando o blueJ. 4.ed. São Paulo, SP: Pearson Prentice Hall, 2009. xxii , 444 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (171, '9788576082774', 'FERNANDEZ, Obie. Programando rails A biblia. Rio de Janeiro, RJ: Alta Books, 2008. xlviii, 671 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (172, '9788535217841', 'BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar. UML: guia do usuário. 2. ed. rev. e atual. Rio de Janeiro, RJ: Elsevier, 2005. xviii, 474 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (173, '8536304545', 'FOWLER, Martin. UML essencial: um breve guia para a linguagem-padrão de modelagem de objetos . 3. ed. Porto Alegre: Bookman, 2005. 160 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (174, '9788575221938', 'GUEDES, Gilleanes T. A. UML 2: uma abordagem prática. São Paulo, SP: Novatec, 2009. 485 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (175, '0471463612', 'ERIKSSON, Hans-Erik; PENKER, Magnus; LYONS, Brian. UML 2 toolkit. Indianapolis, Indiana: Wiley Publishing, 2004. xxvii, 511 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (176, '9788560031528', 'LARMAN, Craig. Utilizando UML e padrões: uma introdução à análise e ao projeto orientados a objetos e ao desenvolvimento iterativo. 3. ed. Porto Alegre: Bookman, 2007. 695 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (178, '8534614597', 'DEITEL, Harvey M.; DEITEL, Paul J.; NIETO, T. R. C#: como programar . São Paulo: Pearson Education do Brasil, 2003. xxix, 1153 p. + 1 CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (179, '9788576081821', 'CASTELLANI, Marcelo Fontes. Certificação Sun Java Associado SCJA: exame CX-310-019 : guia de viagem para passar no exame. Rio de Janeiro, RJ: Alta Books, 2008. xxii, 152 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (180, '8536305398', 'HORSTMANN, Cay S. Conceitos de computação com o essencial C++. Porto Alegre: Bookman, 2005. 711 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (181, '8536301716', 'SEBESTA, Robert W. Conceitos de linguagens de programação. 5. ed. Porto Alegre: Bookman, 2003. ix, 638 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (182, '9788577807918', 'SEBESTA, Robert W. Conceitos de linguagens de programação. 9. ed. -. Porto Alegre, RS: Bookman, 2011. ix, 792 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (188, '9788578730871', 'MOREIRA NETO, Oziel. Entendendo e dominando o Java para a internet. 2. ed. São Paulo: Digerati Books, 2009. 318 + DVD', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (189, '8575220950', 'SÁ, Claudio Cesar de. Haskell: uma abordagem prática. São Paulo, SP: Novatec, 2006. 287 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (190, '8589579565', 'GONÇALVES, Enyo José Tavares; CARNEIRO, Domingos Sávio Silva. Linguagem de programação II. Fortaleza, CE: UECE, 2011. 97 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (191, '9788577260447', 'TUCKER, Allen B. |; NOONAN, Robert. Linguagens de programação: princípios e paradigmas. São Paulo, SP: McGraw-Hill, 2008. xxi, 599 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (192, '9788573936841', 'XAVIER, Fabrício S. V. PHP: do básico à orientação a objetos . Rio de Janeiro, RJ: Ciência Moderna, 2008. x, 234 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (193, '9788575222003', 'DALL´OGLIO, Pablo. PHP: programando com orientação a objetos. 2.ed.-. São Paulo, SP: Novatec, 2009. 574 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (194, '9788576081210', 'MONTGOMERY, Eduard. Programando com C: simples & prático. Rio de Janeiro, RJ: Alta Books, 2006. 157 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (195, '9780321573582', 'YAO, Paul. Programming. NET compact framework 3.5: Paul Yao, David Durant. 2nd. ed. New Jersey: Addison-Wesley, 2010. xxxvii, 694 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (196, '8536303956', 'FOWLER, Martin,. Refatoração: aperfeiçoando o projeto de código existente. Porto Alegre, RS: Bookman, 2008. xiv, 365 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (197, '9788576022101', 'BEIGHLEY, Lynn. Use a cabeça SQL. Rio de Janeiro, RJ: Alta Books, 2008. xxxiv, 454 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (198, '9788577804535', 'RAMOS, Marcus Vinícius Midena; JOSÉ NETO, João; VEGA, Ítalo Santiago. Linguagens formais: teoria, modelagem e implementação. Porto Alegre: Bookman, 2009. 656 p. (Livros didáticos ; n.3)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (199, '9788577802661', 'MENEZES, Paulo Blauth. Linguagens formais e autômatos. 5. ed. Porto Alegre: Bookman, 2008. 215 p. (Livros didáticos ; n.3 Série Livros Didáticos 3)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (200, '9788577807659', 'MENEZES, Paulo Blauth. Linguagens formais e autômatos. 6. ed. Porto Alegre: Bookman, 2011. 215 p. (Livros didáticos ; n.3 Série Livros Didáticos ; 3)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (205, '9788575222119', 'POWERS, Shelley. Aprendendo JavaScript. São Paulo, SP: Novatec, 2010. 407 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (206, '9788577800131', 'LUTZ, Mark; ASCHER, David. Aprendendo python. 2. ed. Porto Alegre: Bookman, 2008. 566 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (207, '8576050560', 'DEITEL, Harvey M.; DEITEL, Paul J. C++: como programar. 5. ed. São Paulo, SP: Prentice Hall, 2006. 1163 p. + cd-rom', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (208, '8534605955', 'SCHILDT, Herbert; MAYER, Roberto Carlos. C completo e total. 3. ed. rev. atual . São Paulo: Pearson/ Makron Books, c1997. xx, 827 p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (209, '8575220551', 'DELAMARO, Márcio. Como construir um compilador utilizando ferramentas Java : Márcio Delamaro. -. São Paulo, SP: Novatec, 2004. 308 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (210, '9788576053576', 'HORSTMANN, Cay S. Core Java: volume I - fundamentos. 8. ed. São Paulo, SP: Pearson, 2009. xiii, 383 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (211, '8576080621', 'HORSTMANN, Cay S.; CORNELL, Gary. Core Java 2: volume I : fundamentos . Rio de Janeiro, RJ: Alta Books, c2005. viii, 580 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (212, '8534615225', 'MUCHOW, John W. Core J2ME: tecnologia & MIDP. São Paulo, SP: Pearson/ Makron Books, 2004. xiv, 588 p. (Java)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (213, '9788575221884', 'SCHMITZ, Daniel Pace. Desenvolvendo sistemas com Flex e PHP. São Paulo, SP: Novatec, 2009. 294 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (214, '8575220500', 'NIEDERAUER, Juliano. Desenvolvendo websites com PHP: aprenda a criar websites dinâmicos e interativos com PHP e banco de dados. Ed. rev. e atual. São Paulo, SP: Novatec, 2008. 269 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (215, '9780757529740', 'CHEN, Yinong; TSAI, Wei-Tek. Introduction to programming languages: proggramming in C, C++, Scheme, Prolog, C#, and SOA. 2nd ed. xii, 383 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (216, '8576050196', 'DEITEL, Harvey M.; DEITEL, Paul J. Java: como programar. 6. ed. São Paulo: Pearson/ Prentice Hall, 2006. xl, 1110 p. + 1 CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (221, '9788576055631', 'DEITEL, Paul J.; DEITEL, Harvey M. Java: como programar. 8. ed. São Paulo: Pearson Prentice Hall, 2010. xxix, 1144 p. + 1 CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (222, '9780321349606', 'GOETZ, Brian. Java concurrency in practice. xx, 403 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (223, '9788574523361', 'COSTA, Daniel Gouveia. Java em rede: programação distribuída na internet . Rio de Janeiro: Brasport, 2008. xv, 288p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (224, '9788574523699', 'COSTA, Daniel Gouveia. Java em rede: recursos avançados de programação. Rio de Janeiro: Brasport, 2008. xiii, 324', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (225, '8573932104', 'KURNIAWAN, Budi. Java para a Web com Servlets, JSP e EJB: Budi Kurniawan; tradução Savannah Hartmann; revisão técnica Alfredo Dias da Cunha Júnior. Rio de Janeiro, RJ: Ciência Moderna, 2002. xxiv, 807 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (227, '1590592395', 'SEIBEL, Peter. Practical common lisp. Berkeley, Ca: Apress, 2005. xxv, 499 p. (The Expert’s voice in programming languages)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (228, '9780470563144', 'CIBRARO, Pablo. Professional WCF 4: Windows Communication Foundation with .NET 4. Indianapolis, Ind.: Wiley Publishing, 2010. xxvii, 451 p. (Guias Wrox profissional)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (229, '9788575221846', 'URUBATAN, Rodrigo. Ruby on rails: desenvolvimento fácil e rápido de aplicações Web. São Paulo, SP: Novatec, 2009. 285 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (230, '9788535224061', 'SILBERSCHATZ, Abraham; GALVIN, Peter B.; GAGNE, Greg. Sistemas operacionais com Java. 7. ed. rev. atual. Rio de Janeiro, RJ: Elsevier, 2008. xx, 673 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (231, '9788576085591', 'STELLMAN, Andrew; GREENE, Jennifer. Use a cabeça! C#: um guia de aprendizafem para a programação no mundo real com C# e .NET. 2.ed. Rio de Janeiro, RJ: Alta Books, 2011. 797p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (232, '9788576082118', 'STELLMAN, Andrew; GREENE, Jennifer. Use a cabeça! C#: um guia de aprendizagem para a programação no mundo real com C# e .NET. Rio de Janeiro, RJ: Alta Books, 2008. xxxvi, 618p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (233, '0596009208', 'SIERRA, Kathy; BATES, Bert. Use a cabeça! Java. 2. ed. Rio de Janeiro, RJ: Alta Books, 2007. xxvi, 470 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (234, '9788535226348', 'DELAMARO, Márcio; MALDONADO, Jose Carlos. Introdução ao teste de software. Rio de Janeiro, RJ: Elsevier: Campus, 2007. 394 p. (Sociedade brasileira de computação)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (235, '9788577807246', 'BECK, Kent. TDD desenvolvimento guiado por testes. Porto Alegre: Bookman, 2010. xiii, 240 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (236, '0646458418', 'REEKIE, John; MCADAM, Rohan. A software architecture primer. Sydney, Australia: Angophora Press, 2006. 179 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (237, '9780596521974', 'WHITE, Tom. Hadoop: the definitive guide. California: O´Reilly, 2009. xix, 501 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (238, '9812384251', 'GRUBB, Penny; TAKANG, Armstrong A. Software maintenance: concepts and practice. 2nd ed. New Jersey: World Scientfic, 2003. xix, 349 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (239, '9780470147078', 'APRIL, Alain; ABRAN, Alain, |. Software maintenance management: evaluation and continuous improvement. New Jersey: IEEE Computer Society, 2008. xx, 314 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (240, '9788575222447', 'LECHETA, Ricardo R. Google android: aprenda a criar aplicações para dispositivos móveis com o Android SDK. 2. ed. rev. ampl. São Paulo, SP: Novatec, 2010. 608 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (241, '9788573936742', 'GONÇALVES, Edson. Desenvolvendo aplicações Web com NetBeans IDE 6. Rio de Janeiro, RJ: Ciência Moderna, 2008. xix, 581 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (242, '9788576082941', 'BASHAM, Bryan; SIERRA, Kathy; BATES, Bert. Use a cabeça!: Servlets & JSP. 2. ed. Rio de Janeiro, RJ: Alta Books, 2008. xxxii, 879 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (243, '8576080850', 'BASHAM, Bryan. Use a cabeça!: Sevlets & JSP. Rio de Janeiro, RJ: Alta Books, 2004. xxi, 534 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (244, '8575022105', 'MOLINARI, Leonardo. Gerência de configuração: técnicas e práticas no desenvolvimento do software. Florianópolis: Visual Books, 2007. 208 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (245, '9788577807567', 'POPPENDIECK, Mary; POPPENDIECK, Thomas David. Implementando o desenvolvimento Lean de software: do conceito ao dinheiro. Porto Alegre, RS: Bookman, 2011. 279 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (246, '9788575221525', 'JARGAS, Aurélio Marinho. Shell script profissional. São Paulo, SP: Novatec, 2008. 480 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (247, '9780201774238', 'SMITH, Roderick W. Advanced linux networking. Boston, Massachusetts: Addison-Wesley, 2002. xviii, 752 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (248, '9780321447739', 'BUTOW, Eric. User interface design for mere mortals: a hands-on guide to user interface design software-independent approach. Boston, Massachusetts: Addison-Wesley, 2007. xxii, 286 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (249, '9788575022443', 'STATO FILHO, André. Linux: controle de redes. Florianópolis: Visual Books, 2009. 352 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (250, '978820332638', 'WILSON, Ed. Microsoft Windows PowerShell: step by step. Redmond, Wash.: Microsoft Press, 2007. xviii, 296 p. + 1 CD ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (251, '8575022202', 'VIGLIAZZI, Douglas. Redes locais com linux. 2. ed. Florianópolis: Visual Books, 2007. 160 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (252, '9788521615484', 'MACHADO, Francis B; MAIA, Luiz Paulo. Arquitetura de sistemas operacionais. 4. ed. Rio de Janeiro: LTC, 2007. 308 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (253, '9780596005955', 'ROBBINS, Arnold; BEEBE, Nelson H. F. Classic Shell Scripting. Sebastopol, Ca: c2005. xxii, 534 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (254, '9788577801473', 'ROBBINS, Arnold; BEEBE, Nelson H. F. Classic shell scripting: automatize suas tarefas com Unix . Porto Alegre: Bookman, 2008. xvii, 511p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (255, '9788573936476', 'CARDOSO, Paulo Roberto Sant´anna; SANTANA, Fabiano de; NAKANO, Vitor. Comandos Windows Server 2003: administração e suporte . Rio de Janeiro: Ciência Moderna, 2008. xxviii, 588 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (256, '9788577805525', 'NORTHRUP, Anthony; MACKIN, J. C. Configuração do Windows Server 2008: infraestrutura de rede : kit de treinamento MCTS (Exame 70-462). Porto Alegre, RS: Bookman, 2009. 679 p. + 1 DVD (Kit de treinamento Microsoft)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (257, '9788577807680', 'MCLEAN, Ian; THOMAS, Orin. Configuração do windows 7: kit de treinamento MCTS - Exame 70-680. Porto Alegre, RS: Bookman, 2011. 919 p. + 1 DVD (Kit de treinamento Microsoft.)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (258, '9788521617471', 'SILBERSCHATZ, Abraham; GALVIN, Peter B.; GAGNE, Greg. Fundamentos de sistemas operacionais. 8. ed. Rio de Janeiro, RJ: LTC, 2010. xvii , 515 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (259, '9788577804832', 'MACKIN, J. C.; DESAI, Anil. Kit de treinamento MCTS - Exame 70-643: configuração do Windows Server 2008 : infraestrutura de aplicativos. Porto Alegre, RS: Bookman, 2009. 695p. + 1 CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (819, '8585818107', 'Elon Lages Lima, A Matemática no Ensino Médio, SBM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (260, '9788577805280', 'HOLME, Dan; RUEST, Nelson; RUEST, Danielle. Kit de treinamento MCTS (Exame 70-640): configuração do Windows Server 2008 : Active Directory . Porto Alegre, RS: Bookman, 2009. 989 p. + 1 CD-ROM (Kits de treinamento Microsoft.)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (714, '8585490152', 'LEVY, P. Tecnologias da inteligência: futuro do pensamento. PrenticeHall, 1995.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (261, '9788575221778', 'FERREIRA, Rubem E. Linux: guia do administrador do sistema. 2. ed. rev. e ampl. São Paulo, SP: Novatec, 2008. 716 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (262, '9788576051121', 'NEMETH, Evi; SNYDER, Garth; HEIN, Trent R. Manual completo do Linux: guia do administrador . São Paulo, SP: Pearson Education do Brasil, 2007. xiv, 684 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (263, '9780735626393', 'THERNSTRÖM, Tobias. MCTS self-paced training kit (Exam 70-433): Microsoft SQL Server 2008: database development . Redmond, Wash.: Microsoft, 2009. xxiii, 456 p. + 1 CD (Self-paced training kit Microsoft)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (264, '9780470891667', 'RANDOLPH, Nick; FAIRBAIRN, Christopher. Professional Windows Phone 7 application development: building applications and games using Visual Studio, Silverlight, and XNA. Indianapolis, Indiana: Wiley Publishing, 2011. xxiii, 594 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (265, '9788574523453', 'NEVES, Julio Cezar. Programação SHELL LINUX. 7. ed. Rio de Janeiro: Brasport, 2008. xxx, 450p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (266, '8576051109', 'BÄCK, Magnus. Servidor de e-mail Linux: guia de instalação, configuração e GERÊNCIAmento para pequenos escritórios. São Paulo, SP: Pearson Prentice Hall, 2007. xvii, 284p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (267, '9788577805211', 'OLIVEIRA, Rômulo Silva de; CARISSIMI, Alexandre da Silva; TOSCANI, Simão Sirineo; UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL. Sistemas operacionais. 4. ed. Porto Alegre: Bookman, 2010. 374 p. (Livros didáticos. 11)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (268, '9788577800575', 'TANENBAUM, Andrew S.; WOODHULL, Albert S. Sistemas operacionais: projeto e implementação. 3. ed. x, 990 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (269, '9788587918574', 'TANENBAUM, Andrew S. Sistemas operacionais modernos. 2. ed. São Paulo, SP: Prentice Hall, 2003. xii, 695 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (270, '9788576052371', 'TANENBAUM, Andrew S.; GONÇALVES, Ronaldo A. L. Sistemas operacionais modernos. 3. ed. São Paulo, SP: Prentice Hall, 2009, c2010. xvi, 653 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (271, '9788536305868', 'HOLME, Dan; THOMAS, Orin. Windows Server 2003: administração e manutenção do ambiente Microsoft : kit de treinamento. Porto Alegre: Bookman, 2006. 688 p. + 1 CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (272, '9788571949805', 'THOMPSON, Marco Aurélio. Windows server 2003: administração de redes . 5. ed. São Paulo: Érica, 2009. 370 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (273, '9788561893040', 'BATTISTI, Júlio; SANTANA, Fabiano de. Windows Server 2008: guia de estudos completo : implementação, administração e certificado . Rio de Janeiro, RJ: Novaterra, 2009. xxx, 1751p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (274, '9788576051428', 'TANENBAUM, Andrew S.; STEEN, Van Maarten; MARQUES, Arlete Simille. Sistemas distribuídos: princípios e paradigmas. 2. ed. São Paulo, SP: Prentice Hall, 2007. viii, 402 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (275, '9788522104222', 'LOUDEN, Kenneth C. Compiladores: princípios e práticas . São Paulo, SP: Cengage Learning, 2004. xiv, 569 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (276, '8522104220', 'LOUDEN, Kenneth C. Compiladores: princípios e práticas . São Paulo, SP: Thomson, c2004. xiv, 569 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (280, '9788588639249', 'AHO, Alfred V. et al. (). Compiladores :: príncípios, técnicas e ferramentas. 2. ed. São Paulo, SP: Pearson/Addison Wesley, 2007. 634 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (281, '9788574524344', 'COSTA, Daniel Gouveia. Administração de redes com scripts: Bash script, Python, VBscript. 2. ed. Rio de Janeiro, RJ: Brasport, 2010. 186 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (282, '0321197860', 'SHNEIDERMAN, Ben. Designing the user interface: strategies for effective human-computer interaction . 4th ed. Boston: Pearson/Addison Wesley, c2005. xviii, 652 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (283, '0321200683', 'HOHPE, Gregor; WOOLF, Bobby. Enterprise integration patterns: designing, building, and deploying messaging solutions . Boston, Massachusetts: Addison-Wesley, c2004. xlix, 683 p. (The Addison-Wesley signature series)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (284, '9788575221396', 'SILVA, Maurício Samy. Construindo sites com CSS e (X)HTML: sites controlados por folhas de estilo em cascata . São Paulo, SP: Novatec, 2008. 446p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (285, '9788576082713', 'KRUG, Steve. Não me faça pensar!: uma abordagem de bom senso à usabilidade na WEB. 2. ed. Rio de Janeiro, RJ: Alta Books, 2008. 201 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (286, '9788535221909', 'NIELSEN, Jakob, |. Usabilidade na web. Rio de Janeiro, RJ: Elsevier, 2007. xxiv, 406 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (287, '9780470383261', 'GOODRICH, Michael T.; TAMASSIA, Roberto. Data structures and algorithms in Java. 5th ed. New York, NY: J. Wiley & Sons, 2010. xxii, 714 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (288, '0201120372', 'MANBER, Udi. Introduction to algorithms: a creative approach . Reading: Addison-Wesley, c1989. xiv, 478 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (289, '139780072465631', 'RAMAKRISHNAN, Raghu. Database management systems. 3rd ed. Boston, Massachusetts: McGraw-Hill, 2003. xxxii, 1065 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (290, '9780132145374', 'KROENKE, David; AUER, David J. Database processing: fundamentals, design & implementation . 12. ed. Upper Saddle River, New Jersey: Pearson Prentice Hall, 2012. xvii, 612 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (291, '9788535211078', 'SILBERSCHATZ, Abraham; KORTH, Henry F.; SUDARSHAN, S. Sistema de banco de dados. Rio de Janeiro, RJ: Elsevier, 2006. xiii, 781 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (292, '9788588639171', 'ELMASRI, Ramez; NAVATHE, Shamkant B. Sistemas de banco de dados. 4. ed. São Paulo, SP: Pearson/Addison Wesley, 2009. xi, 724 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (293, '9788536500126', 'MACHADO, Felipe Nery Rodrigues. Tecnologia e projeto de data warehouse: uma visão multidimensional. 5. ed. São Paulo, SP: Érica, 2010. 314 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (294, '9788577803828', 'HEUSER, Carlos Alberto. Projeto de banco de dados. 6. ed. Porto Alegre: Bookman, 2009. 282 p. (Livros Didáticos Informática ; 4)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (295, '9788579360855', 'ELMASRI, Ramez; NAVATHE, Sham. Sistemas de banco de dados. 6. ed. -. São Paulo, SP: Pearson Education do Brasil, 2011. xviii, 788 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (296, '9788576082187', 'FREEMAN, Elisabeth; FREEMAN, Eric. Use a cabeça!: HTML com CCS e XHTML. 2. ed. Rio de Janeiro, RJ: Alta Books, 2008. xxxi, 580 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (297, '139780131587564', 'PERSISTENCE in the enterprise: a guide to persistence technologies . Boston: Pearson Education, Inc., 2008. xxxii, 430 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (298, '9781441988331', 'OZSU, M.Tamer. Principles of distributed database systems. 3nd. ed. New York: Springer, 2011. 666p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (299, '9788577260270', 'RAMAKRISHNAN, Raghu; GEHRKE, Johannes. Sistemas de GERÊNCIAmento de banco de dados. São Paulo, SP: McGraw-Hill, 2008. xxvii, 884 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (300, '9788576082989', 'COAR, Ken A. L. Apache: guia prático. Rio de Janeiro, RJ: Alta Books, 2009. xvii, 250 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (301, '8535210350', 'WELCH-ABERNATHY, Dameon D. Check point fire wall-1 essencial: um guia de instalação, configuração e solução de problemas. Rio de Janeiro, RJ: Campus, 2002. xvii, 537 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (434, '9788522450022', 'IMONIANA, Joshua Onome. Auditoria de sistemas de informação. 2. ed. São Paulo: Atlas, 2008. 207 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (302, '8536304294', 'CHESWICK, William R.; BELLOVIN, Steven M; RUBIN, Aviel D. Firewalls e segurança na Internet: repelindo o hacker ardiloso . 2.ed. Porto Alegre, RS: Bookman, 2005. 400 p. (Ciência da Computação/Redes)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (572, '8536800763', 'POMPÉIA, Raul. O Ateneu. São Paulo, SP: DCL, 2005. 223 p. (Coleção Nossa Literatura Clássica Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (303, '9781590597842', 'DASWANI, Neil; KERN, Christoph; KESAVAN, Anita. Foundations of security: what every programmer needs to know . Berkeley, Ca: Apress, c2007. xxvii, 290 p. (The Expert’s voice in security)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (304, '9788575221365', 'NAKAMURA, Emilio Tissato; GEUS, Paulo Lício de. Segurança de redes em ambientes cooperativos. São Paulo: Novatec, c2007.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (305, '9788578730529', 'ULBRICH, Henrique Cesar; DELLA VALLE, James. Universidade H4CK3R: desvende todos os segredos do submundo dos hackers . 6. ed. São Paulo: Digerati Books, 2009. 348p. + DVD (Série Universidade)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (306, '9788576051190', 'STALLINGS, William. Criptografia e segurança de redes: princípios e práticas. 4. ed. São Paulo: Pearson/ Prentice Hall, 2008. xvii, 492 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (307, '9780470519462', 'WOOLDRIDGE, Michael J. An introduction to multiagent systems. 2nd ed. New York: J. Wiley & Sons, c2009. xxii, 461 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (308, '9788585490157', 'LÉVY, Pierre. As tecnologias da inteligência :: o futuro do pensamento na era da informática /. Rio de Janeiro: Editora 34, 2010. 206 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (309, '9788521617297', 'COPPIN, Ben. Inteligência artificial. Rio de Janeiro, RJ: LTC, 2010. xxv 636 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (310, '8535211772', 'RUSSELL, Stuart J. |q (Stuart Jonathan), |d 1962-; NORVIG, Peter, |d 1956-. Inteligência artificial. Rio de Janeiro: Elsevier, Campus, 2004. 1021 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (311, '9780521899437', 'SHOHAM, Yoav; LEYTON-BROWN, Kevin. Multiagent systems: algorithmic, game-theoretic, and logical foundations . New York, NY: Cambridge at the University Press, 2009. xx, 483 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (312, '0132733501', 'HAYKIN, Simon S. Redes neurais: princípios e prática. 2. ed. Porto Alegre: Bookman, 2001. xvii, 900 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (313, '8535212523', 'AZEVEDO, Eduardo.; CONCI, Aura. Computação gráfica: geração de imagens . Rio de Janeiro, RJ: Elsevier, Campus, 2003. 353 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (314, '9788521616290', 'AMMERAAL, L.; ZHANG, Kang. Computação gráfica para programadores Java. 2. ed. Rio de Janeiro, RJ: LTC, 2008. viii, 217 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (315, '97885352232193', 'CONCI, Aura; AZEVEDO, Eduardo.; LETA, Fabiana R. Computação gráfica, v.2: teoria e prática. Rio de Janeiro, RJ: Elsevier: Campus, 2008. 407 p., [8] p. de estampas + + 1 CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (317, '9788573939507', 'RIBEIRO, Marcello Marinho; MENEZES, Marco Antonio Figueiredo. Uma breve introdução à computação gráfica. Rui De Janeiro,Rj: Ciência Moderna, 2010. v, 73 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (319, '9788521612223', 'PAULA FILHO, Wilson de Pádua. Multimídia: conceitos e aplicações. Rio de Janeiro: LTC, 2000. 321 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (320, '9783642078880', 'ALONSO, Gustavo. Web services: concepts, architectures and applications. Berlin: Springer, 2010. xx, 354 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (321, '9783540440086', 'WEB services: concepts, architectures and applications. Berlin: Springer, 2004. xx, 354 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (322, '9780521865715', 'MANNING, Christopher D.; RAGHAVAN, Prabhakar. Introduction to information retrieval. New York, NY: Cambridge at the University Press, 2009. xxi, 482 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (323, '850808935X', 'CHAUÍ, Marilena de Sousa. Convite à filosofia. 13.ed. São Paulo: Ática, 1999. 424p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (324, '9788508134694', 'CHAUÍ, Marilena de Sousa. Convite à filosofia /. 14. ed. São Paulo: Ática, 2011. 520 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (325, '9781575866321', 'BARKER-PLUMMER, Dave; BARWISE, Jon; ETCHEMENDY, John. Language, proof and logic. New York, NY: CSLI, 2011. xiii 606 p. (CSLI lecture notes ; v 23)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (326, '9788531405754', 'MASIERO, Paulo Cesar. Ética em construção. São Paulo, SP: EDUSP, 2008. 213 p. (Acadêmica ;32)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (327, '9788521617761', 'BARGER, Robert N. Ética na computação: uma abordagem baseada em casos. Rio de Janeiro, RJ: LTC, 2011. xiv, 226 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (328, '9788577806553', 'YIN, Robert K. Estudo de caso: planejamento e métodos . 4. ed. Porto Alegre, RS: Bookman, 2010. xviii, 248 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (329, '8536304626', 'YIN, Robert K. Estudo de caso: planejamento e métodos. 3. ed. Porto Alegre: Bookman, 2005. 212 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (330, '9788573028638', 'FRIEDMAN, Thomas L. O mundo é plano: uma breve história do século XXI. Rio de Janeiro, RJ: Objetiva, 2007. 557 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (331, '9788574851471', 'SILVA, Delnise. Flores de um jardim: a narrativa de si em contexto de vulnerabilidade social - sociabilidades, sensibilidades e utopias entre os jovens do grupo Nosso espaço (Fortaleza). Fortaleza, CE: Imprensa Universitária - UFC, 2010. 150 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (332, '8572821295', 'CARLEIAL, Adelita Neto; BRAGA, Elza Maria Franco. América Latina: transformações econômicas e políticas. Fortaleza: Ed. UFC, 2003. 291 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (333, '8525036706', 'UCHOA, Pablo. A encruzilhada de Hugo Chávez. São Paulo, SP: Globo, 2003. 294 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (334, '9788535230062', 'GONÇALVES, Carlos Eduardo S. Gonçalves; GUIMARÃES, Bernardo. Economia sem truques: o mundo a partir das escolhas de cada um . 5.ed. Rio de Janeiro, RJ: Campus, 2008. 209 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (335, '8522438129', 'ROSSETTI, José Paschoal. Introdução a economia: livro de exercícios. 4. ed. São Paulo, SP: Atlas, 2004. 387 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (336, '8522104247', 'BRUE, Stanley L. História do pensamento econômico. São Paulo: Thomson Learning, 2006. 553p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (337, '8522434670', 'ROSSETTI, José Paschoal. Introdução à economia. 20. ed. São Paulo: Atlas, 2003. 922 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (338, '9788535242027', 'LEITE, Antonio Dias. A economia brasileira: de onde viemos e onde estamos. 2. ed., rev. e atual. Rio de Janeiro, RJ: Elsevier, 2011. 226p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (339, '8587062387', 'DUQUE, José Guimarães. Perspectivas nordestinas. 2. ed. Fortaleza: Banco do Nordeste do Brasil, 2004. 423 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (340, '8522438927', 'ALMEIDA, Guilherme Assis de; CHRISTMANN, Martha Ochsenhofer. Ética e direito: uma perspectiva integrada . 2. ed. São Paulo: Atlas, 2006. 185 p. ;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (341, '9788522445936', 'PAESANI, Liliana Minardi. O direito na sociedade da informação. São Paulo, SP: Atlas, 2007. xxx, 333 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (342, '9788522455072', 'ALMEIDA, Guilherme Assis de; CHRISTMANN, Martha Ochsenhofer. Ética e direito: uma perspectiva integrada . 3. ed. São Paulo: Atlas, 2009. 171 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (343, '8573484632', 'LIMBERGER, Têmis. O direito à intimidade na era da informática: a necessidade de proteção dos dados pessoais. Porto Alegre, RS: Livraria do Advogado, 2007. 250 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (344, '8588813297', 'CARBONI, Guilherme C. O direito de autor na multímidia: Guilherme C. Carboni. São Paulo, SP: Quartier Latin, 2003. 208 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (345, '9781558609327', 'BRACHMAN, Ronald J.; LEVESQUE, Hector J. Knowledge representation and reasoning. San Francisco [California, Estados Unidos]: Elsevier, 2004. xxix, 381 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (346, '8521904274', 'FREIRE, Paulo. Extensão ou comunicação. 13. ed. Rio de Janeiro: Paz e Terra, 2006. 93 p. ; (O Mundo Hoje ;24.)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (574, '8536800720', 'ALENCAR, José de. Senhora. São Paulo: DCL, 2005. 144 p. (Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (347, '9788572822855', 'HISTÓRIA da educação:. arquivos, documentos, historiografia, narrativas orais e outros rastros. Fortaleza, CE: Edições UFC, 2008. 176 p. (Diálogos intempestivos ; 58)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (348, '9788572823883', 'EPISTEMOLOGIAS e metodologias para avaliação educacional:. múltiplas visões e abordagens. Fortaleza, CE: Edições UFC, 2010. 252 p. (Nave , 8)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (349, '8530801172', 'KAMII, Constance; DECLARK, Georgia. Reinventando a aritmética: implicações da teoria de Piaget . 4.ed. Campinas, SP: Papirus, 1992. 308 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (350, '9788578261191', 'SANTOS, Deribaldo; SOUSA, Francisco Edisom Eugenio de; NASCIMENTO, Arnaldo Ricardo do. Caderno de pesquisas socioeducativas do Sertão Central. Quixadá: EdUECE, 2012. 150 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (351, '9788560031993', 'HAYKIN, Simon S. Sistemas modernos de comunicações wireless. Porto Alegre: Bookman, 2008. x, 579 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (352, '9788533623323', 'LEVINSON, Stephen C. Pragmática. São Paulo: Martins Fontes, 2007. xiv, 548 p. ;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (353, '8587214470', 'LONGMAN gramática escolar da língua inglesa: gramática de referências com exercícios e respostas . São Paulo, SP: Longman, 2004. 317 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (354, '9781405025263', 'MACMILLAN English dictionary for advanced learners. 2nd. ed. Oxford: MacMillan Education, 2007. xi, 1748 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (355, '052143680X', 'MURPHY, Raymond. English grammar in use: a self-study reference and practice book for intermediate students. 3rd. ed. Cambridge: Cambridge University Press, 2007. x, 379 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (356, '9788527409742', 'GALLO, Lígia Razerra. Inglês instrumental para informática: módulo I. São Paulo, SP: Ícone, 2008. 170 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (357, '97885752211226', 'MARINOTTO, Demóstene. Reading on info tech: inglês para informática. 2. ed. São Paulo, SP: Novatec, 2007. 176 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (358, '9788526275393', 'DE NICOLA, Jose. Língua, literatura e produção de textos: José de Nicola. São Paulo, SP: Scipione, 2009. 3 v.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (359, '9788535711738', 'CEREJA, William Roberto. Português: linguagens. 3. ed. São Paulo, SP: Atual Ed., 2009. 576 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (360, '9788535709988', 'CEREJA, William Roberto. Gramática: texto, reflexão e uso. 3. ed. reform. São Paulo, SP: Atual Ed., 2008. 495 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (361, '8533619758', 'FERREIRA, Reinaldo Mathias. Lições de português: para nunca mais esquecer. São Paulo, SP: Martins Fontes, 2004. viii, 159 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (362, '9788586368394', 'KURY, Adriano da Gama. Para falar e escrever melhor o português. Rio de Janeiro, RJ: Lexikon, 2008. 275 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (363, '8587484281', 'SCHLITTLER, José Maria Martins. Pensando em português: teoria e prática, assuntos e temas aplicados em concursos públlicos e vestibulares. Campinas, SP: Servanda, 2004. 392 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (364, '9788537800218', 'AZEREDO, José Carlos de. Ensino de português: fundamentos, percursos, objetos. Rio de Janeiro, RJ: Jorge Zahar, 2007. 214 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (365, '9788571107458', 'OLIVA, Alberto. Filosofia da ciência. 2. ed. Rio de Janeiro, RJ: J. Zahar, 2008. 74 p. (Passo-a-passo ; v. 31)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (369, '9788515019694', 'ALVES, Rubem. Filosofia da ciência:: introdução ao jogo e a suas regras. 15. ed. São Paulo, SP: Loyola, 2010. 223 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (370, '9788577804719', 'MENEZES, Paulo Blauth; TOSCANI, Laira V.; GARCÍA LÓPEZ, Javier. Aprendendo matemática discreta com exercícios. Porto Alegre, RS: Bookman, 2009. 356p. ((Livros didáticos informática ufrgs ; ; v. 19))', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (371, '9788521618102', 'HUNTER, David J. Fundamentos da matemática discreta. Rio de Janeiro, RJ: LTC, 2011. x 235 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (372, '8570562705', 'IEZZI, Gelson; MURAKAMI, Carlos. Fundamentos de matemática elementar: 1 : conjuntos, funções . 8. ed.,. São Paulo, SP: Atual, 2004. 374 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (373, '8535704620', 'IEZZI, Gelson; HAZZAN, Samuel; DEGENSZAJN, David Mauro. Fundamentos de matemática elementar: 11 : matemática comercial, matemática financeira, estatística descritiva . São Paulo, SP: Atual, 2004. 232 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (374, '8535704566', 'IEZZI, Gelson; DOLCE, Osvaldo; MURAKAMI, Carlos. Fundamentos de matemática elementar: 2 : logaritmos . 9. ed. São Paulo, SP: Atual, 2004. 198 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (375, '853704582', 'IEZZI, Gelson; HAZZAN, Samuel. Fundamentos de matemática elementar: 4 : seqüências, matrizes, determinantes, sistemas . 7. ed. São Paulo, SP: Atual, 2004. 232 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (376, '8535705465', 'IEZZI, Gelson. Fundamentos de matemática elementar: 7 : geometria analítica . 5. ed. São Paulo, SP: Atual, 2005. 282 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (377, '8535705473', 'IEZZI, Gelson; MURAKAMI, Carlos; MACHADO, Nílson José. Fundamentos de matemática elementar: 8 : limites, derivadas, noções de integral . 6. ed. São Paulo, SP: Atual, 2005. 263 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (378, '8535704612', 'HAZZAN, Samuel. Fundamentos de matemática elementar, 5: combinatória, probabilidade : 43 exercícios resolvidos, 439 exercícios propostos com resposta, 155 testes de vestibulares com resposta. 7. ed. São Paulo, SP: Atual, 2004. 184 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (379, '8535705481', 'IEZZI, Gelson. Fundamentos de matemática elementar, 6: complexos, polinômios, equações : 89 exercícios resolvidos, 422 exercícios propostos com resposta, 273 testes de vestibulares com resposta. 7. ed. São Paulo, SP: Atual, 2005. 250 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (380, '9788522107964', 'SCHEINERMAN, Edward R. Matemática discreta: uma introdução . São Paulo: Cengage Learning, 2011. xxiii, 573 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (381, '9788577260362', 'ROSEN, Kenneth H. Matemática discreta e suas aplicações. 6. ed. São Paulo, SP: McGraw-Hill, 2009. xxi, 982 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (382, '8571109168', 'ALBERTI, Leon Battista. Matemática lúdica. Rio de Janeiro, RJ: Jorge Zahar, 2006. 115 p. (Ciência e cultura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (383, '3540219439', 'MAJEWSKI, M. MuPAD Pro computing essentials. 2nd. ed. Berlin: Springer-Verlag, 2004. xi, 538 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (384, '9788502102033', 'SMOLE, Kátia Cristina Stocco; DINIZ, Maria Ignez de Souza Vieira. Matemática: ensino médio. São Paulo, SP: Saraiva, 2010. 3 v.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (385, '0122384520', 'ENDERTON, Herbert B. A mathematical introduction to logic. 2nd ed. San Diego, California: Harcourt/Academic Press, c2001. xii, 317 p. ;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (386, '9788571398979', 'CARNIELLI, Walter Alexandre; EPSTEIN, Richard L. Computabilidade,: funções computáveis, lógica e os fundamentos da matemática . 2. ed. rev. São Paulo: Ed. UNESP, 2009. 415 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (387, '8535210725', 'HOPCROFT, John E. Introdução à teoria de autômatos, linguagens e computação. Rio de Janeiro: Elsevier, 2002. 560 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (433, '8522425353', 'LEONE, George Sebastiao Guerra. Custos: planejamento, implantação e controle . 3.ed. São Paulo, SP: Atlas, 2000. 518 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (388, '9780321455369', 'HOPCROFT, John E.; MOTWANI, Rajeev. Introduction to automata theory, languages, and computation. Boston: Pearson Addison Wesley, c2007. xvii, 535 p. (Addison-Wesley series in computer science.)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (866, '0073294411', 'LAW, Averill M. Simulation Modeling and Analysis. McGraw-Hill. 4th ed., 2006. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (389, '9788535229615', 'SOUZA, João Nunes de. Lógica para ciência da computação: uma introdução concisa. 2. ed. rev. e atual. Rio de Janeiro: Elsevier, 2008. 220 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (390, '8522105170', 'SILVA, Flávio Soares Corrêa da; FINGER, Marcelo; MELO, Ana Cristina Vieira de. Lógica para computação. São Paulo, SP: Thomson Learning, 2006. 234 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (391, '9780521527149', 'BLACKBURN, Patrick; RIJKE, Maarten de; VENEMA, Yde. Modal logic. Cambridge: Cambridge Univ. Press, c2001. xxii, 554 p. (Cambridge tracts in theoretical computer science ; 53)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (392, '0201530821', 'PAPADIMITRIOU, Christos H. Computational complexity. Reading, Massachusetts [Estados Unidos]: Addison-Wesley, c1994. xv, 523 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (393, '8524401087', 'GONCALVES, Adilson. Introdução à álgebra. 5. ed. Rio de Janeiro, RJ: IMPA, 2005. 194 p. (Projeto Euclides)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (394, '9788588639379', 'DEMANA, Franklin D. Pré-cálculo. São Paulo: Addison-Wesley, 2009. xv, 380 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (395, '9780321356932', 'DEMANA, Franklin D. Precalculus graphical, numerical, algebraic: media update. 7th. ed. Boston: Addison-Wesley, 2010. xxiv, 1032 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (397, '9780072988437', 'LAW, Averill M. Simulation modeling and analysis. 4th ed. Boston: McGraw-Hill, 2007. xix, 768 p. + + 1 CD-ROM (4 3/4 in.) (McGraw-Hill series in industrial engineering and management science)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (398, '8531406773', 'MAGALHÃES, Marcos Nascimento. Noções de probabilidade e estatística. 6. ed. rev. São Paulo: Editora da Universidade de São Paulo, 2005. xv, 392 p. (Acadêmica ; 40)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (399, '9788531406775', 'MAGALHÃES, Marcos Nascimento. Noções de probabilidade e estatística. 7. ed. rev. São Paulo, SP: Editora da Universidade de São Paulo, 2010. xv, 408 p. (Acadêmica ; 40)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (404, '9788576051992', 'WALPOLE, Ronald E. Probabilidade e estatística: para engenharia e ciências. 8. ed. São Paulo, SP: Pearson/ Prentice Hall, 2009. xiv, 491 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (405, '9788571931909', 'ALBUQUERQUE, José Paulo de Almeida e; FORTES, José Mauro Pedro; FINAMORE, Weiler Alves. Probabilidade, variáveis aleatórias e processos estocásticos. Rio de Janeiro, RJ: Editora PUC-Rio; Interciência, 2008. 334 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (406, '0262150417', 'OSBORNE, Martin J; RUBINSTEIN, Ariel. A course in game theory. London, England: Mit Press, 1998. 352 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (407, '9788535215205', 'GOLDBARG, Marco Cesar. Otimização combinatória e programação linear: modelos e algoritmos. Rio de Janeiro: Elsevier: Campus, 2005. xvi, 518 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (408, '8524106913', 'MENEZES, Paulo Blauth; UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL. Matemática discreta para computação e informática. 2. ed. Porto Alegre: Sagra Luzzato, 2005. 258p (Livros didáticos. 16)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (411, '9780471734406', 'GILAT, Amos; SUBRAMANIAM, Vish. Numerical methods for engineers and scientists: an introduction with applications using MATLAB . Massachusetts, [Estados Unidos]: J. Wiley & Sons, 2008. xx, 459 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (412, '9788587918567', 'HANSELMAN, Duane C.; LITTLEFIELD, Bruce. Matlab 6: curso completo. São Paulo, SP: Pearson Prentice Hall, 2007. xvi , 676 p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (413, '9788576053729', 'LARSON, Ron; FARBER, Betsy. Estatística aplicada. 4. ed. São Paulo, SP: Pearson/ Prentice Hall, 2010. 637 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (414, '9788587918598', 'LARSON, Ron; FARBER, Betsy. Estatística aplicada. 2. ed. São Paulo, SP: Pearson/ Prentice Hall, c2004. 476 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (415, '9788522459940', 'BARBETTA, Pedro Alberto; REIS, Marcelo Menezes; BORNIA, Antonio Cezar. Estatística para cursos de engenharia e informática. 3. ed. São Paulo, SP: Atlas, 2010. 410 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (416, '8536306882', 'DANCEY, Christine P.; REIDY, John. Estatística sem matemática para psicologia: usando SPSS para Windows. 3. ed. Porto Alegre, RS: Artmed, 2006. 608 p. (Biblioteca Artmed. Métodos de Pesquisa)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (417, '9788521615866', 'TRIOLA, Mario F. Introdução à estatística. 10. ed. Rio de Janeiro, RJ: LTC, 2008. 686 p. + 1 CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (418, '8529400925', 'STEVENSON, William J. Estatística aplicada à administração. São Paulo: Harbra, c1981. 495p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (419, '0471283665', 'WOLSEY, Laurence A. Integer programming. New York, NY: John Wiley & Sons, 1998. 264 p. (Wiley-Interscience series in discrete mathematics and optimization)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (420, '9788526258570', 'LUZ, Antônio Máximo Ribeiro da; ALVARES, Beatriz Alvarenga, Luz,A.M.R. Curso de física: Antônio Máximo Ribeiro da Luz, Beatriz Alvarenga Álvares. São Paulo, SP: Scipione, 2005. 3 v.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (421, '9788535711868', 'FERRARO, Nicolau Gilberto. Física básica. 3. ed. São Paulo, SP: Atual, 2009. 720 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (422, '9788573935707', 'COUTO, Ana Brasil. CMMI: integração dos modelos de capacitação e maturidade de sistemas. Rio de Janeiro: Ciência Moderna, 2007. xvi, 276 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (423, '9780470099254', 'HARPER, Brian D.; MERIAM, J. L; KRAIGE, L. G. Solving statics problems in MATLAB: engineering mechanics: statics. 6th ed. Massachusetts, [Estados Unidos]: J. Wiley & Sons, 2007. 139 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (424, '9788576051985', 'RAPPAPORT, Theodore S. Comunicações sem fio: principios e práticas. 2. ed. São Paulo, SP: Pearson/ Prentice Hall, 2009. 409 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (425, '85346154039', 'LEE, Valentino. Aplicações móveis: arquitetura, projeto e desenvolvimento. São Paulo, SP: Pearson Makron Books, 2005. xx, 328 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (426, '8574522147', 'FIORESE, Virgílio. Wireless: introdução às redes de telecomunicação móveis celulares . Rio de Janeiro: Brasport, 2005. xv, 343 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (427, '9788536502076', 'MARIN, Paulo S. Cabeamento estruturado: desvendando cada passo : do projeto à instalação . 3. ed. rev. e atual. São Paulo: Érica, 2009. 336 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (428, '9788535213041', 'PINHEIRO, José Maurício S. Guia completo de cabeamento de redes. Rio de Janeiro, RJ: Elsevier, 2003. xviii, 239p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (429, '8587062360', 'DUQUE, José Guimarães. O Nordeste e as lavouras xerófilas. 4. ed. Fortaleza, CE: Banco do Nordeste do Brasil, 2004. 329 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (430, '9788576058082', 'HONG, Yuh Ching.; MARQUES, Fernando. Contabilidade & finanças para não especialistas. 3. ed. São Paulo, SP: Pearson, 2010. vii, 337 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (431, '9788522462872', 'IUDICIBUS, Sérgio de; MARION, José Carlos. Curso de contabilidade para não contadores: para as áreas de administração, economia, direito e engenharia . 7. ed. São Paulo, SP: Atlas, 2011. 274 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (432, '8522430780', 'MOSCOVE, Stephen A.; SIMKIN, Mark G.; BAGRANOFF, Nancy A. Sistemas de informações contábeis. São Paulo, SP: Atlas, 2002. 451 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (435, '8576050261', 'CARAVANTES, Geraldo Ronchetti.; PANNO, Cláudia Caravantes.; KLOECKNER, Mônica Caravantes. Administração: teorias e processo. São Paulo, SP: Prentice Hall, 2005. 572p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (436, '9788577807451', 'FITZSIMMONS, James A; FITZSIMMONS, Mona J. Administração de serviços: operações, estratégia e tecnologia da informação. 6.ed. Porto Alegre, RS: Bookman, 2010. 583 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (437, '9788576800927', 'WEILL, Peter; ROSS, Jeanne W. Conhecimento em TI: o que os executivos precisam saber para conduzirem com sucesso TI em suas empresas . São Paulo: M. Books do Brasil, 2010. 162 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (438, '8560334009', 'CARVALHO, Isamir Machado de. Gestão do conhecimento: uma estratégia empresarial. Brasília, DF: J.J. Gráfica e Comunicações, 2006. 346 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (439, '8522413630', 'SILVA, Adelphino Teixeira da. Organizacao e tecnica comercial. 20. ed. rev. e atual. Sao Paulo: Atlas, 1996.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (441, '8535213481', 'CHIAVENATO, Idalberto. Introdução à teoria geral da administração. 7. ed., totalmente rev. e atual. Rio de Janeiro: Elsevier: Campus, 2003. xxviii, 634 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (442, '9788522436934', 'ARAÚJO, Luís César G. de. Teoria geral da administração: aplicações e resultados nas empresas brasileiras. São Paulo, SP: Atlas, 2004. 291 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (443, '9788522460250', 'ARAÚJO, Luís César G. de; GARCIA, Adriana Amadeu. Teoria geral da administração: orientação para escolha de um caminho profissional. São Paulo: Atlas, 2010. 305 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (444, '9788536301174', 'COOPER, Donald R.; SCHINDLER, Pamela S. Métodos de pesquisa em administração. 7. ed. Porto Alegre: Bookman, 2008. ix, 640 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (445, '8574521914', 'FREITAS, Rogério Afonso de. Portais corporativos: uma ferramenta estratégica para a gestão do conhecimento. Rio de Janeiro, RJ: Brasport, 2004. xviii, 104 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (446, '8535215719', 'TURBAN, Efraim; RAINER, R. Kelly; POTTER, Richard E. Administração de tecnologia da informação. Rio de Janeiro, RJ: Elsevier, Campus, 2005. xvii, 618 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (447, '9788535217360', 'SALIM, César Simões. Construindo planos de negócios: todos os passos necessários para planejar e desenvolver negócios de sucesso. 3. ed. rev. e atual. Rio de Janeiro, RJ: Elsevier, 2005. xiv, 332 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (448, '8534607958', 'WESTON, J. Fred; BRIGHAM, Eugene F. Fundamentos da administração financeira. São Paulo, SP: Pearson Makron Books, 2004. xxxi, 1030 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (449, '8522426066', 'ROSS, Stephen A; WESTERFIELD, Randolph; JORDAN, Bradford D. Princípios de administração financeira. 2. ed. São Paulo, SP: Atlas, 2000. 523p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (450, '8572821856', 'SANTOS, Sandra Maria dos; PESSOA, Maria Naiula Monteiro; MACIEL, Terezinha de Jesus Pinheiro. Experiências recentes em controladoria. Fortaleza, CE: Edições UFC, 2005. 302p. (Estudos Contemporâneos em Controladoria ; 1)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (451, '9788522456932', 'PADOVEZE, Clóvis Luís. Sistemas de informações contábeis: fundamentos e análise. 6. ed. São Paulo, SP: Atlas, 2009. xvi, 331p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (452, '9788522449118', 'PADOVEZE, Clóvis Luís. Sistemas de informações contábeis: fundamentos e análise. 5. ed. São Paulo: Atlas, 2007. xvi, 331 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (455, '9788522461370', 'FERRONATO, Airto João. Gestão contábil-financeira de micro e pequenas empresas: sobrevivência e sustentabilidade . São Paulo: Atlas, 2011. 247 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (456, '852241422X', 'WELSCH, Glenn A. Orçamento empresarial. 4. ed. São Paulo: Atlas, 1983. 397 p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (457, '9788522451487', 'BRUNI, Adriano Leal; FAMÁ, Rubens. Gestão de custos e formação de preços: com aplicações na calculadora HP 12C e excel. 5. ed. São Paulo, SP: Atlas, 2008. 569 p. (Série Finanças na Prática)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (458, '8573123664', 'LIMONGI-FRANCA, Ana Cristina. As pessoas na organização. São Paulo, SP: Editora Gente, 2002. 306 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (459, '8572821872', 'ESTUDOS empíricos em gestão de recursos humanos e marketing. Fortaleza, CE: Edições UFC, 2005. 385 p. (Estudos Contemporâneos em Administração ; 1)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (460, '9788572822305', 'LIMA, Marcos Antonio Martins; MACIEL, Terezinha de Jesus Pinheiro. Avaliação, gestão e estratégias educacionais: projetos e processos inovadores em organizações. Fortaleza, CE: Edições UFC, 2008. 334 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (461, '9788573936032', 'ARAÚJO FILHO, Geraldo Ferreira de. Empreendedorismo criativo: a nova dimensão da empregabilidade . Rio de Janeiro: Ciência Moderna, 2007. 558 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (462, '9788522454174', 'ANDRADE, Adriana; ROSSETTI, José Paschoal. Governança corporativa: fundamentos, desenvolvimento e tendências. 4. ed. São Paulo, SP: Atlas, 2009. 584p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (463, '9788522448524', 'ANDRADE, Adriana; ROSSETTI, José Paschoal. Governança corporativa: fundamentos, desenvolvimento e tendências . 3. ed., atual. e ampl. São Paulo: Atlas, 2007. 584p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (464, '9788522462711', 'ROSSETTI, José Paschoal; ANDRADE, Adriana. Governança corporativa: fundamentos, desenvolvimento e tendências . 5. ed. atual. e ampl. São Paulo: Atlas, 2011. 596 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (467, '9788573937411', 'MANSUR, Ricardo. Balanced scorecard: revelando SEPV : estudos de casos brasileiros. Rio de Janeiro, RJ: Ciência Moderna, 2008. xi, 265p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (468, '9788535234176', 'FERRARI, Roberto. Empreendedorismo para computação: criando negócios em tecnologia. Rio de Janeiro, RJ: Elsevier, 2010. 164 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (469, '8522443955', 'BALLESTERO-ALVAREZ, María Esmeralda. Manual de organização, sistemas e métodos: abordagem teorica e prática da engenharia da informação. 3. ed. São Paulo, SP: Atlas, 2006. 329p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (470, '9788563308030', 'Hillier Frrederick S. INTRODUÇÃO a pesquisa operacional. 8.ed. Porto Alegre, RS: Bookman, 2010. 852p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (471, '8573034505', 'MEDEIROS, Elizabet M. Spohr de; SAUVÉ, Jácques Philippe. Avaliação do impacto de tecnologias da informação emergentes nas empresas. Rio de Janeiro, RJ: Qualitymark, 2003. 178 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (472, '9788535238990', 'MCAFEE, Andrew. Empresas 2.0: a força das mídias colaborativas para superar grandes desafios empresariais. Rio de Janeiro, RJ: Elsevier, 2010. 216 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (473, '9788535237061', 'ALBERTIN, Rosa Maria de Moura; ALBERTIN, Alberto Luiz. Estratégias de governança de tecnologia da informação: estrutura e práticas . Rio de Janeiro, RJ: Elsevier, 2010. 212 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (474, '9788573079784', 'PROBST, Gilbert; RAUB, Steffen; ROMHARDT, Kai. Gestão do conhecimento: os elementos construtivos do sucesso. Porto Alegre: Bookman, 2002. vii, 286 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (475, '8589384780', 'WEILL, Peter; ROSS, Jeanne W. Governança de TI: tecnologia da informação : como as empresas com melhor desempenho administram os direitos decisórios de TI na busca por resultados superiores. São Paulo, SP: M. Books do Brasil, 2006. 276p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (466, '0131986600', 'EFRAIM, T DECISION support and business intelligence systems. 8th. ed. New Jersey: Prentice Hall, 2007. xxviii, 772 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (465, '9780136107293', 'EFRAIM, T. DECISION support and business intelligence systems. 9th. ed. New Jersey: Prentice Hall, 2011. xxii, 696 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (478, '9788502054424', 'FONTES, Edison Luiz Gonçalves. Segurança da informação: o usuário faz a diferença. São Paulo, SP: Saraiva, 2006. 172 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (573, '8536800739', 'AZEVEDO, Aluísio. O Cortiço. São Paulo, SP: DCL, 2008. 136 p. (Coleção Nossa Literatura Clássica Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (479, '9788522440856', 'BEAL, Adriana. Segurança da informação: princípios e melhores práticas para a proteção dos ativos de informação nas organizações. São Paulo, SP: Atlas, 2008. xii, 175 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (480, '857605065X', 'OLIVEIRA, Fátima Bayma de FUNDAÇÃO DE AMPARO À PESQUISA DO ESTADO DO RIO DE JANEIRO; FUNDAÇÃO GETÚLIO VARGAS. Tecnologia da informação e da comunicação: desafios e propostas estratégicas para o desenvolvimento dos negócios. São Paulo, SP: Prentice Hall, 2006. 240p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (481, '9788536303413', 'TURBAN, Efraim. Tecnologia da informação para gestão: transformando os negócios na economia digital. 3. ed. Porto Alegre: Artmed, 2004. xiv, 660 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (482, '9788577805082', 'TURBAN, Efraim. Tecnologia da informação para gestão: transformando os negócios na economia digital. 6. ed. Porto Alegre: Bookman, 2010. xiii, 680 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (486, '9788522461226', 'REZENDE, Denis Alcides. Planejamento de sistemas de informação e informática: guia prático para planejar a tecnologia da informação integrada ao planejamento estratégico das organizações. 4. ed. São Paulo, SP: Atlas, 2011. 179 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (487, '9788576059233', 'LAUDON, Kenneth C.; LAUDON, Jane Price. Sistemas de informação GERÊNCIAis. 9. ed. São Paulo, SP: Pearson Education do Brasil, 2011. xxviii, 428 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (488, '9788576050896', 'LAUDON, Kenneth C.; LAUDON, Jane Price. Sistemas de informação GERÊNCIAis. 7. ed. São Paulo: Prentice Hall, 2007. xxi, 452 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (490, '9788522450039', 'REZENDE, Denis Alcides; Abreu. Tecnologia da informação aplicada a sistemas de informação empresariais: o papel estratégico da informação e dos sistemas de informação nas empresas. 5. ed. rev. e amp. São Paulo, SP: Atlas, 2008. 303 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (491, '9788522465187', 'REZENDE, Denis Alcides; Abreu (Professora). Tecnologia da informação aplicada a sistemas de informação empresariais: o papel estratégico da informação e dos sistemas de informação nas empresas. 8. ed. rev. e amp. São Paulo, SP: Atlas, 2011. xxv, 335 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (492, '852243493X', 'SOUZA, Cesar Alexandre de.; SACCOL, Amarolinda Zanela. Sistemas ERP no Brasil: (enterprise resource planning); teoria e casos. São Paulo, SP: Atlas, 2003. 368p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (493, '9788574523237', 'DINSMORE, Paul C.; CABANIS-BREWIN, Jeannette. AMA: manual de GERÊNCIAmento de projetos. Rio de Janeiro, RJ: Brasport, 2009. xxii, 498p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (494, '9788574523750', 'VARGAS, Ricardo Viana. Análise de valor agregado em projetos: revolucionando o GERÊNCIAmento de custos e prazos . 4. ed. Rio de Janeiro: Brasport, 2008. xviii, 107p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (495, '8573035579', 'DINSMORE, Paul Campbell; BARBOSA, Adriane Monteiro Cavalieri. Como se tornar um profissional em GERÊNCIAmento de projetos: livro base de preparação para certificação PMP - Project Management Professional. 2. ed. Rio de Janeiro: Qualitymark, 2007. xxxvi, 342 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (502, '9788573039788', 'DINSMORE, Paul Campbell; BARBOSA, Adriane Monteiro Cavalieri. Como se tornar um profissional em Gerênciamento de projetos: livro-base de Preparação para certificação PMP® - Project management professional. 4. ed., rev. e ampl. Rio de Janeiro: Qualitimark, 2011. xxiv, 383p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (503, '9788535211832', 'PHILLIPS, Joseph. Gerência de projetos de tecnologia da informação: no caminho certo, do início ao fim. Rio de Janeiro, RJ: Elsevier, 2003. xviii, 449 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (504, '9788576084983', 'GREENE, Jennifer; STELLMAN, Andrew. Use a cabeça! PMP. Rio de Janeiro: Alta Books, 2010. xxxv, 794 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (505, '9781933890517', 'A GUIDE to the project management body of knowledge (PMBOK GUIDE). 4rd. ed. Newtown Square, Pa: Project Management Institute, c2008. xxvi, 467 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (506, '9788522106080', 'FARAH, Osvaldo Elias. Empreendedorismo estratégico. São Paulo: Cengage Learning, 2008. 251 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (507, '9788502067448', 'CHIAVENATO, Idalberto. Empreendedorismo: dando asas ao espírito empreendedor: empreendedorismo e viabilização de novas empresas, um guia eficiente para iniciar e tocar seu próprio negócio. 3. ed. rev. e atual. São Paulo, SP: Saraiva, 2008. xiv, 281 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (508, '9788576352600', 'JUSTUS, Roberto. O empreendedor: como se tornar um líder de sucesso. São Paulo, SP: Larousse do Brasil, 2007. 127 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (509, '9788535232707', 'DORNELAS, Jose Carlos Assis. Empreendedorismo: transformando idéiais em negócios . 3. ed. rev. atual. Rio de Janeiro: Elsevier, 2008. 232 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (510, '9788535247589', 'DORNELAS, Jose Carlos Assis. Empreendedorismo: transformando idéiais em negócios . 4. ed. rev. atual. Rio de Janeiro, RJ: Elsevier, 2012. 260 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (514, '9788575423387', 'DOLABELA, Fernando. O segredo de Luísa: uma idéia, uma paixão e um plano de negócios: como nasce o empreendedor e se cria uma empresa . Rio de Janeiro: Sextante, 2008. 299 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (515, '8535201772', 'NONAKA, Ikujiro; TAKEUCHI, Hirotaka. Criação de conhecimento na empresa: como as empresas japonesas geram a dinâmica da inovação . 19. ed. Rio de Janeiro: Campus; Elsevier, 1997. 358p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (516, '8573590963', 'CARUSO, Carlos A. A.; STEFFEN, Flávio Deny. Segurança em informática e de informações. 3. ed. rev. ampl. São Paulo: SENAC, 2006.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (517, '9788574523460', 'FERNANDES, Aguinaldo Aragon; ABREU, Vladimir Ferraz de. Implantando a governança de TI: da estratégia à gestão de processos e serviços . 2. ed. rev. ampl. Rio de Janeiro, RJ: Brasport, 2008. xxviii, 444 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (518, '9788520427422', 'CHIAVENATO, Idalberto. Planejamento e controle da produção. 2. ed.,rev., atual. São Paulo: Manole, 2008. 138 p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (519, '8521614004', 'MONTGOMERY, Douglas C. Introdução ao controle estatístico da qualidade. 4. ed. Rio de Janeiro: Livros Técnicos e Científicos, c2004. 513 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (520, '9788522456178', 'DIAS, Marco Aurélio P. Administração de materiais: princípios, conceitos e gestão. 6. ed. São Paulo, SP: Atlas, 2010. 346p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (521, '8587918095', 'TURBAN, Efraim; KING, David R. Comércio eletrônico: estratégia e gestão . São Paulo: Prentice Hall, 2004. xvii, 436 .p :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (567, '8536800860', 'ASSIS, Machado de. Dom Casmurro. São Paulo: DCL, 2005. 120 p. (Serie Bom Livro Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (522, '9788522456857', 'ALBERTIN, Alberto Luiz.; MOURA, Rosa Maria de. Comércio eletrônico: modelo, aspectos e contribuições de sua aplicação. 6. ed. atual. e ampl. São Paulo, SP: Atlas, 2004. 306 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (523, '8573078758', 'KALAKOTA, Ravi; ROBINSON, Marcia. e-business: estratégias para alcançar o sucesso no mundo digital. 2. ed. Porto Alegre, RS: Bookman, 2002. 470p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (524, '0130323640', 'DEITEL, Harvey M.; DEITEL, Paul J.; STEINBUHLER, K. E-business & e-commerce for managers. New Jersey: Prentice Hall, 2001. xxxvii, 794 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (525, '8534613737', 'DEITEL, Harvey M.; DEITEL, Paul J.; STEINBUHLER, K. E-business e e-commerce para administradores. São Paulo: Makron Books, 2004. xxii, 456 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (526, '8561381000', 'LIMA, Roberto Galvão; OLIVEIRA, Almir Leal de; UNIVERSIDADE FEDERAL DO CEARÁ. A escola invisível: artes pláticas em Fortaleza 1928-1958. Fortaleza, CE: Quadricolor, 2008. 215 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (527, '9788522106387', 'BERTOMEU, João Vicente Cegato. Criação visual e multimídia. São Paulo, SP: Cengage Learning, 2010. 149 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (528, '9788577807383', 'LIDWELL, William; HOLDEN, Kritina; BUTLER, Jill. Princípios universais do design: 125 maneiras de aprimorar a usabilidade, influenciar a percepção, aumentar o apelo e ensinar por meio do design. Porto Alegre, RS: Bookman, 2010. 272 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (529, '9788574163871', 'WILLIAMS, Robin. Design para quem nao é designer: noções básicas de planejamento visual . 3. ed. São Paulo, SP: Callis, 2009. 191 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (530, '9788532305305', 'MOLETTA, Alex. Criação de curta-metragem em vídeo digital: uma proposta para produções de baixo custo. São Paulo, SP: Summus, 2009. 142 p. ((Biblioteca fundamental de cinema) ; 3)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (531, '8526214527', 'HAGGARD, H. Rider. As minas do Rei Salomão. 10. ed. São Paulo, SP: Scipione, 2000. 99 p. (Série Reencontro)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (532, '9789875665910', 'KEYES, Marian. Bajo el edredón. Buenos Aires, Argentina: DeBOLS!LLO, 2010. 414 p. (Coleção Best Seller)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (533, '8526211978', 'ROSTAND, Edmond,. Cyrano de Bergerac. 12. ed. São Paulo: Scipione Autores Editores, 1987. 88 p. (Série Reencontro Série Reencontro)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (534, '0689867220', 'HOPKINS, Cathy. Mates, dates and mad mistakes. New York, NY: Simon Pulse, 2004. 209 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (535, '8586796980', 'COLBERT, David. O mundo mágico de Harry Potter: mitos, lendas e histórias fascinantes. Rio de Janeiro, RJ: Sextante, 2001. 183 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (536, '852621733X', 'MALORY, Thomas Sir. O Rei Artur e os cavaleiros da Tavola Redonda. 12. ed. São Paulo, SP: Scipione, 2001. 80 p. (Série Reencontro)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (537, '0679801146', 'PIERCE, Tamora. Alanna: the first adventure. New York, NY: Random House, 1983.. 216 p. (Song of the lioness ; 1)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (538, '0763619582', 'MACKLER, Carolyn. The earth, my butt, and other big, round things. Cambridge, Massachusetts: Candlewick Press, 2003. 246 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (539, '0590476998', 'RUBY, Lois. Skin Deep. New York: Scholastic, 1994. 280p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (540, '0471138231', 'EPSTEIN, Richard G. The case of the killer robot: stories about the professional, ethical, and societal dimensions of computing. New York, NY: John Wiley & Sons, 1997. x, 242 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (541, '8526237284', 'SHAKESPEARE, William,. A megera domada. São Paulo, SP: Scipione, 2000. 120 p. (Coleção L & PM Pocket. v.95 Série Reencontro)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (542, '0521664772', 'SCOTT-MALDEN, Sarah. A Picture to remember. 1st ed. Cambridge, UK: Cambridge University Press, 1999. 48 p. (Cambridge english readers ; level 2.)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (543, '0194230678', 'DICKENS, Charles. Great expectations. 2. ed. Oxford [England]: Oxford University Press, 2000. 104 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (544, '0521656079', 'MALEY, Alan. He Knows too much. Austrália: Cambridge University Press, 1999. 112 p. (Cambridge english readers ; 6)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (545, '9788501053213', 'FIELDING, Helen. O diário de Bridget Jones. 25. ed. Rio de Janeiro, RJ: Record, 2007. 319p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (546, '9780140292817', 'KEYES, Marian. Sushi for beginners. England: Penguin Books, 2001. 563 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (547, '9788525419132', 'CHRISTIE, Agatha. testemunha ocular do crime. Porto Alegre, RS: L & PM, 2009. 254p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (548, '0435272705', 'GALSWORTHY, John. The man of property. Oxford [England]: Macmillan Heinemann, 1995. 95 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (549, '8525410349', 'FLEMING, Ian. Viva e deixe morrer. Porto Alegre, RS: L&PM, 1999. 326 p. (L&PM Pocket ; 193)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (550, '8500217588', 'CERVANTES SAAVEDRA, Miguel de. Dom Quixote. 22. ed. Rio de Janeiro, RJ: Ediouro, 2005. 186 p. (Coleção Clássicos para o jovem leitor)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (551, '8572821287', 'VIANA, Carlos Augusto. Drummond: a insone arquitetura. Fortaleza: Ed. UFC, 2003. 167p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (552, '8536800844', 'ALVES, Castro. Espumas flutuantes. São Paulo, SP: DCL, 2005. 95 p. (Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (553, '8536800801', 'GONZAGA, Tomás Antônio. Marília de Dirceu. São Paulo: DCL, 2005. 119 p. (Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (554, '857485042X', 'MAIA, Virgílio. Palimpsesto & outros sonetos. Fortaleza: Imprensa Universitária da Universidade Federal do Ceará, 2004. 99 p. (Coleção Literatura no Vestibular ; 3)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (555, '8572821708', 'BEZERRA, João Clímaco. A vinha dos esquecidos. Fortaleza: Ed. UFC, 2005. 227 p. (Coleção Literatura no Vestibular ; 6)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (556, '8536800887', 'AZEVEDO, Aluísio. Casa de pensão. São Paulo, SP: DCL, 2005. 175 p. (Serie Bom Livro Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (557, '8536800836', 'TAUNAY, Alfredo d´Escragnolle Taunay Visconde de,. Inocência. São Paulo: DCL, 2005. 104 p. (Serie Bom Livro Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (558, '8586375942', 'ALMEIDA, Manuel Antônio de. Memórias de um sargento de milícias. Fortaleza: DCL, 2001. 120 p. (Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (559, '8572821686', 'MONTE, Airton. Moça com flor na boca: crônicas escolhidas. Fortaleza: Ed. UFC, 2005. 130 p. (Coleção Literatura no Vestibular ; 4)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (560, '8536800771', 'AZEVEDO, Álvares de. Noite na taverna e Macário : Álvares de Azevedo . São Paulo, SP: DCL, 2005. 80 p. (Biblioteca de literatura brasileira)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (561, '8587791052', 'VIANCO, André. Os sete. São Paulo, SP: Novo Século, 2001. 380 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (562, '8536800704', 'BARRETO, Lima. Triste fim de Policarpo Quaresma. São Paulo, SP: DCL, 2005. 119 p. (Bom livro Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (563, '9788525409683', 'ASSIS, Machado de. Contos fluminenses. São Paulo, SP: DCL, 2005. 219p. (Coleção L&PM Pocket ; 151)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (564, '8587653334', 'ALENCAR, José de. Luciola. Fortaleza: ABC, 2002. 152p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (565, '8508004656', 'GÜIMARÃES, Bernardo,. A escrava Isaura. São Paulo, SP: DCL, 2005. 96 p. (Classicos da Literatura Brasileira Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (566, '8536800895', 'MACEDO, Joaquim Manuel de. A Moreninha. São Paulo, SP: DCL, 2005. 96 p. (Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (568, '8500005645', 'TAUNAY, Alfredo d´Escragnolle Taunay Visconde de,. Inocência. 2. ed. Rio de Janeiro, RJ: Ediouro, 2001. 216 p. (Serie Bom Livro Coleção Super Prestígio)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (569, '8536800828', 'ALENCAR, José de. Iracema: lenda do Ceará. São Paulo: DCL, 2005. 71 p. (Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (570, '853680081X', 'ALENCAR, José de. Lucíola. Fortaleza: DCL, 2005. 88 p. (Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (801, '9780470177075', 'MAK, Ronald, Writing Compilers and Interpreters: A Software Engineering Approach, Wiley, 3rd Edition, 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (571, '8536800798', 'ASSIS, Machado de. Memórias Póstumas de Brás Cubas. São Paulo, SP: DCL, 2005. 112 p. (Coleção Nossa Literatura Clássica Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (575, '8572821406', 'CAMPOS, Natércia Maria Alcides. A casa. Fortaleza, CE: Ed. UFC, 2004. 89 p. (Coleção Literatura no Vestibular ; 2)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (576, '8536800747', 'BARRETO, Lima. Os Bruzundangas. Fortaleza: DCL, 2005. 88 p. (Coleção Literatura no Vestibular ; 1 Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (577, '8536800712', 'HERCULANO, Alexandre. Eurico, o presbítero. São Paulo, SP: DCL, 2005. 96 p. (O Monasticon ; v. 1 Grandes Nomes da Literatura)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (578, '0471314250', 'CHRISMAN, Nicholas. Exploring geographic information systems. 2nd. ed. New York, NY: John Wiley, 2002. xvi, 289 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (579, '9781589482609', 'ORMSBY, Tim. Getting to know ArcGIS desktop. 2nd. ed., atualizado para ArcGis 10. Redlands, Calif.: ESRI Press, 2010. xii, 584 p. + CD-ROM', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (580, '8508067712', 'POLIZZI, Valéria Piassa. Depois daquela viagem: diário de bordo de uma jovem que aprendeu a viver com AIDS. 18. ed. São Paulo, SP: Ática, 1999. 279 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (581, '8575631160', 'DUARTE, Ana Rita Fonteles UNIVERSIDADE FEDERAL DO CEARA. Carmen da Silva: o feminismo na imprensa brasileira . Fortaleza: Expressão Gráfica e Editora, 2005. 185p. (Historia e memória do jornalismo Série História e Memória do Jornalismo)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (582, '9788574851464', 'MAIA, Michelle Ferreira. Lembrança de alguém: a construção das memórias sobre a santidade de João das Pedras. Fortaleza, CE: Imprensa Universitária - UFC, 2010. 262 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (583, '9788574851457', 'GOMES, José Eudes Arrais Barroso. Um escandaloso theatro de horrores: a capitania do Ceará sob o espectro da violência. Fortaleza, CE: Imprensa Universitária - UFC, 2010. 283 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (585, '999999506', 'INTERNATIONAL Network for Social Network Analysis. Disponível em: <http://www.insna.org.>. Acesso em: 23 jan. 2013', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (586, '999999507', 'VASCONCELOS, Davi Romero de; HAEUSLER, Edward Hermann. PONTIFÍCIA UNIVERSIDADE CATÓLICA DO RIO DE JANEIRO Departamento de Informática. Lógica modal de primeira-ordem para racionar sobre jogos. 2007. 241f. Tese(DoutoradoemInformática)-Pontifícia Universidade Católica do Rio de Janeiro, Rio de Janeiro, 2007', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (587, '9788563899156', 'FOWLER, F. J. Pesquisa de Levantamento. PortoAlegre:Pearson, 2011', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (588, '0321826620', 'FOWLER, M. NoSQL Distilled: a brief guide to the emerging world of poliglot persistence. SãoPaulo:Prentice-Hall, 2012', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (589, '9788577806812', 'MENEZES, Paulo Blauth; UNIVERSIDADE FEDERAL DO RIO GRANDE DO SUL. Matemática discreta para computação e informática. 3. ed. PortoAlegre, RS:Bookman, 2010. 350p(Livrosdidáticos. 16)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (591, '3212935332011', 'AMBLER, ScottW. ;SADALAGE, PramondJ. Refactoring databases: evolutionary database design. NewJ ersey: Addison-Wesley, 2011. 350p. (The Addison Wesley signature series)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (592, '9780321712479', 'APPELO, J. Management3. 0:Leading agile developers, developing agile leaders. NewYork: Addison Wesley, 2010. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (593, '0321417461', 'BRATKO, Ivan. Prolog programming for artificial intelligence. 4. ed. Wokingham: Addison-Wesley, 2011. (International computer science series)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (594, '0452284392', 'BARABASI, Albert-Laszlo. Linked: how everything is connected to everything else and what it means for business, science, and everyday life. New York, :Plume Book, 2003. 294p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (595, '0321154959', 'BASS, Len; CLEMENTS, Paul; KAZMAN, Rick. Software architecture in practice. 2. ed. Boston: Addison-Wesley, 2003. 528p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (596, '9788580630534', 'BASTOS, Aderson et al. Base de conhecimento em teste de software. 3. ed. São Paulo: Martins Fontes, 2012. 263p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (597, '157586374X', 'BARWISE, Jon; ETCHEMENDY, John; ALLWEIN, Gerard; BARKER-PLUMMER, Dave;LIU, Albert. Language, proof and logic. Stanford:CSLI, 2008. 587p. ;(CSLI lecture notes;v23)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (598, '8535205624', 'BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar. UML: guia do usuário. 2. ed. Rio de Janeiro, RJ: Campus, 2005. 474p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (599, '0471958697', 'BUSCHMANN, Franketal. Pattern-oriented software architecture: volume4: a system of patterns. New York: John Wiley & Sons, 1996. 457p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (600, '9780131479415', 'COHN, Mike; HIGHSMITH, Jim. . Agile estimating and planning. Upper Saddle River, NJ: Prentice Hall PTR, 2006. 330p. (Robert C. Martin series)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (601, '1591392705', 'CROSS, RobertL. ;PARKER, Andrew. The hidden power of social networks: understanding how work really gets done in organizations. Boston: Harvard Business School, 2004. 213p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (602, '9780470542200', 'CROSS, RobertL. ; SINGER et al. The organizational network field book: best practices, techniques and exercises to drive organizational innovation and performance. New York: John Wiley, 2010. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (603, '9781580537919', 'COPELAND, Lee. A practitioners guide to software test design. Boston, Mass. ; London: Artech House, 2004. 294p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (604, '3540208798', 'DALEN, D. van. Logic and structure. 4. ed. Berlin: Springer-Verlag, 2004. 263p. (Universitext)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (605, '852210295', 'DROZDEK, Adam. Estrutura de dados e algoritmos em C++. São Paulo: Thomson, 2002. 579p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (606, '8535212736', 'DATE, C. J. Introdução a sistemas de banco de dados. 8. ed. Rio de Janeiro: Elsevier, 2004. 865p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (607, '9780321336385', 'DUVALL, PaulM. Continuous integration: improving software quality and reducing risk. Boston, MA: Addison-Wesley, 2007. 283p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (608, '8522430357', 'SILVA, Sebastiao Medeiros da; SILVA, Elio Medeiros da; SILVA, Ermes Medeiros da. Matemática básica para cursos superiores. São Paulo: Atlas, 2002. 227p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (609, '0471398195', 'MILI, Hafedh. Reuse-based software engineering: techniques, organization and measurement. New York: Wiley, 2002. 636p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (590, '9788521304036', 'ALENCAR FILHO, E. Iniciação à lógica matemática. 21. ed. SãoPaulo:Nobel, 2008. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (610, '9788575222386', 'LUCKOW, Décio Heinzelmann; MELO, Alexandre Altair. Programação Java para a web. São Paulo: Novatec Editora, 2010. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (611, '9788576086420', 'GEARY, David; HORSTMANN, Cay. Core Java Server Faces. 3. ed. Rio de Janeiro, RJ: AltaBooks, 2012', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (613, '9780470093559', 'MAGEE, J. ;KRAMER, J. Concurrency: state models and Java programs. Michigan:Wiley, 2006. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (614, '1558603484', 'LYNCH, Nancy A. Distributed algorithms. San Francisco: Morgan Kaufmann, 1996. 872p. (The morgan kaufmann series in data management systems). ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (615, '0201633469', 'STEVENS, W. Richard. TCP/IP illustrated: v. 1. Reading, Mass.: Addison-Wesley, 1994. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (616, '8571948992', 'VAZQUEZ, Carlos Eduardo; SIMÕES, Guilherme Siqueira;ALBERT, RenatoMachado. Análise de pontos de função:medição, estimativas e gerenciamento de projetos de software. São Paulo: Érica, 2011. 222p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (617, '9780201699443', 'GARMUS, David; HERRON, David. Function point analysis: measurement practices for successful software projects. Boston: Addison-Wesley, 2001. (Addison-Wesley information technology series)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (618, '9780071483001', 'JONES, Capers. Estimating softwarecosts: bringing realism to estimating. 2. ed. New York: Mc Graw-Hill, 2007. 644p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (619, '9780071717915', 'HILL, P. Practical Software Project Estimation: a toolkit for estimating software development effort & duration. New York: McGraw-Hill Osborne Media, 2011. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (620, '9780735605350', 'MCCONNELL, Steve. Software estimation: demystifying the black art. Redmond, Wa.: MicrosoftPress, 2006. 308p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (621, '9788535232493', 'FEOFILOFF, Paulo. . Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. 208p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (622, '8575220241', 'OLIVEIRA, CelsoH. Poderosode. SQL: curso prático. São Paulo:Novatec, 2002. 272p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (623, '857001841X', 'RUMBAUGH, James. Modelagem e projetos baseados em objetos. Rio de Janeiro: Campus, 2006. 652p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (624, '0136291554', 'MEYER, Bertrand. Object-oriented software construction. 2nd. ed. New Jersey: Prentice Hall PTR, 1997. 1254p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (625, '9781412947152', 'PRELL, Christina. Social network analysis: history, theory and methodology. California: Sage Publications Ltd, 2011. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (626, '9788535246698', 'PIMENTEL, M. ;FURKS, Hugo. Sistemas Colaborativos. Rio de Janeiro: Elsevier-Campus-SBC, 2011. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (627, '9780471678359', 'MYERS, Glenford J. The Art of software testing. New York: J. Wiley, 2004. 177p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (628, '0321419499', 'ROBERTSON, Suzanne; ROBERTSON, James. Mastering the requirements process. 2. ed. Upper Saddle River, NJ: Addison-Wesley, 2006. 560p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (630, '9788536503622', 'MACHADO, Felipe Nery Rodrigues. Análise e gestão de requisitos de software: onde nascem os sistemas. São Paulo: Érica, 2011. 286p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (631, '0792386825', 'EXPERIMENTATION in software engineering: an introduction. Boston, MA: Kluwer Academic, 2000. 204p. (The Kluwer international series in software engineering; 6)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (632, '9781848000445', 'SHULL, Forrest;SINGER, Janice;SJÃ¸BERG, DagI. K SPRINGER LINK. Guide to advanced empirical software engineering. London: Springer-Verlag London Limited, 2008. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (633, '9788574524511', 'MARTINS, José Carlos Cordeiro. Gerenciando projetos de desenvolvimento de software com PMI, RUP E UML. 5. ed. Rio de Janeiro: Brasport, 2010. 290p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (635, '0131177052', 'FEATHERS, Michael C. Working effectively with legacy code. Upper Saddle River, NJ: Prentice Hall, 2005. 434p. (Robert C. Martin series)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (636, '9780321166074', 'SPINELLIS, Diomidis. Code Quality: the open source perspective. Boston: Addison-Wesley, 2006. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (637, '9788535243970', 'VELLOSO, Fernando de Castro. Informática: conceitos básicos. 8. ed. rev. atual. Rio de Janeiro, RJ: Campus, 2011. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (638, '9780137012893', 'GEARY, David M; HORSTMANN, Cay S. Core Java Server Faces. 3. ed. Boston: Prentice Hall, 2010. 636p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (639, '0137288743', 'WATT, David Anthony; FINDLAY, William; HUGHES, John. Programming language: concepts and paradigms. New York: Prentice Hall, 1990. 322p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (640, '9788521616108', 'HUTH, Michael; RYAN, Mark. Lógica em ciência da computação: modelagem e argumentação sobre sistemas. 2. ed. Rio de Janeiro: LTC, 2008. 322p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (641, '8535210938', 'SOUZA, João Nunes de. Lógica para ciência da computação: fundamentos de linguagem, semântica e sistemas de dedução. Rio de Janeiro: Elsevier, 2002. 309p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (642, '9780321601919', 'HUMBLE, Jez. ; FARLEY, David. Continuous delivery: reliable software releases through build, test, and deployment automation. Upper Saddle River, NJ: Addison-Wesley, 2011. 463p. (Addison-Wesley Signature Series. )', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (643, '0470856629', 'VÖLTER, Markus; KIRCHER, Michael;ZDUN, Uwe. Remoting patterns foundations of enterprise, internet and real time distributed object middleware. Chichester:John Wiley, 2005. 389p. (Wiley series in software design patterns)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (644, '0471606952', 'SCHMIDT, Douglas C. Pattern-oriented software architecture: volume 2. Chichester [England]; New York: John Wiley & Sons, 2000. 633p. (Wiley series in software design patterns)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (645, '999999567', 'ALMEIDA, Eduardo Santana de et al. C.R.U.I.S.E: Component Reuse in Software Engineering. Recife: Gráfica Dom Bosco, 2007. Disponível em: <http://cruise.cesar.org.br/index.html> Acesso em: 14 set. 2008', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (648, '999999570', 'ABRAN, Alain (Ed.).Guide to the software engineering body of knowledge: trial version. Washington: Computer society, 2001. 205p. Disponível em: <http://www.computer.org/portal/web/swebok>. Acesso em: 23 jan. 2013', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (649, '9780321312839', 'BEN-ARI. Principles of concurrent and distributed programming. 2. ed. SãoPaulo: Prentice-Hall, 2006', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (650, '9780321711502', 'CHRISSIS, Mary Beth; KONRAD, Mike; SHRUM, Sandy. CMMI for Development®: guidelines for process integration and product improvement. 3. ed. Upper Saddle River:Addison-Wesley,2011', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (651, '9780321552686', 'CLEMENTS, Paul et al. Documenting software architectures: views and beyond. 2. ed. Massachusetts: Addison-Wesley Professional. 2010. 592p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (656, '999999578', 'GUIA MPS-BR: Melhoria do processo de software brasileiro. Disponível em:<http://www.softex.br/mpsbr/_home/default.asp>. Acesso em: 23 jan. 2013', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (657, '999999579', 'FIPA. Especificações FIPA. Disponível em: <http://www.fipa.org>. Acesso em: 24 jan. 2013', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (659, '999999581', 'MEIRA, Silvio R. L. et al. The Emerging Web of Social Machines. COMPSAC/IEEE, 2011. p. 26-27. Disponível em: <http://arxiv.org/abs/1010.3045>. Acesso em: 23 jan. 2013', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (660, '999999582', 'UM GUIA para o corpo de conhecimento de análise de negócios: guia BABOK: versão 2.0. Toronto: IIBA International Institutute of Business Analysis, 2011. Disponível em: <http://books.google.com.br/books?id=wZvSEEg39N4C&printsec=frontcover&hl=pt-BR&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false>. Acesso em: 07 nov. 2012', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (671, '999999593', 'SOFTEX Brasil. Guias MPS.BR. Disponível em: <http://www.softex.br/mpsbr/_home/default.asp>. Acesso em: 23 jan. 2013', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (673, '079237990X', 'JURISTO, Natalia; MORENO, Ana M. Basics of software engineering experimentation. Boston: Kluwer Academic Publishers, 2001. 395p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (675, '97885739366742', 'GONÇALVES, Edson. Desenvolvendo aplicações Web com NetBeans IDE 6. Rio de Janeiro, RJ: Ciência Moderna, 2008. xix, 581p. ', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (676, '8535206841', 'MURDOCCA, Miles; HEURING, Vincent P. Introdução a arquitetura de computadores. Rio de Janeiro, RJ: Elsevier, 2000. xxii, 512p. ', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (678, '9780471433019', 'BLUM, R. Network Performance: Tool kit Using Open Source Testing Tools. Wiley, 2003.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (679, '9788535246711', 'CHIAVENATO, I. Introdução à teoria geral da administração. 8ed. Campus, 2011.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (680, '9788539900459', 'MANSUR, Ricardo. Governança de ti verde: o ouro verde da nova TI. Rio de Janeiro: Ciência Moderna, 2011. 212p.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (682, '9788599593110', 'MORIMOTO, C. E. Redes: guiaprático. GDHP ress, 2008.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (684, '978020148534', 'STALLINGS, W. SNMP, SNMP V2, SNMP V3 AND RMON 1 AND 2. 3ed. Addison Wesley, 1999.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (686, '978852245507', 'ALMEIDA, G. A.; CHRISTMANN, M. O. Ética e direito: uma perspectiva integrada. 3ed. Atlas, 2009', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (687, '9788577260881', 'FOROUZAN, B. A. Comunicação de dados e redes de computadores. Bookman, 2008.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (688, '0471333417', 'Trivedi, K. S. Probability & Statistics with Reliability, Queueing, and Computer Science Applications. JohnWilley, 2002.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (689, '9788532636904', 'VON BERTALANFFY, L. Teoria Geral dos Sistemas. Vozes, 2008.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (690, '0135259657', 'STALLINGS, W. High Speed Networks TCP IP and ATM Design Principles, 1ed Prentice Hall, 1998,', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (667, '9780471463610', 'ERIKSSON,Hans-Erik. UML 2 toolkit. New York: Wiley, 2004', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (654, '9781852335021', 'EZRAN, M. ; MORISIO, M. ; TULLY, C. Practical software reuse. Berlim: Springer, 200', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (699, '8536500271', 'GASPARINI, Anteu Fabiano Lúcio. Infraestrutura, protocolos e sistemas operacionais de LANs: redes locais. São Paulo: Érica, 2004. 334p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (668, '788575221938', 'GUEDES, Gilleanes T. A. UML 2: uma abordagem prática. São Paulo: Novatec, 2009', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (664, '9780131587564', 'HAMBRICK, G. et al. Persistence in the enterprise: a guide to persistence technologies. Boston: IBM Press, 2008', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (653, '9781420068429', 'KANG, K. C.; SUGUMARAN, V.;PARK, S. Applied software product line engineering. Boca Raton, Florida: CRC Press,2010', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (670, '9780470746639', 'MOREIRA, Mario E. Adapting configuration management for agile teams: balancing sustainability and speed. New York: John Wiley & Sons, 2009', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (655, '9783540243724', 'POHL, K.; BÖCKLE, G.; LINDEN, F. J. Software product line engineering: foundations, principles and techniques. Berlim: Springer, 2005', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (661, '9780131829572', 'SHAW, Mary; GARLAN, David. Software architecture: perspectives on an emerging discipline. São Paulo: Prentice Hall. 1996. 242p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (662, '9780470167748', 'TAYLOR, R. N.; MEDVIDOVIC, N. ; DASHOFTY, E. M. Software architecture: Foundations, Theory, and Practice. Wiley, 2009. 750p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (672, '9780818677380', 'THAYER, Richard H. ; DORFMAN, M. ; BAILIN, Sidney C. Software requirements engineering. 2. ed. Los Alamitos, Calif.: IEEE Computer Society Press, 2000. 483p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (663, '9780136006374', 'ULLMAN,J.D.;WIDOW,J.First Course in database systems. 3. ed. São Paulo: Prentice Hall, 2007', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (700, '3540440089', 'ALONSO, G.; CASATI, F.; KUNO, K.; MACHIRAJU, V. Web Services: Concepts, Architectures and Applications. Springer, 2004. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (652, '9789727226665', 'DELGADO, José; RIBEIRO, Carlos. Arquitetura de computadores. 4. ed. rev. atual. Lisboa: FCA, 2010', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (696, '9788573037494', 'DINSMORE, Paul Campbell; CAVALIERI, Adriane(Coord.) Como se tornar um profissional em gerenciamento de projetos: livro base de preparação para certificação PMP Project Management Professional. 2.ed. Rio de Janeiro: Qualitymark, 2007. 342p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (658, '9788576083603', 'EVANS, Eric. Domain-driven design: atacando as complexidades no coração do software. Rio de Janeiro, RJ: Alta Books, 2009. 499p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (728, '9788576081883', 'ODOM, W. CCNA I CND2-Guia oficial de certificação do exame. 2ed. STARLIN ALTA, CONSULT,2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (691, '9789813083899', 'Smith, PeterJ. Into Statistics: A Guide to Understanding Statistical Concepts in Engineering and the Sciences,Springer , 2 edição, 1998.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (666, '999999588', 'KITCHENHAM, B. Procedures for Performing Systematic Reviews. Australia: Joint Technical Report Keele University/NICTA Technical/Keele University/ NICTA, 2004', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (665, '999999587', 'Travassos, G. et. al. Introdução a Engenharia de Software Experimental. Rio de Janeiro: COPPE/UFRJ, 2002. Relatório Técnico ES-590/02', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (698, '8571948933', 'VIEIRA,  Fabiano Marques. Trabalhando em Redes. Editora Érica, 2002.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (748, '9788535223293', 'AZEVEDO,E.; CONCI,A.;LETA,F. Computaçao Grafica, V.2 - Teoria E Pratica. Campus, 2007.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (805, '0131877151', 'Richard A. Johnson, Dean W. Wichern. Applied Multivariate Statistical Analysis (6th Edition, 2007), Pearson', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (722, '9780387241524', 'CHUAH, Moi Choo; ZHANG, Qinqing. Design and perfomance of 3G wirelss networks and wireless lans. New York: 2006', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (708, '9780132393089', 'COMER, D. Automated network management systems. Pearson, 2006.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (707, '9788574522920', 'COSTA, Daniel Gouveia. DNS: um guia para administradores de redes. Rio de Janeiro, RJ: Brasport, c2007. xiii, 121p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (727, '9788575022382', 'FILIPPETTI, Marco Aurélio. CCNA4.1: guia completode estudo exame 640-802). Florianópolis: Visual Books, 2008. 478p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (729, '9788571940192', 'IDOETA, Ivan Valeije; CAPUANO, Francisco Gabriel. Elementos de eletrônica digital. 40. ed. SãoPaulo: Érica, 2007. 524p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (720, '9788521618645', 'JOHNSON, T. M. S. M. e Coutinho, M. M. Avaliação de Desempenho de Sistemas Computacionais, 1ªEdição, 2011. Editora LTC.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (719, '9780130646347', 'Mahbub Hassan, Raj Jain. High Performance TCP/IP Networking –Concepts, Issues and Solutions. 2004, Pearson Prentice Hall', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (735, '9788574523224', 'MANSUR, Ricardo. Governança de TI: metodologias, frameworks, melhores práticas. Rio de Janeiro: Brasport, 2007. xviii, 200p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (721, '9780130906731', 'MENASCÉ, D. A., ALMEIDA, V, Performance by Design: Computer Capacity Planning By Example., 1ªEdição, 2004, Prentice Hall Inc. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (738, '9788599593134', 'MORIMOTO, Carlos E. Servidores Linux: guiaprático. Porto Alegre: SulEditores, 2010. 735p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (734, '8535221905', 'NIELSEN,Jakob; LORANGER, Hoa. Usabilidade na web. Rio de Janeiro: Campus, 2007. 406p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (724, '9780071760942', 'OSBORNE-MCGRAW-HIL, Wireless Network Security, PEARSON, BROCK, 2011', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (710, '9781118024485', 'PARKER, S. Shell Scripting Professional: Expert Recipes for Lixux, Bashandmore. John Willey,2011. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (747, '9788521614043', 'PETERSON, L. L.; DAVIE, B. S. REDES DE COMPUTADORES: UMA ABORDAGEM SISTÊMICA. 2ed. LTC, 2004.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (750, '8535222065', 'POTTER, R. E.; RAINER JR, R. K.; TURBAN, E.Introdução a sistemas de informação: uma abordagem gerencial. Campus 2007.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (739, '9788521614142', 'SILBERSCHATZ, Abraham; GAGNE, Greg; GALVIN, Peter; Fundamentos de Sistemas Operacionais. Rio de Janeiro. 6ªEdição. LTC. 2004', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (695, '9788535222739', 'VIEIRA, Marconi Fábio. Gerenciamento de projetos de tecnologia da informação. 2. ed., Rio de Janeiro, RJ, Elsevier,2007.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (736, '8561024194', 'SIQUEIRA, Luciano Antonio.C ertificação LPI-1. 3.ed. São Paulo: Linux New Media,2009. 252p. (Coleção LinuxPro)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (737, '8561024143', 'SIQUEIRA, Luciano Antonio. Certificação LPI-2. 2.ed. São Paulo: Linux New Media do Brasil, 2009. 303p. (Coleção LinuxPro)', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (751, '9788522104819', 'STAIR, R. M.; REYNOLDS, G. W.Princípios de sistemas de informação: uma abordagem gerencial. reimpr. 2008 e 2009. Cengage, 2006.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (741, '9780130322210', 'STALLINGS, W. High Speed Networks and Internets - Performance and Quality of Service. 2ªedição. Prentice Hall', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (746, '9788536504346', 'THOMPSON, M. A. Microsoft Windows Server 2012 - Instalação, Configuração e Administração De Redes. 1a Edição. ÉRICA. 2012.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (730, '9788573231731', 'TORRES, Gabriel. Fundamentos de eletrônica. Rio de Janeiro.: Axcel Books, 2002. 229p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (743, '9780735624214', 'TULLOCH, M. INTRODUCING WINDOWS SERVER 2008. MICROSOFT PRESS,2007.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (732, '9788578730963', 'ULBRICH, Henrique Cesar. Universidade hacker:exercícios práticos para desvendar os segredos do submundo hacker!.2.ed. São Paulo: Digerati Books,2009. 381p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (752, '8515019698', 'ALVES, R. Introdução à Filosofia da ciência. 12 ed. Loyola, 2007.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (717, '9788535202700', 'COMER, D. Interligação de redes com TCP/IP v.2. 3ed. (vol.2). Campus, 1998', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (766, '999999691', 'KROETZ, César Eduardo S.. Apostilha Contabilidade de Custos. UNIJUI, RS, 2001.  http://apostilas.netsaber.com.br/apostilas/1029.pdf', 'Virtual');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (767, '9788522459407', 'MARTINS, E. Contabilidade de custos. Editora Atlas. 10ª ed. 2010.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (768, '9788522459353', 'MARTINS, E. Contabilidade de custos - Livro de Exercícios. Editora Atlas. 10ª ed.  2010.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (773, '9780471138235', 'EPSTEIN, R. G. The case of the killer robot: STORIES ABOUT THE PROFESSIONAL, ETHICAL, AND SOCIETAL DIMENSIONS OF COMPUTING. John Willey, 1996.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (774, '9780130323644', 'DEITEL, H. M.; DEITEL, P. J.; STEINBUHLER, K. E-busines e E-commerce para administradores. Pearson, 2004.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (775, '9788574524382', 'FREITAS, M.A.S. Fundamentos do Gerenciamento de Serviços de TI. Brasport. 2010.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (776, '9780130648396', 'KROENKE, D. M. Database Processing. 8. Ed. Prentice Hall, 2001. ', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (778, '0521779111', 'A. S. Troelstra, H. Schwichtenberg. Basic Proof Theory. Inseries Cambridge Tracts in Theoretical Computer Science, Cambridge University Press, Second Edition, 2000,', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (779, '0982106017', 'Al Sweigart. Invent Your Own Computer Games with Python, 2nd Edition. Creative Commons licenced.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (780, '9780201530827', 'PAPADIMITROU, C. Computational complexity. Addison Wesley, 1994.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (781, '0471056693', 'Pattern Classification, 2nd edition, Wiley- Interscience, 2000. -R.O.Duda, P. E. Hart, D. G. Stork.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (782, '9788522104994', 'SIPSER, M. Introdução à teoriada computação. 2ed. Thompson Learning, 2007.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (783, '0470853204', 'WATT, D. A. Programming language design concept. IE-Wiley, 2004.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (759, '9788520436691', 'CHIAVENATO, Idalberto. Introdução à teoria geral da administração, 9 ed. ,2014.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (755, '9788522404223', 'BRAGA, Roberto. Fundamentos e técnicas de administração financeira. São Paulo: Atlas, 1995.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (731, '9788521617914', 'ENGLANDER, Irv. A Arquitetura de Hardware Computacional, Software de Sistema e Computação e Comunicação em Rede. 4 Edição.  2011. Editora LTC.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (802, '9781584885511', 'Jonathan Katz; Yehuda Lindell. Introduction to Modern Cryptography: Principles And Protocols, Chapman and Hall/CRC, 1 edition, 2007', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (803, '9781608454402', 'Y.C. Tay, Analytical Performance Modeling for Computer Systems, Morgan and Claypool Publishers, 2010 ', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (804, '857780402X', 'Joseph F. Hair, Bill Black, Barry Babin, Rolph E. Anderson, Ronald L. Tatham. Análise Multivariada de Dados - 6ª Edição - Anderson Tatham', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (763, '8502037226', 'BRITO, O. Controladoria De Risco-Retorno Em Instituiçoes. Ed. Saraiva, 2002.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (793, '9781424076673', 'COLLINS. COLLINS: dicionário escolar. Martins Fontes, 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (764, '9788522456475', 'IUDICIBUS,S.; MARION,J.C. Curso de Contabilidade para nao Contadores. 6ª ed. Editora Atlas, 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (798, '9780321295354', 'KLEINBERG, J.; TARDOS, E. Algorithm Design, Addison Wesley, 2005. 9780321295354', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (799, '9788535236996', 'LEISERSON, C.E., STEIN, C., RIVEST, R.L. & CORMEN T.H. Algoritmos: teoria e prática, Editora Campus, 3ª. Edição, 2012.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (800, '9780596155971', 'LEVINE, J., Flex & Bison: Text Processing Tools. O Reilly Media, 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (754, '8571946353', 'MANAS, Antonio Vico. Administração de sistemas de informação; São Paulo, Erica, p. 282, 1999.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (795, '9780521537629', 'MURPHY, R. English Grammar in use.3 ed. Cambridge University, 2004.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (796, '9780136126591', 'PHILIPS, D. Longman Preparation Course for the TOEFL Test Ibt. Longman do Brasil, 2007.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (758, '9788522433131', 'REZENDE, Denis Alcides, Abreu, Aline Franca, Tecnologia da informação: integrada à inteligência empresarial. Alinhamento estratégico e análise da prática nas organizações.São Paulo : Atlas, 2002.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (762, '9788502126763', 'RIBEIRO, O.M. Contabilidade geral fácil. 7ª ed. Editora Saraiva, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (765, '9788502095106', 'SARAIVA, E. Licitações e contratos em adminisração pública. 13ª edição. Editora Saraiva, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (784, '9788577808335', 'Seymour Lipschutz; Marc Lipson; Álgebra Linear; Coleção Schaum; Editora Bookman; 20112;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (761, '9788576050995', 'SOBRAL, F.; PECI, A. Administração: teoria e prática no contexto brasileiro. São Paulo: Pearson – Prentice Hall, 2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (788, '9780471000075', 'Tom M. Apostol; Cálculo, Volume 2; 1079', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (785, '8540701383', 'TOSCANI, L. V.; VELOSO, P.A.S. Complexidade de Algoritmos.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (789, '8521612575', 'Um Curso de Cálculo, Guidorizzi Hamilton Luiz, volumes 3 e 4, 5-edição, 2001, Editora LTC', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (790, '9788522107353', 'Valéria Zuma Medeiros, André Machado Caldeira, Luiza Maria Oliveira da Silva e Maria Augusta Soares Machado; PRÉ-CÁLCULO; 2ª edição revista e atualizada, 2010, Editora Cengage', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (756, '8522439591', 'DIAS, MARCO AURELIO PEREIRA , Administração de Materiais: Princípios, Conceitos e Gestão, Atlas, 5 ed., 2006.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (726, '9788571946385', 'SOARES NETO, V; SILVA, A. P.; BOSCATO JUNIOR, M. TELECOMUNICAÇÕES REDES DE ALTA VELOCIDADE, CABEAMENTO ESTRUTURADO. 3.ed. ÉRICA, 1999. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (760, '8502029800', 'SINCLAYR LUIZ, Organização e Técnica Comercial - Introdução a Administração,Saraiva, Ed. 21, 2005.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (786, '9788577803484', 'TOSCANI, S. S., Implementação de Ling. de Progr. – Compiladores,  1 ed, 2008 Bookman', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (806, '9780262042208', 'SOUZA, C.S. Semiotic Engineering of Human Computer Interaction. MIT Press, 2005. ', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (817, '8522447071', 'Análise Multivariada - Para os Cursos de Administração , Ciências Contábeis e Economia - Edilson Paulo ', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (822, '0123748569', 'Data Mining: Practical Machine Learning Tools and Techniques, Third Edition (The Morgan Kaufmann Series in Data Management Systems) - Ian H. Witten, Eibe Frank, Mark A. Hall', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (831, '8529402022', 'Algebra Linear; Jose Luiz Boldrini; 3. Edição; Editora Harbra;', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (840, '8573937610', 'Introdução ao Data Mining - Mineração de Dados - Vipin Kumar, Michael Steinbach, Pang-ning Tan ', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (841, '8573937076', 'Inteligência Analítica: Mineração de Dados e Descoberta de Conhecimento - Carlos André Reis Pinheiro ', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (845, '0471503363', 'Raj Jain, The Art of Computer System Performance Analysis, John Wiley & Sons, 1991', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (847, '9781587202834', 'OPPENHEIMER, P. Top-Down Network Design.  Cisco Press;  2010. 3oedição.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (850, '9780471314257', 'CHRISMAN, N.	Exploring geographical information. 2 ed. Wiley, 2001.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (852, '9788573078756', 'ROBINSON, M. E-busines. 2. Ed. Artmed, 2002.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (950, '857123440X', 'LABORIT, Emmanuelle. O Vôo da Gaivota. Best Seller, 1994.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (832, '9780074609446', 'Alfredo Steinbruch; Introduçao à Algebra Linear; Makron Books Editora; 1990;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (830, '9780521780193', 'An Introduction to Support Vector Machines, Cambridge Univ. Press, 2000. - N. Cristianini and J. Shawe-Taylor', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (827, '9788521615521', 'Barbieri Filho, Plinio; Biscolla, Laura M. Da Cunha C. O.; Espinosa, Isabel C. O. N.; Fundamentos de Informática - Álgebra Linear para Computação; Editora LTC;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (824, '8522106614', 'Cálculo, Stewart, James, V-2, 6.-Edição, 2009, Editora Cengage', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (825, '858863936X', 'Cálculo,, Thomas, George, Volume-2, B., 11.-Edição, 2008, Editora Addison Wesley Brasil', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (843, '9788576050476', 'CERVO, A.; BERVIAN, P.A.; SILVA, R. Metodologia Científica. 6ª ed, Pearson, 2006.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (856, '1558604383', 'Database: Principles, Programming and Performance, Patrick O’Neil and Elizabeth O’Neil, 2rd edition, Morgan Kaufmann, 2001.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (821, '1558609016', 'Data Mining: Concepts and Techniques, Morgan Kaufmann, 2nd Edition, 2007. - J. Han and M. Kamber.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (807, '9788522430352', 'SILVA, Sebastião Medeiros da, et al.; Matemática Básica para Cursos Superiores, 2002, Atlas.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (823, '9788581430966', 'Franklin D. Demana, Bert K. Waits, Gregory D. Foley e Daniel Kennedy. Pré-cálculo . 2a Ed. Pearson. 2013.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (844, '9788577531813', 'FREIRE, P. Extensão ou Comunicação. 15 ed. Paz e Terra. 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (842, '9788535211481', 'LOPES, Raquel Vigolvino. Melhores Práticas para Gerência de Redes de Computadores. Campus, Editora Campus, 2003', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (818, '9788521619031', 'Fundamentos da Física, Halliday, Resnick, Walker; Volume 1- MECÂNICA; 9.-Edição; 2012; Editora LTC', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (816, '9780387202488', 'GRUNE, D.,Jacobs, C., Parsing Techniques: A Practical Guide (Monographs in Computer Science), Springer, 2nd Edition, 2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (815, '9788585818319', 'HAMILTON PRADO BUENO; Álgebra Linear; Sociedade Brasileira de Matemática-SBM;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (813, '8521613601', 'HINES, W.W., MONTGOMERY, D.C., GOLDSMAN, D.M., BORROR, C.M. Estatística Aplicada e Probabilidade para Engenheiros. Editora LTC, 2003.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (811, '9788515024421', 'Humberto José Bortolossi; Cálculo diferencial a várias variáveis; Edicoes Loyola, 2003;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (835, '9780763776275', 'MOZGOVOY, Maxim, Algorithms, Languages, Automata, & Compilers: A Practical Approach, Jones and Bartlett Publishers, Inc., 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (837, '9788521617709', 'PAULA FILHO, W. P. Multimídia: conceitos e aplicações. LTC, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (838, '9788586948121', 'PRADO, D. Teoria das Filas e da Simulação. 2a. Ed. IDNG, 2004.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (839, '9781558606531', 'Pyle D. (2003) Business Modeling and Data Mining. The Morgan Kaufmann Series in Data Management Systems. Morgan Kaufmann Publisher.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (853, '9780321197863', 'SHNEIDERMAN, Ben. Designing the user interface: strategies for effective human-computer interaction . 4 ed. Boston: Pearson/Addison Wesley, c2005.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (857, '9788574521503', 'SQL: Guia Prático. COSTA, Rogério Luis de C. Editora: Brasport, 2004.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (812, '9788573078473', 'Howard Anton,Chris Rorres; Algebra Linear com Aplicacoes; Editora Bookman 2002;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (810, '9788535705492', 'IEZZI, G. Fundamentos de matemática elementar v.10: Geometria Espacial. 6 ed. Atual, 2005.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (867, '1597492728', 'THEODORIDIS, SERGIOS; KOUTROUMBAS, KONSTANTINOS. PATTERN RECOGNITION. ACADEMIC PRESS. 4a edição, 2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (868, '0387310738', 'BISHOP, CHRISTOPHER M. PATTERN RECOGNITION AND MACHINE LEARNING. SPRINGER VERLAG, 2006.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (870, '0262018020', 'MURPHY, KEVIN P. MACHINE LEARNING: A PROBABILISTIC PERSPECTIVE. MIT PRESS, 2012. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (874, '9780201648652', 'Grama, Ananth and Karypis, George and Kumar, Vipin and Gupta, Anshul; Introduction to Parallel Computing; Second Edition, Editora Addison-Wesley; ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (875, '9780123742605', 'Pacheco, Peter; An Introduction to Parallel Programming; First Edition; Editora Morgan Kaufmann; ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (876, '9783642048173', 'Rauber, Thomas and Rünger Gudula; Parallel Programming: for Multicore and Cluster Systems; First Edition; Editora Springer; ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (877, '9780124159921', 'Kirk, David and Hwu Wen-mei; Programming Massively Parallel Processors A Hands-on Approach; Second Edition; Editora Morgan Kaufmann.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (878, '9788574523729', 'Pitanga, Marcos; Construindo Supercomputadores com Linux; Terceira Edição; Editora Brasport', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (879, '9780321228116', 'Mattson, Timothy G. and Sanders Beverly A. and Massingill Berna L.; Patterns for Parallel Programming; First Edition; Editora Addison-Wesley Professional;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (880, '9781423901983', 'Kaminsky, Alan; Building Parallel Programs: SMPs, Clusters & Java; First Edition; Editora Course Technology;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (887, '8587918745', 'SPERANDIO, DECIO; MENDES, JOAO TEIXEIRA; SILVA, LUIZ HENRY MONKEN. CALCULO NUMERICO - CARACTERISTICAS MATEMATICAS E COMPUTACIONAIS. PRENTICE HALL BRASIL, 2003.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (891, '0521527147', 'Blackburn, P.; de Rijke, Maarten; Venema, Yde, Modal logic, Cambridge University Press, 2002', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (892, '0792353358', 'M. Fitting, Richard L. Mendelsohn. First-Order Modal Logic. Springer. 1st ed. 1998 edition', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (893, '1107010527', 'Robert Goldblatt. Quantifiers, Propositions and Identity: Admissible Semantics for Quantified Modal and Substructural Logics (Lecture Notes in Logic). Cambridge University Press (August 22, 2011).', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (895, '9788574524726', 'DONDA, Daniel. Administração do windows server 2008 R2:server core. xvi, 428 p. Rio de Janeiro: Brasport, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (896, '9788576085140', 'FREDERICK, Gail Rahn; LAL, Rajesh. Dominando o desenvolvimento web para smartphone:construindo aplicativos baseados em JavaScript, CSS, HTML e Ajax para iPhone, Android, Palm Pre, BlackBerry, Windows Mobile e Nokia S60. 344 p. Rio de Janeiro: Alta Books, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (897, '9788564574168', 'ASCENCIO, Ana Fernanda Gomes; CAMPOS, Edilene Aparecida Veneruchi de. Fundamentos da programação de computadores:  algoritmos, Pascal, C/C++ e java. x, 569p. 3.ed. São Paulo, SP: Pearson Education do Brasil, 2012.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (898, '9788536303611', 'LIPSCHUTZ, Seymour; LIPSON, Marc. Teoria e problemas de matemática discreta. 511p. (Coleção Schaum) 2. ed.  Porto Alegre, RS: Bookman, 2004.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (899, '9788536501383', 'TRONCO, Tania Regina. Redes de nova geração: arquitetura de convergência das redes: IP, telefônica e óptica. 164 p.2.ed. São Paulo, SP: Érica, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (900, '9788579150432', 'A REVOLUÇÃO dos monólitos:  pioneirismo e trajetória do desenvolvimento sustentável em Quixadá. 97,[15]p. Fortaleza, CE: LCR, 2010. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (901, '8570564112', 'DOLCE, Osvaldo; POMPEO, José Nicolau. Fundamentos de matemática elementar, 10:  geometria espacial, posição e métrica.  440 p. 5. ed. São Paulo, SP: Atual, 1993.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (902, '853570549X', 'DOLCE, Osvaldo; POMPEO, José Nicolau.  Fundamentos de matemática elementar 10 : geometria espacial, posição e métrica. 440p. 6.ed. São Paulo, SP: Atual, 2005.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (885, '8529400895', 'BARROSO, CAMPOS FILHO, CARVALHO, MAIA; CALCULO NUMERICO (COM APLICAÇOES); Editora HARBRA, 2a edição.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (863, '0471636819', 'BAZARAA, M., JARVIS, A. & SHERALI, H. - Linear Programming and Network Flows. John Wiley, 2a. Ed., 1990.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (862, '9781886529199', 'BERTSIMAS, D., TSITSIKLIS, J.N. Introduction to Linear Optimization. Athena Scientific, 1997. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (889, '9788570568830', 'CAIO SERGIO CALÇADA, JOSE LUIZ SAMPAIO; Física Clássica; Volume 1-Cinemática; ATUAL EDITORA;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (861, '9788535205411', 'GOLBARG, M. C., LUNNA. H. P. L. Otimização Combinatória e Programação Linear - Modelos e Algoritmos. Editora Campus, 2000.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (858, '9788535207491', ' GARCIA-MOLINA, HECTOR & WIDOM, JENNIFER. Implementação de Sistemas de Bancos de Dados. Campus. 1ª. 2001', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (883, '9788531403705', 'JACQUES BOUCHARA, Anna Catarina Pontone Hellmeister, Reinaldo Salvitti, Vera Lucia Carrara Zanetic, ANA CATARINA PONTONE HELLMEISTER; Cálculo Integral Avançado; EdUSP; 1996;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (890, '9788521617105', 'MOSCA, GENE e TIPLER, PAUL A.; FISICA, V.1, PARA CIENTISTAS E ENGENHEIROS (MECANICA, OSCILAÇOES, ONDAS, TERMODINAMICA); Editora: LTC;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (873, '9780471529743', 'R. Schalkoff. Pattern Recognition: Statistical, Structural and Neural Approaches. John Wiley and Sons, 1992.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (860, '8570010664', 'BREGALDA, P.F., BORNSTEIN, C.T. & OLIVEIRA, A.A.F - Introdução à Programação Linear. Campus, 1981.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (884, '9788522110599', 'Dennis G. Zill; Michael R. Cullen; Equações Diferenciais; Cengage Learning Editores;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (903, '8570560478', 'HAZZAN, Samuel. Fundamentos de matematica elementar, 5: combinatória, probabilidade : 43 exercícios resolvidos, 439 exercícios propostos com resposta, 152 testes de vestibulares com resposta. 174p. 6.ed. Sao Paulo: Atual, 1993', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (904, '8570564392', 'IEZZI, Gelson; MURAKAMI, Carlos; MACHADO, Nílson José. Fundamentos de matematica elementar, 8: limites, derivadas, noções de integral : 62 exercícios resolvidos, 264 exercícios propostos com resposta, 156 testes de vestibulares com resposta. 267p. 5.ed. Sao Paulo: Atual, 1993.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (905, '857056046X', 'IEZZI, Gelson. Fundamentos de matematica elementar , 7 geometria analítica : 86 exercícios resolvidos, 392 exercícios propostos com resposta, 263 testes de vestibulares com resposta. 273p. 4.ed. Sao Paulo: Atual, 1993.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (906, '0521474655', 'Rajeev Motwani, Prabhakar Raghavan. Randomized Algorithms. Cambridge University Press, 1995.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (907, '0521835402', 'Michael Mitzenmacher, Eli Upfal. Probability and Computing: Randomized Algorithms and Probabilistic Analysis. Cambridge University Press, 2005.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (908, '3642084699', 'Vijay V. Vazirani. Approximation Algorithms. Springer, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (909, '9788507006480', 'ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. ABNT NBR ISO/IEC 27002 - Tecnologia da informação - técnicas de segurança - código de prática para a gestão da segurança da informação. RiodeJaneiro, RJ, 2005. 120p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (910, '9788521617501', 'SZWARCFITER , Jayme; MARKENZON, Lilian. Estruturas de Dados e Seus Algoritmos. LTC, 3a edição, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (911, '032157351X', 'SEDGEWICK, Robert, WAYNE, Kevin. Algorithms (4th Edition). Addison-Wesley Professional; 4 edition, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (912, '1468108867', 'KARUMANCHI, NARASIMHA. DATA STRUCTURES AND ALGORITHMS MADE EASY. CREATESPACE PUB, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (913, '8522106150', 'Paul Schuytema. Design de Games: Uma Abordagem Prática. Cengage. 2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (914, '8522106320', 'Jeannie Novak. Desenvolvimento de Games. Cengage.2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (915, '158450580X', 'Brenda Brathwaite e Ian Schreiber. Challenges for Game Designers. Charles River Media. 2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (916, '1932111972', 'Raph Koster. A Theory of Fun for Game Design. Paraglyph Press. 2004.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (917, '0123694965', 'Jesse Schell. The Art of Game Design: A book of lenses. CRC Press. 2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (918, '1584505710', 'Mark DeLoura. Best of Game Programming Gems. Charles River Media. 2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (919, '1568814135', 'Jason Gregory, Jeff Lander e Matt Whiting. Game Engine Architecture. A K Peters. 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (920, '1848829345', 'Richard Szeliski. Computer Vision: Algorithms and Applications. Springer, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (921, '1107011795', 'PRINCE, SIMON J. COMPUTER VISION - MODELS, LEARNING, AND INFERENCE. WILLIAM MORROW, 2012.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (318, '9780071748469', 'VAUGHAN, Tay. Multimedia: making it work. McGrawHill, 8ed , 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (922, '8576054019', 'GONZALEZ, RAFAEL C.; WOODS, RICHARD E. PROCESSAMENTO DIGITAL DE IMAGENS. ADDISON WESLEY. 3a edição, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (923, '1439840458', 'RUSS, JOHN C. THE IMAGE PROCESSING HANDBOOK. TAYLOR & FRANCIS. 6a edição, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (924, '8535257160', 'Marco Cesar. Goldbarg, Elizabeth Goldbarg. Grafos - Conceitos, Algoritmos e Aplicações. ELSEVIER - CAMPUS, 2012', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (925, '8521206801', 'PAULO OSWALDO BOAVENTURA NETTO. Grafos - Teoria, Modelos, Algoritmos - 5ª Edição - 2012. Editora Edgard Blucher.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (926, '0486247759', 'Gary Chartrand. Introductory Graph Theory. Dover Publications, 1984.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (927, '3540693181', 'WOLFRAM POHLERS. PROOF THEORY: THE FIRST STEP INTO IMPREDICATIVITY. IN UNIVERSITEXT. SPRINGER VERLAG POD. FIRST EDITION. 2008. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (928, '1402003684', 'JEAN GOUBAULT-LARRECQ, IAN MACKIE. PROOF THEORY AND AUTOMATED DEDUCTION. KLUWER ACADEMIC. 2002.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (929, '3540212027', 'LEONID LIBKIN. ELEMENTS OF FINITE MODEL THEORY. SPRINGER VERLAG NY. FIRST EDITION. 2004.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (930, '0521865719', 'Christopher D. Manning, Prabhakar Raghavan, Hinrich Schütze. Introduction to Information Retrieval. Cambridge University Press; 1 edition, 2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (931, '1558605703', 'MOFFAT, ALISTAIR; WITTEN, IAN H. MANAGING GIGABYTES - COMPRESSING AND INDEXING DOCUMENTS AND IMAGES. MORGAN KAUFMANN. 2a ed., 1999.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (932, '0136072240', 'Bruce Croft, Donald Metzler, Trevor Strohman. Search Engines: Information Retrieval in Practice. Addison-Wesley; 1 edition, 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (933, '1558603530', 'SHERMAN, WILLIAM L.; CRAIG, ALAN. UNDERSTANDING VIRTUAL REALITY - INTERFACE, APPLICATION, AND DESIGN. ACADEMIC PRESS, 2002.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (934, '1568815808', 'GOMES, JONAS; VELHO, LUIZ; COSTA SOUSA, MARIO. COMPUTER GRAPHICS - THEORY AND PRACTICE. TAYLOR & FRANCIS USA, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (935, '1118036638', 'MULLEN, TONY. PROTOTYPING AUGMENTED REALITY. SYBEX, 2011. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (936, '9788536503745', 'MANZANO, José Augusto N. G.; COSTA Jr., Roberto Affonso da. Java 7 - Programação de Computadores - Guia Prático de Introdução, Orientação e Desenvolvimento. 1. ed. Editora Érica, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (937, '0486478831', 'MICHAELSON, Greg. An Introduction to Functional Programming Through Lambda Calculus. Dover Publications, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (938, '0521576814', 'COUSINEAU, Guy; MAUNY, Michel; CALLAWAY, K. The Functional Approach to Programming. Cambridge University Press; English edition, 1998.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (939, '9788575223161', 'WAMPLER, Dean. Programação Funcional Para Desenvolvedores Java: Ferramentas para Melhor Concorrência, Abstração e Agilidade. Novatec. 1a ed., 2012.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (940, '0470643854', 'PARKER, J. R. ALGORITHMS FOR IMAGE PROCESSING AND COMPUTER VISION. JOHN WILEY. 2a edição, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (941, '0486402584', 'Christos H. Papadimitriou, Kenneth Steiglitz. Combinatorial Optimization: Algorithms and Complexity. Dover Publications, 1998.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (942, '013617549X', 'Ravindra K. Ahuja, Thomas L. Magnanti, James B. Orlin. Network Flows: Theory, Algorithms, and Applications. Prentice Hall; 1 ed. 1993.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (943, '8580551188', 'HILLIER, FREDERICK S.; LIEBERMAN, GERALD J. INTRODUÇAO A PESQUISA OPERACIONAL. MCGRAW HILL. 9a edição.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (945, '8521615590', 'COLIN, EMERSON CARLOS. PESQUISA OPERACIONAL - 170 APLICAÇOES EM ESTRATEGIA, FINANÇAS, LOGISTICA, PRODUÇAO, MARKETING E VENDAS. LTC, 2007.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (946, '0471359432', 'Laurence A. Wolsey, George L. Nemhauser. Integer and Combinatorial Optimization. Wiley-Interscience; 1 edition, 1999.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (947, '3642244874', 'Korte, Bernhard and Vygen, Jens. Combinatorial Optimization: Theory and Algorithms. Springer; 5th ed. 2012 edition (January 10, 2012).', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (948, '9788531406683', 'CAPOVILLA, Fernando. C; RAPHAEL, Walkyria. D. Dicionário Enciclopédico Ilustrado Trilingue da Língua de Sinais. 3ª Ed. São Paulo: EDUSP, 2008', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (949, '8599091018', 'Felipe, Tanya A.Libras em Contexto : Curso Básico : Livro do Estudante / Tanya A.Felipe. 8ª. edição- Rio de Janeiro : WalPrint Gráfica e Editora,2007.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (951, '8536303085', 'QUADROS, Ronice Muller; KARNOPP, Lodenir B. Língua de Sinais Brasileira: estudos lingüísticos. Porto Alegre: ArtMed, 2004.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (952, '9788536503660', 'MARIN, Paulo S. Data Centers - Desvendando cada passo: conceitos, projeto, infraestrutura física e eficiência energética. São Paulo, SP : Érica, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (836, '9788534602044', 'MÁRCIA A. GOMES RUGGIERO E VERA LÚCIA DA ROCHA LOPES; CÁLCULO NUMÉRICO - ASPECTOS TEÓRICOS E COMPUTACIONAIS; Editora Pearson Education, 2ª Edição; 1996;', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (753, '9788522422234', 'ALBERTIN, Alberto Luiz. Administração de informática: funções e fatores criticos de sucesso; 2.ed, São Paulo, Atlas, p. 152, 1999.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (647, '9780321685865', 'AIELLO, R.; SACHS, L. Configuration management best practices: practical methods that work in the real world. Upper Saddle River, NJ: Addison-Wesley, 2011. 229p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (723, '9780470741489', 'ALI, NAJAHABU, LTE, LTE - Advanced And Wimax,JOHN WILEY PROFESSIONAL, 2011', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (733, '8522440859', 'BEAL, Adriana. Segurança da informação: princípios e melhores práticas para a proteção dos ativos de informação nas organizações. SãoPaulo: Atlas, 2005. 175p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (697, '8535210458', 'CHOWDHURY, D. D. PROJETOS AVANÇADOS DE REDES IP: ROTEAMENTO, QUALIDADE DE SERVIÇO E VOZ SOBRE IP. Campus, 2002. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (694, '8576050242', 'FORBELLONE, A. L. V.; EBERSPACHER, H. F. Lógica de programação: a construção de algoritmos. 3ed. Prentice Hall, 2005 ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (849, '9788535704570', 'IEZZI, GELSON et al; Fundamentos de matemática elementar v.3: Trigonometria, 8 ed., 2004, Saraiva.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (177, '9788574524061', 'SERSON, Roberto Rubinstein. A Bíblia: certificação JAVA 6. Rio de Janeiro: Brasport, 2009. V1.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (693, '9788574524078', 'SERSON, Roberto Rubinstein. A Bíblia: certificação JAVA 6. Rio de Janeiro: Brasport, 2009. V2', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (646, '9780006586371', 'ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS. ABNT NBR ISO/IEC 27001-Tecnologia da informação - técnicas de segurança-sistemas de gestão de segurança da informação-requisitos.2013.30p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (757, '9788522452699', 'ALBERTIN, ALBERTO LUIZ. Administração de informática: funções e fatores críticos de sucesso. 6.ed.: Atlas, 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (864, '9788521616658', 'ANDRADE, E.L. - Introdução à Pesquisa Operacional: Métodos e Modelos Para Análise de Decisões. 4ed. LTC, 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (718, '9780137469758', 'Edward D. Lazowska, John Zahorjan, G. Scott Graham, Kenneth C. Sevcik. Quantitative System Performance Computer System Analysis Using Queueing Network Models, 1984, Editora Prentice Hall', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (440, '9788577803460', 'Robert D. Hisrich, Michael P. Peters, Dean A. Shepher. Empreendedorismo. 7. ed. Porto Alegre, RS: Bookman, 2009. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (139, '9788586804960', 'AGUILAR, Luis Joyanes. Fundamentos de programação: algoritmos, estrutura de dados e objetos. São Paulo, SP: McGraw-Hill, 2008. xxix, 690 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (396, '8529400941', 'LEITHOLD, Louis; PATARRA, Cyro de Carvalho. O Cálculo com geometria analítica. 3. ed. São Paulo: Harbra, c1994.  vol 1.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (772, '8521613385', 'STAIR, Ralph M.; REYNOLDS, George W. Princípios de sistemas de informação. 4 ed. Rio de Janeiro: LTC, 2002.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (316, '8524402008', 'GOMES, Jonas de Miranda; VELHO, Luiz. Fundamentos de computação gráfica. Rio de Janeiro, RJ: IMPA, 2008 603 p. :', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (57, '8535211853', 'TANENBAUM, Andrew S. Redes de computadores. 4. ed. Rio de Janeiro: Elsevier, Campus, 2003. 945p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (148, '9780471684183', 'THAYER, Richard H.; DORFMAN, M. Software Engineering, Volume 2, the Supporting Processes, 3rd Edition ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (612, '020117782X', 'ZAHRAN, Sami. Software process improvement: practical guide lines for business success. Reading: Addison-Wesley, 1998, 447p. ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (953, '9788571647794', 'SACKS, Oliver. Vendo Vozes: uma viagem ao mundo dos surdos. São Paulo: Cia. Das Letras, 1998.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (954, '8573079983', 'FERNANDES, Eulália. Linguagem e surdez. Porto Alegre. Editora Artmed, 2003', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (955, '9788528200690', 'FERREIRA-BRITO, Lucinda. Por uma Gramática da Língua de Sinais. Rio de Janeiro: Tempo Brasileiro, 1995.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (956, '9788530802363', 'GOES, Maria Cecília Rafael; SMOLKA, Ana Luiza B. A linguagem e o outro no espaço escolar: Vygotsky e a construção do conhecimento. Campinas: Papirus, 1993.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (957, '9788585689339', 'GOLDFELD, Marcia. A Criança Surda: linguagem e cognição numa perspectiva sócio-interacionista. São Paulo: Plexus, 1997.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (958, '9788585274634', 'LACERDA, Cristina Broglia. GOES, Cecília Rafael de. Surdez: processos educativos e subjetividade. São Paulo: LOVISE, 2000', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (959, '9789728407926', 'LANE, Harlan. A máscara da benevolência : comunidade surda amordaçada. Lisboa: Instituto PIAGET, 1997.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (960, '9788587635532', 'LIMA-SALLES, Heloisa Maria Moreira (org). Bilinguismo dos surdos: questões lingüísticas e educacionais. Goiania: Cânone Editorial, 2007', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (961, '9788573072655', 'QUADROS, Ronice Muller de. Educação de surdos: a aquisição da linguagem. Porto Alegre: Artes Médicas, 1997', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (962, '026251298X', 'DYBVIG, R. Kent. The Scheme Programming Language, MIT Press; fourth edition, 2009.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (963, '1933988924', 'PETRICEK, Tomas; SKEET, Jon. Real-World Functional Programming: With Examples in F# and C#. Manning Publications; 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (964, '1449394701', 'EMERICK, Chas; CARPER, Brian; GRAND, Christophe. Clojure Programming. O Reilly Media; 1 edition, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (965, '1593272839', 'LIPOVACA, Miran. Learn You a Haskell for Great Good!: A Beginner s Guide. O Reilly; 1 edition, 2011', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (966, '8529402065', 'LEITHOLD, Louis.O Cálculo com Geometria Analítica - 3.ª edição - Volume 2. Editora Harbra.1994.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (967, '1449314651', 'Gary Bradski, Adrian Kaehler. Learning OpenCV: Computer Vision in C++ with the OpenCV Library. O Reilly Media; Second Edition, 2012.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (712, '9788574524405', 'NEVES, J. C. Programação Shell Linux. 8ed. Brasport, 2010.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (869, '9780387848570', 'HASTIE, TREVOR; TIBSHIRANI, ROBERT; FRIEDMAN, JEROME. The Elements of Statistical Learning: Data Mining, Inference, and Prediction Springer. 2a edição, 2008.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (968, '0387303030', 'Jorge Nocedal, Stephen Wright. Numerical Optimization. Springer; 2nd edition, 2006.', 'Físico');
+
+
+--
+-- TOC entry 1834 (class 2606 OID 17536)
+-- Dependencies: 161 161 161 161 1973
+-- Name: bibliografias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY bibliografias
+    ADD CONSTRAINT bibliografias_pkey PRIMARY KEY (id_disciplina, id_titulo, tipo_bibliografia);
+
+
+--
+-- TOC entry 1838 (class 2606 OID 17538)
+-- Dependencies: 163 163 1973
+-- Name: cod_c; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY curso
+    ADD CONSTRAINT id_crs PRIMARY KEY (id_crs);
+
+
+--
+-- TOC entry 1840 (class 2606 OID 17540)
+-- Dependencies: 164 164 1973
+-- Name: cod_d; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY disciplinas
+    ADD CONSTRAINT cod_d UNIQUE (cod_d);
+
+
+--
+-- TOC entry 1844 (class 2606 OID 17542)
+-- Dependencies: 165 165 1973
+-- Name: cod_e; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY exemplares
+    ADD CONSTRAINT cod_e UNIQUE (cod_e);
+
+
+--
+-- TOC entry 1850 (class 2606 OID 17544)
+-- Dependencies: 167 167 1973
+-- Name: id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY titulos
+    ADD CONSTRAINT id PRIMARY KEY (id_t);
+
+
+--
+-- TOC entry 1836 (class 2606 OID 17546)
+-- Dependencies: 162 162 1973
+-- Name: id_c; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY curriculo
+    ADD CONSTRAINT id_c PRIMARY KEY (id_c);
+
+
+--
+-- TOC entry 1842 (class 2606 OID 17548)
+-- Dependencies: 164 164 1973
+-- Name: id_d; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY disciplinas
+    ADD CONSTRAINT id_d PRIMARY KEY (id_d);
+
+
+--
+-- TOC entry 1846 (class 2606 OID 17550)
+-- Dependencies: 165 165 1973
+-- Name: id_e; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY exemplares
+    ADD CONSTRAINT id_e PRIMARY KEY (id_e);
+
+
+--
+-- TOC entry 1848 (class 2606 OID 17552)
+-- Dependencies: 166 166 166 1973
+-- Name: integracao_curricular_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY integracao_curricular
+    ADD CONSTRAINT integracao_curricular_pkey PRIMARY KEY (id_disciplina, id_curriculo);
+
+
+--
+-- TOC entry 1852 (class 2606 OID 17554)
+-- Dependencies: 167 167 1973
+-- Name: isbn; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY titulos
+    ADD CONSTRAINT isbn UNIQUE (isbn);
+
+ALTER TABLE ONLY curso
+    ADD CONSTRAINT cod_c UNIQUE (cod_c);
+
+--
+-- TOC entry 1857 (class 2606 OID 17555)
+-- Dependencies: 162 166 1835 1973
+-- Name: curriculo_integracao_curricular; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY integracao_curricular
+    ADD CONSTRAINT curriculo_integracao_curricular FOREIGN KEY (id_curriculo) REFERENCES curriculo(id_c) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1855 (class 2606 OID 17560)
+-- Dependencies: 163 162 1837 1973
+-- Name: curso_curriculo; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY curriculo
+    ADD CONSTRAINT curso_curriculo FOREIGN KEY (id_curso) REFERENCES curso(id_crs) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1853 (class 2606 OID 17565)
+-- Dependencies: 164 161 1841 1973
+-- Name: disciplinas_bibliografias; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY bibliografias
+    ADD CONSTRAINT disciplinas_bibliografias FOREIGN KEY (id_disciplina) REFERENCES disciplinas(id_d) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1858 (class 2606 OID 17570)
+-- Dependencies: 164 166 1841 1973
+-- Name: disciplinas_integracao_curricular; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY integracao_curricular
+    ADD CONSTRAINT disciplinas_integracao_curricular FOREIGN KEY (id_disciplina) REFERENCES disciplinas(id_d) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1854 (class 2606 OID 17575)
+-- Dependencies: 161 167 1849 1973
+-- Name: titulo_bibliografias; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY bibliografias
+    ADD CONSTRAINT titulo_bibliografias FOREIGN KEY (id_titulo) REFERENCES titulos(id_t) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 1856 (class 2606 OID 17580)
+-- Dependencies: 1849 165 167 1973
+-- Name: titulo_exemplares; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY exemplares
+    ADD CONSTRAINT titulo_exemplares FOREIGN KEY (id_titulo) REFERENCES titulos(id_t) ON DELETE CASCADE;
+
 
 
 -- Sincronia de autoincrement --
@@ -6048,11 +6232,23 @@ SELECT setval('seq_id_titulo', (SELECT MAX(id_t) FROM titulos));
 SELECT setval('seq_id_disciplina', (SELECT MAX(id_d) FROM disciplinas));
 SELECT setval('seq_id_exemplar', (SELECT MAX(id_e) FROM exemplares));
 SELECT setval('seq_id_curriculo', (SELECT MAX(id_c) FROM curriculo));
-SELECT setval('seq_id_curso', (SELECT MAX(id_curso) FROM curso));
+SELECT setval('seq_id_curso', (SELECT MAX(id_crs) FROM curso));
 
-
+--
+-- TOC entry 1978 (class 0 OID 0)
+-- Dependencies: 6
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA public FROM postgres;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2014-05-19 08:54:01 BRT
+
+--
+-- PostgreSQL database dump complete
+--
+

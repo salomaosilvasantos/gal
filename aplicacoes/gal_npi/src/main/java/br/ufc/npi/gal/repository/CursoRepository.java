@@ -9,7 +9,7 @@ public interface CursoRepository extends GenericRepository<Curso>{
 
 	public List<Curso> listar();
 	
-	public Curso buscar(String sigla, String codigo);
+	public Curso buscar(String sigla, Integer codigo);
 	
-	public abstract List<Curso> findByCodigo(String codigo);
+	public abstract List<Curso> findByCodigo(Integer codigo);
 }
