@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -58,12 +59,13 @@ public class CursoController {
 		
 	}
 	
-	
-	@RequestMapping(value = "/{id}/excluir.htm", method = RequestMethod.GET)
-	public String excluir(@PathVariable("id") Integer id) {
+	@RequestMapping(value = "/excluir.htm", method = RequestMethod.POST)
+	//ResquestParam("id") where name = "id"
+	public String excluir(@RequestParam("id") Integer id) {
 		this.cursoService.excluir(id);
 		return "redirect:/curso/listar.htm";
 	}
+	
 	
 	@RequestMapping("/adicionado")
 	public String confirm(){

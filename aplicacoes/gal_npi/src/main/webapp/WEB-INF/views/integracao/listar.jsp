@@ -54,13 +54,13 @@
 			<label class="control-label" style="font-size: 20px;">Integração Curricular</label>
 		</div>
 
-		<datatables:table id="integracao" data="${integracao}" cdn="true" row="integ" theme="bootstrap3" cssClass="table table-striped">
+		<datatables:table id="integracao" data="${integracao}" cdn="true" row="integ" theme="bootstrap2" cssClass="table table-striped">
 			<datatables:column title="Disciplina">
-				<c:out value="${integ.disciplina.nome}"></c:out>
+				<c:out value="${integ.disciplina.id}"></c:out>
 			</datatables:column>
 
 			<datatables:column title="Estrutura curricular">
-				<c:out value="${integ.estruturaCurricular.anoSemestre}"></c:out>
+				<c:out value="${integ.estruturaCurricular.id}"></c:out>
 			</datatables:column>
 			
 			<datatables:column title="Semestre oferta">
