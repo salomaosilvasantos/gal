@@ -17,7 +17,37 @@ $.fn.serializeObject = function()
 
 $( document ).ready(function() {
 	
-	$('#add-curso-button').click(function() {
+	$.fn.dataTableExt.sErrMode = 'throw';
+	$('table').dataTable(
+		{
+			"sPaginationType" : "full_numbers",
+			"oLanguage" : {
+				"sEmptyTable" : "Nenhum registro encontrado na tabela",
+				"sInfo" : "Mostrar _START_ até _END_ do _TOTAL_ registros",
+				"sInfoEmpty" : "Mostrar 0 até 0 de 0 Registros",
+				"sInfoFiltered" : "(Filtrar de _MAX_ total registros)",
+				"sInfoPostFix" : "",
+				"sInfoThousands" : ".",
+				"sLengthMenu" : "Mostrar _MENU_ registros por pagina",
+				"sLoadingRecords" : "Carregando...",
+				"sProcessing" : "Processando...",
+				"sZeroRecords" : "Nenhum registro encontrado",
+				"sSearch" : "Pesquisar",
+				"oPaginate" : {
+					"sNext" : "Proximo",
+					"sPrevious" : "Anterior",
+					"sFirst" : "Primeiro",
+					"sLast" : "Ultimo"
+				},
+				"oAria" : {
+					"sSortAscending" : ": Ordenar colunas de forma ascendente",
+					"sSortDescending" : ": Ordenar colunas de forma descendente"
+				}
+			}
+		}
+	);
+	
+	/*$('#add-curso-button').click(function() {
 	    var $form = $('#add-curso-form');
 	    var data = JSON.stringify($form.serializeObject());
 	    $.ajax({
@@ -33,6 +63,6 @@ $( document ).ready(function() {
 	            alert('error: ' + data);
 	        }
 	    });
-	});
+	});*/
 	
 });

@@ -65,6 +65,16 @@ public class EstruturaCurricular {
 	public void setCurso(Curso curso) {
 		this.curso = curso;
 	}
+	
+	
+
+	public List<IntegracaoCurricular> getCurriculos() {
+		return curriculos;
+	}
+
+	public void setCurriculos(List<IntegracaoCurricular> curriculos) {
+		this.curriculos = curriculos;
+	}
 
 	@Override
 	public String toString() {

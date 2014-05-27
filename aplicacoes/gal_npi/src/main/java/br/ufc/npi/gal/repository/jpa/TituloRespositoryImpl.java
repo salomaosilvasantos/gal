@@ -25,6 +25,7 @@ public class TituloRespositoryImpl extends GenericRepositoryImpl<Titulo> impleme
 		return em.createQuery("select t from Titulo t where isbn = :isbn").setParameter("isbn", isbn).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Titulo> findByNome(String nome) {
 		return em.createQuery("select t from Titulo t where nome = :nome").setParameter("nome", nome).getResultList();
 	}

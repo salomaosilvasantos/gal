@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -47,7 +46,7 @@ public class Curso implements Serializable{
 	@Size(min = 2, max = 3, message = "O sigla deve conter entre 2 e 3 caracteres")
 	private String sigla;	
 	
-	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class)
 	private List<EstruturaCurricular> curriculos;
 	
 	public Integer getId() {
