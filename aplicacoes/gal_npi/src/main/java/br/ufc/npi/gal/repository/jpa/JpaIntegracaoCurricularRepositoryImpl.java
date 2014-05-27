@@ -14,7 +14,10 @@ public class JpaIntegracaoCurricularRepositoryImpl extends GenericRepositoryImpl
 
 	@SuppressWarnings("unchecked")
 	public List<IntegracaoCurricular> listar() {		
-		return em.createQuery("Select ic from IntegracaoCurricular ic").getResultList();
+		List<IntegracaoCurricular> out = em.createQuery("Select ic from IntegracaoCurricular ic").getResultList();
+		for(IntegracaoCurricular ic : out)
+			System.out.println(ic.toString());
+		return out;
 	}
 
 	public void salvar(IntegracaoCurricular integracaoCurricular) {

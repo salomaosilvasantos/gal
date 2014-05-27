@@ -36,8 +36,8 @@ public class Disciplina {
 	@Size(min = 6, max = 12, message = "O código deve estar entre 6 e 12 caracteres")
 	private String codigo;	
 	
-	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class, fetch = FetchType.LAZY)
-	private List<EstruturaCurricular> curriculos;
+	@OneToMany(mappedBy = "disciplina", targetEntity = IntegracaoCurricular.class, fetch = FetchType.LAZY)
+	private List<IntegracaoCurricular> curriculos;
 	
 	public Disciplina() {
 		this.codigo = "";

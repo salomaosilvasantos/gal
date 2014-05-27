@@ -1,5 +1,6 @@
 package br.ufc.npi.gal.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -18,7 +19,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name="curso") 
-public class Curso {
+public class Curso implements Serializable{
 
 	@Id
 	@Column(name="id_curso")

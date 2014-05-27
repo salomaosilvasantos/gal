@@ -25,11 +25,11 @@ public class EstruturaCurricular {
 	@Column(name="ano_semestre")
 	private String anoSemestre;
 	
-	@JoinColumn(name="cod_curso")
+	@JoinColumn(name="cod_curso",referencedColumnName="cod_c")
 	@ManyToOne
 	private Curso curso;
 	
-	@OneToMany(mappedBy="disciplina")
+	@OneToMany(mappedBy="estruturaCurricular")
 	private List<IntegracaoCurricular> curriculos;
 	
 	public EstruturaCurricular(){
