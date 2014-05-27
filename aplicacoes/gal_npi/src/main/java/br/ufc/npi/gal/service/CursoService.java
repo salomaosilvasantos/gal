@@ -17,8 +17,8 @@ public interface CursoService {
     
     public Curso findById(Integer id);
 
-    public Curso buscar(String sigla, String codigo);
+    public Curso buscar(String sigla, Integer codigo);
     
-    public abstract List<Curso> findByCodigoList(String codigo);
+    public abstract List<Curso> findByCodigoList(Integer codigo);
 
 }

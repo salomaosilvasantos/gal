@@ -33,7 +33,7 @@ public class CursoServiceImpl implements CursoService {
 	}
 	
 	
-	public List<Curso> findByCodigoList(String codigo) {
+	public List<Curso> findByCodigoList(Integer codigo) {
 		List<Curso> cursos = cursoRepository.findByCodigo(codigo);
 		return cursos;
 	}
@@ -43,8 +43,9 @@ public class CursoServiceImpl implements CursoService {
 		return curso;
 	}
 	
-	public Curso buscar(String sigla, String codigo) {
+	public Curso buscar(String sigla, Integer codigo) {
 		return cursoRepository.buscar(sigla, codigo);
 	}
+
 	
 }

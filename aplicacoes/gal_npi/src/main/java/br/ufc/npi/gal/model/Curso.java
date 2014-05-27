@@ -11,7 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -27,14 +27,14 @@ public class Curso implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="id_curso")
+	@Column(name="id_crs")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
-	@NotEmpty(message="Campo Código não pode ficar vazio")
+	@NotNull(message="Campo Código não pode ficar vazio")
 	@Column(name = "cod_c")
-	@DecimalMin(value = "1", message="O campo deve conter apenas números")
-	private String codigo;
+	//@DecimalMin(value = "1", message="O campo deve conter apenas números")
+	private Integer codigo;
 
 	@NotEmpty(message="Campo Nome não pode ficar vazio")
 	@Column(name = "nome_c")
@@ -66,11 +66,11 @@ public class Curso implements Serializable{
 		this.curriculos = curriculos;
 	}
 
-	public String getCodigo() {
+	public Integer getCodigo() {
 		return codigo;
 	}
 
-	public void setCodigo(String codigo) {
+	public void setCodigo(Integer codigo) {
 		this.codigo = codigo;
 	}
 	
