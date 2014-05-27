@@ -6,3 +6,7 @@
 .form-horizontal {
 	text-align: center;
 }
+
+.tab-content {
+	width: 100% !important;
+}
