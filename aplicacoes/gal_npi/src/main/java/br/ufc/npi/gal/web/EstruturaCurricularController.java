@@ -18,5 +18,9 @@ public class EstruturaCurricularController {
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("estruturas", this.estruturaCurricularService.listar());
 		return "estrutura/listar";
-	} 
+	}
+	
+	public void teste() {
+		
+	}
 }
