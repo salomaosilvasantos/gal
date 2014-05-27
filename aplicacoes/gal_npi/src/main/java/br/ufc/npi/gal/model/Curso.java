@@ -21,6 +21,11 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Table(name="curso") 
 public class Curso implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Column(name="id_curso")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -34,7 +39,6 @@ public class Curso implements Serializable{
 	@NotEmpty(message="Campo Nome não pode ficar vazio")
 	@Column(name = "nome_c")
 	@Pattern(regexp="[a-zA-Z\\sà-ùÀ-Ù]{0,}",message="O campo Nome não pode possuir caracteres especiais ou números.")
-	@Size(min = 6, max = 40, message = "O nome deve estar entre 6 e 40 caracteres")
 	private String nome;
 	
 	@NotEmpty(message="Campo Sigla não pode ficar vazio")
