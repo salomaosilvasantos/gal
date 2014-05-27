@@ -10,7 +10,6 @@
 	<title>Cursos</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<jsp:include page="../fragments/htmlHead.jsp" />
-
 	<script type="text/javascript">
 		$(document)
 				.ready(
@@ -47,101 +46,97 @@
 	
 						});
 	</script>
-	
-    <spring:url value="/resources/js/validacoes.js" var="javascriptJs"/>
-	<script type="text/javascript" src="${javascriptJs}"></script>
-	
 </head>
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<a class="buttonAdd" href="<c:url value = "/curso/adicionar.htm"></c:url>">Adicionar</a>
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 20px;">Cursos</label>
 		</div>
 
 		<datatables:table id="curso" data="${cursos}" cdn="true" row="curso" theme="bootstrap2" cssClass="table table-striped">
 			<datatables:column title="Nome">
-				<c:out value="${curso.nome}"></c:out>
-			</datatables:column>
-
-			<datatables:column title="Codigo">
-				<c:out value="${curso.codigo}"></c:out>
-			</datatables:column>
-			
-			<datatables:column title="Sigla">
-				<c:out value="${curso.sigla}"></c:out>
-			</datatables:column>
-
-			<datatables:column title="Editar">
-				<a class="buttonAdd" href="<c:url value = "/curso/${curso.id}/editar.htm"></c:url>">Editar</a>
-			</datatables:column>
-
-			<datatables:column title="Deletar">
-
- 			<c:url value = "excluir.htm" var = "delete"></c:url>
-        
-	    		<form:form id = "deletePerson" action="${delete}" method ="post" onsubmit="return verificarDeletarCurso(this.name.value)">
-	    		
-	    			<input name = "name" value ="${curso.nome}"  type = "hidden"/>
-	    			<input name = "id" value ="${curso.id}"  type = "hidden"/>
-	    			<input type = "submit" value="Deletar"/>
-
-	    		</form:form>
-
+			<div class="panel-group" id="accordion">
+			  <div class="panel panel-default">
+			    <div class="panel-heading">
+			      <h4 class="panel-title">
+			        <a data-toggle="collapse" data-parent="#selection" href="#collapse${curso.id}">
+			        <div class="row">
+					  <div class="col-md-9">
+					  	<c:out value="${curso.nome}"></c:out>
+					  </div>
+					  <div class="col-md-3">
+					  	<a class="btn btn-primary" href="<c:url value = "/curso/${curso.id}/editar.htm"></c:url>"><span class="glyphicon glyphicon-edit"></span> Editar</a>
+						<a class="btn btn-danger" href="<c:url value = "/curso/${curso.id}/excluir.htm"></c:url>"><span class="glyphicon glyphicon-trash"></span> Excluir</a>
+					  </div>
+					</div>
+			        </a>
+			      </h4>
+			    </div>
+			    <div id="collapse${curso.id}" class="panel-collapse collapse">
+			      <div class="panel-body">
+			        teste
+			      </div>
+			    </div>
+			  </div>
+			</div>
 			</datatables:column>
 		</datatables:table>
-
-		<!--<button id="btnAdicionar" class="btn btn-primary" data-toggle="modal" data-target="#add-curso-modal">Adicionar</button>-->
+		
+		<a class="btn btn-primary" href="<c:url value = "/curso/adicionar.htm"></c:url>">Adicionar</a>
+		
+		
+<!-- 		<button id="btnAdicionar" class="btn btn-primary" data-toggle="modal" data-target="#add-curso-modal">Adicionar</button> -->
 		
 		<!-- Modal -->
-		<!--<div class="modal fade" id="add-curso-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myModalLabel">Adicionar curso</h4>
-					</div>
+<!-- 		<div class="modal fade" id="add-curso-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> -->
+<!-- 			<div class="modal-dialog"> -->
+<!-- 				<div class="modal-content"> -->
+<!-- 					<div class="modal-header"> -->
+<!-- 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> -->
+<!-- 						<h4 class="modal-title" id="myModalLabel">Adicionar curso</h4> -->
+<!-- 					</div> -->
 
-					<div class="modal-body">
+<!-- 					<div class="modal-body"> -->
 
-						<form class="form-horizontal" id="add-curso-form" action="<c:url value = "/curso/adicionar.htm"></c:url>">
+<%-- 						<form class="form-horizontal" id="add-curso-form" action="<c:url value = "/curso/adicionar.htm"></c:url>"> --%>
 
-							<input type="hidden" name="id" id="id" /> 
+<!-- 							<input type="hidden" name="id" id="id" />  -->
 
-							<div class="form-group">
-								<label class="col-sm-2 control-label" for="nome">Código</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" placeholder="Código" name="codigo" id="codigo" />
-								</div>
-							</div>
+<!-- 							<div class="form-group"> -->
+<!-- 								<label class="col-sm-2 control-label" for="nome">Código</label> -->
+<!-- 								<div class="col-sm-10"> -->
+<!-- 									<input type="text" class="form-control" placeholder="Código" name="codigo" id="codigo" /> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
 							
-							<div class="form-group">
-								<label class="col-sm-2 control-label" for="nome">Nome</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" placeholder="Nome" name="nome" id="nome" />
-								</div>
-							</div>
+<!-- 							<div class="form-group"> -->
+<!-- 								<label class="col-sm-2 control-label" for="nome">Nome</label> -->
+<!-- 								<div class="col-sm-10"> -->
+<!-- 									<input type="text" class="form-control" placeholder="Nome" name="nome" id="nome" /> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
 
-							<div class="form-group">
-								<label class="col-sm-2 control-label" for="sobreNome">Sigla</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" placeholder="Sigla" name="sigla" id="sigla" />
-								</div>
-							</div>
+<!-- 							<div class="form-group"> -->
+<!-- 								<label class="col-sm-2 control-label" for="sobreNome">Sigla</label> -->
+<!-- 								<div class="col-sm-10"> -->
+<!-- 									<input type="text" class="form-control" placeholder="Sigla" name="sigla" id="sigla" /> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
 
-						</form>
+<%-- 						</form> --%>
 
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-						<button id="add-curso-button" type="button" class="btn btn-primary">Salvar</button>
-					</div>
-				</div>
-			</div>
-		</div>-->
-		
+<!-- 					</div> -->
+<!-- 					<div class="modal-footer"> -->
+<!-- 						<button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button> -->
+<!-- 						<button id="add-curso-button" type="button" class="btn btn-primary">Salvar</button> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 </body>
 </html>
+
+
