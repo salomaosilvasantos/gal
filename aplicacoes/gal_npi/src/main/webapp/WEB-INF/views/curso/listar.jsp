@@ -124,13 +124,13 @@
 										<c:out value="${integracao.semestreOferta}"></c:out>
 									</datatables:column>
 						
-									<datatables:column title="Editar">
-										<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/editar.htm"></c:url>">Editar</a>
-									</datatables:column>
+<%-- 									<datatables:column title="Editar"> --%>
+<%-- 										<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/editar.htm"></c:url>">Editar</a> --%>
+<%-- 									</datatables:column> --%>
 						
-									<datatables:column title="Deletar">
-										<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir.htm"></c:url>">Deletar</a>
-									</datatables:column>
+<%-- 									<datatables:column title="Deletar"> --%>
+<%-- 										<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir.htm"></c:url>">Deletar</a> --%>
+<%-- 									</datatables:column> --%>
 								</datatables:table>
 					            <p></p>
 					        </div>
