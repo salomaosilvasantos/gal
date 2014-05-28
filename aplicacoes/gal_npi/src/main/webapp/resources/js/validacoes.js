@@ -24,6 +24,19 @@ function verificarDeletarCurso(name) {
 
 }
 
+function verificarDeletarTitulo(name) {
+
+	var value = confirm("Deletar definitivamente o título " + name + " ?");
+
+	if (value == true) {
+		return true;
+
+	} else if (value == false) {
+		return false;
+	}
+
+}
+
 function validarNomeDisciplina(nome, x) {
 
 	x.style.color = "white";

@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.TituloService;
@@ -89,6 +90,14 @@ public class TituloController {
 		
 	}
 	
+	@RequestMapping(value = "/excluir.htm", method = RequestMethod.POST)
+	//ResquestParam("id") where name = "id"
+	public String excluir(@RequestParam("id") Integer id) {
+		this.tituloService.excluir(id);
+		return "redirect:/titulo/listar.htm";
+	}
+	
+	/*
 	@RequestMapping(value = "/{id}/excluir.htm", method = RequestMethod.GET)
 	public String excluir(@PathVariable("id") Integer id, ModelMap modelMap) {
 
@@ -96,5 +105,5 @@ public class TituloController {
 		return "redirect:/titulo/listar.htm";
 		
 	}
-
+*/
 }

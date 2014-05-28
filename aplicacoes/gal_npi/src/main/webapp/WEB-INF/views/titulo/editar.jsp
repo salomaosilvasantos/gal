@@ -9,7 +9,10 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Editar Título</title>
-<jsp:include page="../fragments/htmlHead.jsp" />
+
+	<jsp:include page="../fragments/htmlHead.jsp" />
+	<jsp:include page="../fragments/headTag.jsp" />
+
 <script type="text/javascript">
 	$(document).ready(
 			function() {

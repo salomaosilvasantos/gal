@@ -10,6 +10,8 @@
 	<title>Títulos</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<jsp:include page="../fragments/htmlHead.jsp" />
+	<jsp:include page="../fragments/headTag.jsp" />
+	
 	<script type="text/javascript">
 		$(document)
 				.ready(
@@ -73,7 +75,17 @@
 			</datatables:column>
 
 			<datatables:column title="Excluir">
-				<a class="buttonAdd" href="<c:url value = "/titulo/${titulo.id}/excluir.htm"></c:url>">Excluir</a>
+			
+			<c:url value = "excluir.htm" var = "delete"></c:url>
+        
+	    		<form:form id = "deletePerson" action="${delete}" method ="post" onsubmit="return verificarDeletarTitulo(this.isbn.value)">
+	    		
+	    			<input name = "isbn" value ="${titulo.isbn}"  type = "hidden"/>
+	    			<input name = "id" value ="${titulo.id}"  type = "hidden"/>
+	    			<input type = "submit" value="Excluir" class ="btn btn-danger"/>
+
+	    		</form:form>
+			
 			</datatables:column>
 		</datatables:table>
 
