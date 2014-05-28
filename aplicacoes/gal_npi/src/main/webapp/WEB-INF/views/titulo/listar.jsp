@@ -50,6 +50,7 @@
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
+		<a class="btn btn-primary" href="/gal_npi/titulo/adicionar.htm">Adicionar</a>
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 20px;">Títulos</label>
 		</div>
@@ -76,7 +77,6 @@
 			</datatables:column>
 		</datatables:table>
 
-		<a class="buttonAdd" href="/gal_npi/titulo/adicionar.htm">Adicionar</a>
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 </body>

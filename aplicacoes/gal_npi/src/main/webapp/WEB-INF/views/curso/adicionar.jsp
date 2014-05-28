@@ -6,28 +6,46 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Cadastro de Curso</title>
+	<title>Adicionar Curso</title>
 	<jsp:include page="../fragments/htmlHead.jsp" />
+	<script type="text/javascript">
+		$( document ).ready(function() {
+			$('div:has(span.error)').find('span.error').css('color', '#a94442');
+			$('div:has(span.error)').find('span.error').parent().parent().addClass('has-error has-feedback');
+		});
+	</script>
 </head>
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<form:form action="/gal_npi/curso/adicionar.htm" method="post" modelAttribute="curso">
-			<label for="codigo">Código:</label>
-<%-- 			<form:input type="hidden" name="id" path="id"/> --%>
-			<form:input type="text" name="codigo" id="codigo" path="codigo"/>
-			<form:errors path="codigo" cssStyle="color:red"/>
-			<br />
-			<form:errors cssClass="error" path="codigo" />
-			<label for="nome">Nome:</label>
-			<form:input type="text" name="nome" id="nome" path="nome"/>
-			<br />
-			<form:errors cssClass="error" path="nome" />
-			<label for="sigla">Sigla:</label>
-			<form:input type="text" name="sigla" id="sigla" path="sigla"/>
-			<br />
-			<form:errors cssClass="error" path="sigla" />
-			<input type="submit" value="Cadastrar">
+		<form:form action="/gal_npi/curso/adicionar.htm" method="post" modelAttribute="curso" role="form" class="form-horizontal">
+			<div class="form-group" style="text-align: center;">
+				<label class="control-label" style="font-size: 20px;">Adicionar Curso</label>
+			</div>
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">Código</label>
+			    <div class="col-sm-8">
+			    	<form:input id="codigo" class="form-control" placeholder="Código" path="codigo"/>
+			    	<form:errors path="codigo" cssClass="error" />
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="nome" class="col-sm-1 control-label">Nome</label>
+			    <div class="col-sm-8">
+			    	<form:input id="nome" class="form-control" placeholder="Nome" path="nome"/>
+			    	<form:errors path="nome" cssClass="error" />
+			    </div>
+			</div>
+			<div class="form-group">
+			    <label for="sigla" class="col-sm-1 control-label">Sigla</label>
+			    <div class="col-sm-8">
+			    	<form:input id="sigla" class="form-control" placeholder="Sigla" path="sigla"/>
+			    	<form:errors path="sigla" cssClass="error" />
+			    </div>
+			</div>
+			<div class="btn-group">
+				<input id="criar" class="btn btn-primary" type="submit" value="Adicionar"/>
+			</div>
 		</form:form>
 	</div>
 </body>

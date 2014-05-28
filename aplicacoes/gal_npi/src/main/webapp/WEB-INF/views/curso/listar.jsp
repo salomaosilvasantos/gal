@@ -79,6 +79,7 @@
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
+		<a class="btn btn-primary" href="/gal_npi/curso/adicionar.htm">Adicionar</a>
 		<div style="text-align: center; margin-bottom: 30px;">
 			<label class="control-label" style="font-size: 20px;">Cursos</label>
 		</div>
@@ -143,8 +144,6 @@
 			  </div>
 			</div>
 		</c:forEach>
-		
-		<a class="btn btn-primary" href="<c:url value = "/curso/adicionar.htm"></c:url>">Adicionar</a>
 		
 		
 <!-- 		<button id="btnAdicionar" class="btn btn-primary" data-toggle="modal" data-target="#add-curso-modal">Adicionar</button> -->
