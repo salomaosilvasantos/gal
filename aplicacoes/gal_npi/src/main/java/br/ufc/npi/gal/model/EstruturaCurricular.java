@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,8 +26,8 @@ public class EstruturaCurricular {
 	@Column(name="ano_semestre")
 	private String anoSemestre;
 	
-	@JoinColumn(name="cod_curso",referencedColumnName="cod_c")
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="id_curso")
 	private Curso curso;
 	
 	@OneToMany(mappedBy="estruturaCurricular")
