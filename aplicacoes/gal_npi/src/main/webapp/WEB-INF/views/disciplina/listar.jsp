@@ -68,8 +68,8 @@
 				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/editar.htm"></c:url>">Editar</a>
 			</datatables:column>
 
-			<datatables:column title="Deletar">
-				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir.htm"></c:url>">Deletar</a>
+			<datatables:column title="Excluir">
+				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir.htm"></c:url>">Excluir</a>
 			</datatables:column>
 		</datatables:table>
 

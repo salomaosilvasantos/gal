@@ -32,7 +32,7 @@ public class Disciplina {
 	
 	@NotEmpty(message="Campo Código não pode ficar vazio")
 	@Column(name = "cod_d")
-	@Pattern(regexp="^[a-z\\sA-Z0-9]+",message="O campo código não pode possuir caracteres especiais.")
+	@Pattern(regexp="[a-zA-Z\\sà-ùÀ-Ù0-9]{0,}",message="O campo código não pode possuir caracteres especiais.")
 	@Size(min = 6, max = 12, message = "O código deve estar entre 6 e 12 caracteres")
 	private String codigo;	
 	

@@ -15,6 +15,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.NumberFormat;
+import org.springframework.format.annotation.NumberFormat.Style;
 
 @Entity
 @Table(name="curso") 
@@ -32,7 +34,7 @@ public class Curso implements Serializable{
 	
 	@NotNull(message="Campo Código não pode ficar vazio")
 	@Column(name = "cod_c")
-	//@DecimalMin(value = "1", message="O campo deve conter apenas números")
+	@NumberFormat(style = Style.NUMBER)
 	private Integer codigo;
 
 	@NotEmpty(message="Campo Nome não pode ficar vazio")

@@ -33,7 +33,7 @@ public class DisciplinaController {
 		Disciplina disciplina = this.disciplinaService.findById(id);
 
 		if (disciplina == null) {
-			return "redirect:/";
+			return "redirect:/disciplina/listar.htm";
 
 		} else {
 			modelMap.addAttribute("disciplina", disciplina);
@@ -79,7 +79,7 @@ public class DisciplinaController {
 		
 		if(disciplinaService.buscar(disciplina.getCodigo(), disciplina.getNome()) == null) {
 			disciplinaService.adicionar(disciplina);
-			return "disciplina/adicionada";
+			return "redirect:/disciplina/listar.htm";
 		
 		} else {
 			redirectAttributes.addFlashAttribute("message", "Disciplina não pode ser adicionada pois já existe semelhante registrada");

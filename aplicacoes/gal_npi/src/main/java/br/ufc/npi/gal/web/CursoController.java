@@ -35,7 +35,7 @@ public class CursoController {
 		Curso curso = this.cursoService.findById(id);
 
 		if (curso == null) {
-			return "redirect:/";
+			return "curso/editar";
 
 		} else {
 			model.addAttribute("curso", curso);
@@ -70,7 +70,7 @@ public class CursoController {
 	
 	@RequestMapping("/adicionado")
 	public String confirm(){
-		return "curso/adicionado";
+		return "redirect:/curso/listar.htm";
 	}
 	
 	@RequestMapping(value = "/adicionar.htm")
@@ -87,7 +87,7 @@ public class CursoController {
 		
 		if(cursoService.buscar(curso.getSigla(), curso.getCodigo()) == null) {
 			cursoService.adicionar(curso);
-			return "curso/adicionado";
+			return "redirect:/curso/listar.htm";
 		
 		} else {
 			redirectAttributes.addFlashAttribute("message", "Curso não pode ser adicionado pois já existe semelhante registrada");
