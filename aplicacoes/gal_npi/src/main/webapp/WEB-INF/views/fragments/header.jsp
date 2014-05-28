@@ -40,14 +40,6 @@
 		            <li><a href="<c:url value='/titulo/listar.htm'/>">Listar</a></li>
 		          </ul>
 		        </li>
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Estrutura Curricular<b class="caret"></b></a>
-		          <ul class="dropdown-menu">
-		            <li><a href="#">Adicionar</a></li>
-		            <li class="divider"></li>
-		            <li><a href="<c:url value='/estrutura/listar.htm'/>">Listar</a></li>
-		          </ul>
-		        </li>
 		        <li><a href="#">Metas</a></li>
 		      </ul>
 	    </div>
