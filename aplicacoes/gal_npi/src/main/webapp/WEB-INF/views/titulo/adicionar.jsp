@@ -42,6 +42,7 @@
 			    	<form:errors path="tipo" cssClass="error" />
 			    </div>
 			</div>
+			<a class="btn btn-primary" href="/gal_npi/titulo/listar.htm">Voltar</a>
 			<div class="btn-group">
 				<input id="criar" class="btn btn-primary" type="submit" value="Adicionar"/>
 			</div>
