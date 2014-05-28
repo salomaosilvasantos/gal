@@ -77,12 +77,10 @@
 	    		
 	    			<input name = "name" value ="${disciplina.nome}"  type = "hidden"/>
 	    			<input name = "id" value ="${disciplina.id}"  type = "hidden"/>
-	    			<input type = "submit" value="Deletar"/>
+	    			<input type = "submit" value="Excluir" class ="btn btn-danger"/>
 
 	    		</form:form>
 			
-			
-				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir.htm"></c:url>">Excluir</a>
 			</datatables:column>
 		</datatables:table>
 

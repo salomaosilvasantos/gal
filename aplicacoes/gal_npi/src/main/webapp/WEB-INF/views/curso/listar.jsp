@@ -105,7 +105,7 @@
 	    		
 	    			<input name = "name" value ="${curso.nome}"  type = "hidden"/>
 	    			<input name = "id" value ="${curso.id}"  type = "hidden"/>
-	    			<input type = "submit" value="Deletar"/>
+	    			<input type = "submit" value="Excluir" class ="btn btn-danger"/>
 
 	    		</form:form>
 					
