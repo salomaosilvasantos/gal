@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Disciplina;
@@ -41,12 +42,14 @@ public class DisciplinaController {
 			return "disciplina/editar";
 	}
 	
-	@RequestMapping(value = "/{id}/excluir.htm", method = RequestMethod.GET)
-	public String excluir(@PathVariable("id") Integer id, ModelMap modelMap) {
-
+	@RequestMapping(value = "/excluir.htm", method = RequestMethod.POST)
+	//ResquestParam("id") where name = "id"
+	public String excluir(@RequestParam("id") Integer id) {
 		this.disciplinaService.excluir(id);
 		return "redirect:/disciplina/listar.htm";
 	}
+	
+	
 	
 	@RequestMapping(value = "/editar.htm", method=RequestMethod.POST)
 	public String atualizar(@Valid Disciplina disciplina, BindingResult result){

@@ -10,6 +10,8 @@
 	<title>Cursos</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<jsp:include page="../fragments/htmlHead.jsp" />
+	<jsp:include page="../fragments/headTag.jsp" />
+	
 	<script type="text/javascript">
 		/* $(document)
 				.ready(
@@ -96,7 +98,17 @@
 					  </div>
 					  <div class="col-md-3">
 					  	<a class="btn btn-primary" href="<c:url value = "/curso/${curso.id}/editar.htm"></c:url>"><span class="glyphicon glyphicon-edit"></span> Editar</a>
-						<a class="btn btn-danger" href="<c:url value = "/curso/${curso.id}/excluir.htm"></c:url>"><span class="glyphicon glyphicon-trash"></span> Excluir</a>
+					
+					<c:url value = "excluir.htm" var = "delete"></c:url>
+        
+	    		<form:form id = "deletePerson" action="${delete}" method ="post" onsubmit="return verificarDeletarCurso(this.name.value)">
+	    		
+	    			<input name = "name" value ="${curso.nome}"  type = "hidden"/>
+	    			<input name = "id" value ="${curso.id}"  type = "hidden"/>
+	    			<input type = "submit" value="Deletar"/>
+
+	    		</form:form>
+					
 					  </div>
 					</div>
 			        </a>

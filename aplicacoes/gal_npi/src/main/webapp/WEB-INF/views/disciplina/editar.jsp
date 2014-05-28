@@ -10,6 +10,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Editar Disciplina</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
+<jsp:include page="../fragments/headTag.jsp"/>
+	
 <script type="text/javascript">
 	$(document).ready(
 			function() {
@@ -33,14 +35,14 @@
 			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">Código</label>
 			    <div class="col-sm-8">
-			    	<form:input id="codigo" class="form-control" placeholder="Código" path="codigo"/>
+			    	<form:input id="codigo" class="form-control" placeholder="Código" path="codigo" onkeyup = "validarCodigoDisciplina(this.value, this)"/>
 			    	<form:errors path="codigo" cssClass="error" />
 			    </div>
 			</div>
 			<div class="form-group">
 			    <label for="nome" class="col-sm-1 control-label">Nome</label>
 			    <div class="col-sm-8">
-			    	<form:input id="nome" class="form-control" placeholder="Nome" path="nome"/>
+			    	<form:input id="nome" class="form-control" placeholder="Nome" path="nome" onkeyup = "validarNomeDisciplina(this.value, this)"/>
 			    	<form:errors path="nome" cssClass="error" />
 			    </div>
 			</div>
