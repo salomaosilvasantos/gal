@@ -97,18 +97,21 @@
 					  	<c:out value="${curso.nome}"></c:out>
 					  </div>
 					  <div class="col-md-3">
-					  	<a class="btn btn-primary" href="<c:url value = "/curso/${curso.id}/editar.htm"></c:url>"><span class="glyphicon glyphicon-edit"></span> Editar</a>
-					
-					<c:url value = "excluir.htm" var = "delete"></c:url>
-        
-	    		<form:form id = "deletePerson" action="${delete}" method ="post" onsubmit="return verificarDeletarCurso(this.name.value)">
-	    		
-	    			<input name = "name" value ="${curso.nome}"  type = "hidden"/>
-	    			<input name = "id" value ="${curso.id}"  type = "hidden"/>
-	    			<input type = "submit" value="Excluir" class ="btn btn-danger"/>
-
-	    		</form:form>
-					
+					  	<div class="row">
+						  	<div class="col-md-5">
+						  	<a class="btn btn-primary" href="<c:url value = "/curso/${curso.id}/editar.htm"></c:url>"><span class="glyphicon glyphicon-edit"></span> Editar</a>
+							</div>
+							<div class="col-md-5">
+							<c:url value = "excluir.htm" var = "delete"></c:url>
+				    		<form:form id = "deletePerson" action="${delete}" method ="post" onsubmit="return verificarDeletarCurso(this.name.value)">
+				    			
+				    			<input name = "name" value ="${curso.nome}"  type = "hidden"/>
+				    			<input name = "id" value ="${curso.id}"  type = "hidden"/>
+				    			<button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Excluir</button>
+				    			
+				    		</form:form>
+				    		</div>
+			    		</div>
 					  </div>
 					</div>
 			        </a>
