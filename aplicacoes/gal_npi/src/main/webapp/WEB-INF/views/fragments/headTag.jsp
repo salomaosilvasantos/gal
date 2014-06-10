@@ -1,14 +1,13 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 	
-    <spring:url value="/resources/css/springapp.css" var="springappCss"/>
-    <link href="${springappCss}" rel="stylesheet"/>
+    <script src="<c:url value="/webjars/jquery/2.1.0/jquery.js" />"></script>
+    <link href="<c:url value="/webjars/bootstrap/3.1.1/css/bootstrap.min.css" />" rel="stylesheet" />
+    <script src="<c:url value="/webjars/bootstrap/3.1.1/js/bootstrap.min.js" />"></script>
     
-    
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-    <spring:url value="/resources/js/validacoes.js" var="javascriptJs"/>
-	<script type="text/javascript" src="${javascriptJs}"></script>
+    <link href="<c:url value="/webjars/datatables/1.9.4/media/css/jquery.dataTables.css" />" rel="stylesheet" />
+    <script src="<c:url value="/webjars/datatables/1.9.4/media/js/jquery.dataTables.min.js" />"></script>
 	
 	
 </head>

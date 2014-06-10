@@ -9,15 +9,14 @@
 <head>
 	<title>Cursos</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<jsp:include page="../fragments/htmlHead.jsp" />
 	<jsp:include page="../fragments/headTag.jsp" />
 	
 	<script type="text/javascript">
-		/* $(document)
+		$(document)
 				.ready(
 						function() {
 							$.fn.dataTableExt.sErrMode = 'throw';
-							$('#curso').dataTable(
+							$('table').dataTable(
 								{
 									"sPaginationType" : "full_numbers",
 									"oLanguage" : {
@@ -46,36 +45,9 @@
 								}
 							);
 							
-							$('#estrutura').dataTable(
-									{
-										"sPaginationType" : "full_numbers",
-										"oLanguage" : {
-											"sEmptyTable" : "Nenhum registro encontrado na tabela",
-											"sInfo" : "Mostrar _START_ até _END_ do _TOTAL_ registros",
-											"sInfoEmpty" : "Mostrar 0 até 0 de 0 Registros",
-											"sInfoFiltered" : "(Filtrar de _MAX_ total registros)",
-											"sInfoPostFix" : "",
-											"sInfoThousands" : ".",
-											"sLengthMenu" : "Mostrar _MENU_ registros por pagina",
-											"sLoadingRecords" : "Carregando...",
-											"sProcessing" : "Processando...",
-											"sZeroRecords" : "Nenhum registro encontrado",
-											"sSearch" : "Pesquisar",
-											"oPaginate" : {
-												"sNext" : "Proximo",
-												"sPrevious" : "Anterior",
-												"sFirst" : "Primeiro",
-												"sLast" : "Ultimo"
-											},
-											"oAria" : {
-												"sSortAscending" : ": Ordenar colunas de forma ascendente",
-												"sSortDescending" : ": Ordenar colunas de forma descendente"
-											}
-										}
-									}
-								);
+							
 	
-						}); */
+						});
 	</script>
 </head>
 <body>
@@ -126,7 +98,7 @@
 			        	<div class="tab-content col-md-10">
 			        		<div class="tab-pane active" id="tab_a">
 			        			<div>Estrutura Curricular</div>
-			        			<datatables:table id="estrutura" data="${curriculo.curriculos}" cdn="true" row="integracao" theme="bootstrap2" cssClass="table table-striped">
+			        			<datatables:table id="estrutura${curso.id}" data="${curriculo.curriculos}" cdn="true" row="integracao" theme="bootstrap2" cssClass="table table-striped">
 									<datatables:column title="Disciplina">
 										<c:out value="${integracao.disciplina.nome}"></c:out>
 									</datatables:column>
