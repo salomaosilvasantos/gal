@@ -1,0 +1,14 @@
+--------- Arquivo server.xml -----------
+
+<Resource auth="Container" driverClassName="org.postgresql.Driver"
+			maxActive="10" maxIdle="3" maxWait="10000" name="galnpi" password="postgres"
+			type="javax.sql.DataSource" url="jdbc:postgresql://localhost/bd_gal"
+			username="postgres" />
+
+
+
+
+
+--------- Arquivo context.xml -----------
+
+<ResourceLink global="galnpi" name="galnpi" type="javax.sql.DataSource"/>
