@@ -11,7 +11,6 @@
 <title>Editar Título</title>
 
 	<jsp:include page="../fragments/htmlHead.jsp" />
-	<jsp:include page="../fragments/headTag.jsp" />
 
 <script type="text/javascript">
 	$(document).ready(
@@ -28,7 +27,7 @@
 
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<form:form action="/gal_npi/titulo/editar.htm" method="post" modelAttribute="titulo" role="form" class="form-horizontal">
+		<form:form action="/gal_npi/titulo/editar" method="post" modelAttribute="titulo" role="form" class="form-horizontal">
 			<form:input path="id" type="hidden" />
 			<div class="form-group" style="text-align: center;">
 				<label class="control-label" style="font-size: 20px;">Editar Título</label>
@@ -54,11 +53,12 @@
 			    	<form:errors path="tipo" cssClass="error" />
 			    </div>
 			</div>
-			<a class="btn btn-primary" href="/gal_npi/titulo/listar.htm">Voltar</a>
+			<a class="btn btn-primary" href="/gal_npi/titulo/listar">Voltar</a>
 			<div class="btn-group">
 				<input id="criar" class="btn btn-primary" type="submit" value="Editar"/>
 			</div>
 		</form:form>
+		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 
 </body>

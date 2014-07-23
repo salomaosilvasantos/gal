@@ -22,19 +22,19 @@ public class DisciplinaController {
 	@Autowired
 	private DisciplinaService disciplinaService;
 
-	@RequestMapping(value = "/listar.htm")
+	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("disciplinas", this.disciplinaService.listar());
 		return "disciplina/listar";
 	} 
 
-	@RequestMapping(value = "/{id}/editar.htm", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
 
 		Disciplina disciplina = this.disciplinaService.findById(id);
 
 		if (disciplina == null) {
-			return "redirect:/disciplina/listar.htm";
+			return "redirect:/disciplina/listar";
 
 		} else {
 			modelMap.addAttribute("disciplina", disciplina);
@@ -42,16 +42,16 @@ public class DisciplinaController {
 			return "disciplina/editar";
 	}
 	
-	@RequestMapping(value = "/excluir.htm", method = RequestMethod.POST)
+	@RequestMapping(value = "/excluir", method = RequestMethod.POST)
 	//ResquestParam("id") where name = "id"
 	public String excluir(@RequestParam("id") Integer id) {
 		this.disciplinaService.excluir(id);
-		return "redirect:/disciplina/listar.htm";
+		return "redirect:/disciplina/listar";
 	}
 	
 	
 	
-	@RequestMapping(value = "/editar.htm", method=RequestMethod.POST)
+	@RequestMapping(value = "/editar", method=RequestMethod.POST)
 	public String atualizar(@Valid Disciplina disciplina, BindingResult result){
 		
 		if(result.hasErrors()){
@@ -59,22 +59,22 @@ public class DisciplinaController {
 		}
 
 		this.disciplinaService.atualizar(disciplina);
-		return "redirect:/disciplina/listar.htm";
+		return "redirect:/disciplina/listar";
 		
 	}
 	
-	@RequestMapping("/adicionada.htm")
+	@RequestMapping("/adicionada")
 	public String confirm(){
 		return "disciplina/adicionada";
 	}
 	
-	@RequestMapping(value = "/adicionar.htm")
+	@RequestMapping(value = "/adicionar")
 	public String adicionar(ModelMap modelMap){
 		modelMap.addAttribute("disciplina", new Disciplina());
 		return "disciplina/adicionar";
 	}
 	
-	@RequestMapping(value="/adicionar.htm",method = RequestMethod.POST)
+	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
 	public String adicionar(@Valid Disciplina disciplina, BindingResult result, final RedirectAttributes redirectAttributes) {
 		
 		if(result.hasErrors())
@@ -82,15 +82,15 @@ public class DisciplinaController {
 		
 		if(disciplinaService.buscar(disciplina.getCodigo(), disciplina.getNome()) == null) {
 			disciplinaService.adicionar(disciplina);
-			return "redirect:/disciplina/listar.htm";
+			return "redirect:/disciplina/listar";
 		
 		} else {
 			redirectAttributes.addFlashAttribute("message", "Disciplina não pode ser adicionada pois já existe semelhante registrada");
-			return "redirect:/disciplina/adicionar.htm";
+			return "redirect:/disciplina/adicionar";
 		}
 	}
 	
-	@RequestMapping("/buscar.htm")
+	@RequestMapping("/buscar")
 	public String buscar(ModelMap model, String disc) {
 		model.addAttribute("disciplinas", disciplinaService.findByCodigo(disc));
 		return "disciplina/listar";

@@ -10,7 +10,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Editar Disciplina</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
-<jsp:include page="../fragments/headTag.jsp"/>
 	
 <script type="text/javascript">
 	$(document).ready(
@@ -27,7 +26,7 @@
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
 
-		<form:form modelAttribute="disciplina" id="reg" action="/gal_npi/disciplina/editar.htm" method="post" role="form" class="form-horizontal">
+		<form:form modelAttribute="disciplina" id="reg" action="/gal_npi/disciplina/editar" method="post" role="form" class="form-horizontal">
 			<form:input path="id" type="hidden" />
 			<div class="form-group" style="text-align: center;">
 					<label class="control-label" style="font-size: 20px;">Editar Disciplina</label>
@@ -46,11 +45,12 @@
 			    	<form:errors path="nome" cssClass="error" />
 			    </div>
 			</div>
-			<a class="btn btn-primary" href="/gal_npi/disciplina/listar.htm">Voltar</a>
+			<a class="btn btn-primary" href="/gal_npi/disciplina/listar">Voltar</a>
 			<div class="btn-group">
 				<input id="criar" class="btn btn-primary" type="submit" value="Editar"/>
 			</div>
 		</form:form>
+		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 
 </body>

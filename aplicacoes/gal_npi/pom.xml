@@ -99,6 +99,7 @@
 			<artifactId>validation-api</artifactId>
 			<version>${java.validation.version}</version>
 		</dependency>
+		
 
 		<!-- SPRING -->
 		<dependency>
@@ -176,6 +177,12 @@
  			<artifactId>spring-security-config</artifactId>
  			<version>${spring.security.version}</version>
  		</dependency>
+ 		
+ 		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>3.2.1.RELEASE</version>
+		</dependency>
 		
 
 		<!-- Webjars (static dependencies distributed as JAR files) -->

@@ -14,7 +14,7 @@ public class EstruturaCurricularController {
 	@Autowired	
 	private EstruturaCurricularService estruturaCurricularService;
 	
-	@RequestMapping(value = "/listar.htm")
+	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("estruturas", this.estruturaCurricularService.listar());
 		return "estrutura/listar";

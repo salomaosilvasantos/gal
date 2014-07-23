@@ -10,7 +10,6 @@
 	<title>Títulos</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<jsp:include page="../fragments/htmlHead.jsp" />
-	<jsp:include page="../fragments/headTag.jsp" />
 	
 	<script type="text/javascript">
 		$(document)
@@ -52,7 +51,7 @@
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<a class="btn btn-primary" href="/gal_npi/titulo/adicionar.htm">Adicionar</a>
+		<a class="btn btn-primary" href="/gal_npi/titulo/adicionar">Adicionar</a>
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 20px;">Títulos</label>
 		</div>
@@ -71,12 +70,12 @@
 			</datatables:column>
 
 			<datatables:column title="Editar">
-				<a class="buttonAdd" href="<c:url value = "/titulo/${titulo.id}/editar.htm"></c:url>">Editar</a>
+				<a class="buttonAdd" href="<c:url value = "/titulo/${titulo.id}/editar"></c:url>">Editar</a>
 			</datatables:column>
 
 			<datatables:column title="Excluir">
 			
-			<c:url value = "excluir.htm" var = "delete"></c:url>
+			<c:url value = "excluir" var = "delete"></c:url>
         
 	    		<form:form id = "deletePerson" action="${delete}" method ="post" onsubmit="return verificarDeletarTitulo(this.isbn.value)">
 	    		

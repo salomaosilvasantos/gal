@@ -5,35 +5,59 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	id="WebApp_ID" version="3.0">
 	
-	<context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/spring/applicationContext.xml</param-value>
-  </context-param>
-  <listener>
+  <display-name>Archetype Created Web Application</display-name>
+  <welcome-file-list>
+  	<welcome-file>/WEB-INF/views/index.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <servlet>
+	<servlet-name>mvc-dispatcher</servlet-name>
+	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	<load-on-startup>1</load-on-startup>
+</servlet>
+	<servlet-mapping>
+		<servlet-name>mvc-dispatcher</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	
+	<listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
-  <display-name>Archetype Created Web Application</display-name>
-  <servlet>
-    <servlet-name>gal_npi</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <init-param>
-      <param-name>contextConfigLocation</param-name>
-      <param-value>/WEB-INF/spring/app-config.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
+  <jsp-config>
+	    <jsp-property-group>
+	        <url-pattern>*.jsp</url-pattern>
+	        <page-encoding>UTF-8</page-encoding>
+	    </jsp-property-group>
+	</jsp-config>
+	
+	<context-param>
+ 		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring-security.xml, /WEB-INF/applicationContext.xml</param-value>
+ 	</context-param>  
+  
+  
+  <!-- Spring Security -->
+ 	<filter>
+ 		<filter-name>springSecurityFilterChain</filter-name>
+ 		<filter-class>
+                   org.springframework.web.filter.DelegatingFilterProxy
+        </filter-class>
+ 	</filter>
+  
+ 	<filter-mapping>
+ 		<filter-name>springSecurityFilterChain</filter-name>
+ 		<url-pattern>/*</url-pattern>
+ 	</filter-mapping>
+ 	
   <servlet>
     <servlet-name>datatablesController</servlet-name>
     <servlet-class>com.github.dandelion.datatables.extras.servlet2.servlet.DatatablesServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>gal_npi</servlet-name>
-    <url-pattern>*.htm</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>datatablesController</servlet-name>
     <url-pattern>/datatablesController/*</url-pattern>
   </servlet-mapping>
+  
   <filter>  
     <filter-name>encodingFilter</filter-name>  
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>  

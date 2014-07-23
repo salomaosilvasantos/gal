@@ -1,6 +1,7 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div class="page-header">
-  <h1>GAL <small>Gest„o de AquisiÁ„o de Livros</small></h1>
+  <h1>GAL <small>Gest√£o de Aquisi√ß√£o de Livros</small></h1>
 </div>
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container-fluid">
@@ -19,25 +20,25 @@
 		        <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Disciplina<b class="caret"></b></a>
 		          <ul class="dropdown-menu">
-		            <li><a href="<c:url value='/disciplina/adicionar.htm'/>">Adicionar</a></li>
+		            <li><a href="<c:url value='/disciplina/adicionar'/>">Adicionar</a></li>
 		            <li class="divider"></li>
-		            <li><a href="<c:url value='/disciplina/listar.htm'/>">Listar</a></li>
+		            <li><a href="<c:url value='/disciplina/listar'/>">Listar</a></li>
 		          </ul>
 		        </li>
 		        <li class="dropdown">
 		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Curso<b class="caret"></b></a>
 		          <ul class="dropdown-menu">
-		            <li><a href="<c:url value='/curso/adicionar.htm'/>">Adicionar</a></li>
+		            <li><a href="<c:url value='/curso/adicionar'/>">Adicionar</a></li>
 		            <li class="divider"></li>
-		            <li><a href="<c:url value='/curso/listar.htm'/>">Listar</a></li>
+		            <li><a href="<c:url value='/curso/listar'/>">Listar</a></li>
 		          </ul>
 		        </li>
 		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">TÌtulo<b class="caret"></b></a>
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">T√≠tulo<b class="caret"></b></a>
 		          <ul class="dropdown-menu">
-		            <li><a href="<c:url value='/titulo/adicionar.htm'/>">Adicionar</a></li>
+		            <li><a href="<c:url value='/titulo/adicionar'/>">Adicionar</a></li>
 		            <li class="divider"></li>
-		            <li><a href="<c:url value='/titulo/listar.htm'/>">Listar</a></li>
+		            <li><a href="<c:url value='/titulo/listar'/>">Listar</a></li>
 		          </ul>
 	    </div>
 	</div>

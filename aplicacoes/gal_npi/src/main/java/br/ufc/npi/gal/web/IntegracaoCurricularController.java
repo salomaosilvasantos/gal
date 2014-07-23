@@ -13,7 +13,7 @@ public class IntegracaoCurricularController {
 	@Autowired
 	private IntegracaoCurricularService integracaoService;
 	
-	@RequestMapping(value = "/listar.htm")
+	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("integracao", this.integracaoService.listar());
 		return "integracao/listar";

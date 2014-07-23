@@ -72,15 +72,15 @@
 			</datatables:column>
 
 			<datatables:column title="Editar">
-				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/editar.htm"></c:url>">Editar</a>
+				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/editar"></c:url>">Editar</a>
 			</datatables:column>
 
 			<datatables:column title="Deletar">
-				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir.htm"></c:url>">Deletar</a>
+				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir"></c:url>">Deletar</a>
 			</datatables:column>
 		</datatables:table>
 
-		<a class="buttonAdd" href="/gal_npi/disciplina/adicionar.htm">Adicionar</a>
+		<a class="buttonAdd" href="/gal_npi/disciplina/adicionar">Adicionar</a>
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 </body>

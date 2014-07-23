@@ -23,7 +23,7 @@ public class TituloController {
 	@Autowired
 	private TituloService tituloService;
 	
-	@RequestMapping(value = "/listar.htm", method = RequestMethod.GET)
+	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
 		
 		modelMap.addAttribute("titulos", this.tituloService.listar());
@@ -31,7 +31,7 @@ public class TituloController {
 		
 	}
 	
-	@RequestMapping(value = "/adicionar.htm", method = RequestMethod.GET)
+	@RequestMapping(value = "/adicionar", method = RequestMethod.GET)
 	public String adicionar(ModelMap modelMap){
 		
 		modelMap.addAttribute("titulo", new Titulo());
@@ -39,7 +39,7 @@ public class TituloController {
 		
 	}
 	
-	@RequestMapping(value="/adicionar.htm",method = RequestMethod.POST)
+	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
 	public String adicionar(@Valid Titulo titulo, BindingResult result, ModelMap modelMap) {
 		
 		if(result.hasErrors()) {
@@ -51,7 +51,7 @@ public class TituloController {
 			titulos = tituloService.findByNome(titulo.getNome());
 			if(titulos == null || titulos.isEmpty()) {
 				tituloService.adicionar(titulo);
-				return "redirect:/titulo/listar.htm";
+				return "redirect:/titulo/listar";
 			} else {
 				modelMap.addAttribute("error", "Já existe um título com o mesmo nome");
 			}
@@ -64,7 +64,7 @@ public class TituloController {
 		
 	}
 	
-	@RequestMapping(value = "/{id}/editar.htm", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
 
 		Titulo titulo = this.tituloService.findById(id);
@@ -78,7 +78,7 @@ public class TituloController {
 			return "titulo/editar";
 	}
 	
-	@RequestMapping(value = "/editar.htm", method=RequestMethod.POST)
+	@RequestMapping(value = "/editar", method=RequestMethod.POST)
 	public String atualizar(@Valid Titulo titulo, BindingResult result){
 		
 		if(result.hasErrors()){
@@ -86,23 +86,23 @@ public class TituloController {
 		}
 
 		this.tituloService.atualizar(titulo);
-		return "redirect:/titulo/listar.htm";
+		return "redirect:/titulo/listar";
 		
 	}
 	
-	@RequestMapping(value = "/excluir.htm", method = RequestMethod.POST)
+	@RequestMapping(value = "/excluir", method = RequestMethod.POST)
 	//ResquestParam("id") where name = "id"
 	public String excluir(@RequestParam("id") Integer id) {
 		this.tituloService.excluir(id);
-		return "redirect:/titulo/listar.htm";
+		return "redirect:/titulo/listar";
 	}
 	
 	/*
-	@RequestMapping(value = "/{id}/excluir.htm", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}/excluir", method = RequestMethod.GET)
 	public String excluir(@PathVariable("id") Integer id, ModelMap modelMap) {
 
 		this.tituloService.excluir(id);
-		return "redirect:/titulo/listar.htm";
+		return "redirect:/titulo/listar";
 		
 	}
 */

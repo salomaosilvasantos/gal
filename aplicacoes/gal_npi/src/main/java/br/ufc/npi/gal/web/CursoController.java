@@ -23,14 +23,14 @@ public class CursoController {
 	@Autowired
 	private CursoService cursoService;
 
-	@RequestMapping(value = "/listar.htm")
+	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("cursos", this.cursoService.listar());
 
 		return "curso/listar";
 	} 
 
-	@RequestMapping(value = "/{id}/editar.htm", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, Model model) {
 
 		Curso curso = this.cursoService.findById(id);
@@ -44,7 +44,7 @@ public class CursoController {
 			return "curso/editar";
 	}
 	
-	@RequestMapping(value = "/editar.htm", method=RequestMethod.POST)
+	@RequestMapping(value = "/editar", method=RequestMethod.POST)
 	public String atualizar(@Valid Curso curso, BindingResult result){
 		
 		if(result.hasErrors()){
@@ -52,29 +52,29 @@ public class CursoController {
 		}
 
 		this.cursoService.atualizar(curso);
-		return "redirect:/curso/listar.htm";
+		return "redirect:/curso/listar";
 		
 	}
 	
-	@RequestMapping(value = "/excluir.htm", method = RequestMethod.POST)
+	@RequestMapping(value = "/excluir", method = RequestMethod.POST)
 	//ResquestParam("id") where name = "id"
 	public String excluir(@RequestParam("id") Integer id) {
 		this.cursoService.excluir(id);
-		return "redirect:/curso/listar.htm";
+		return "redirect:/curso/listar";
 	}
 	
 	@RequestMapping("/adicionado")
 	public String confirm(){
-		return "redirect:/curso/listar.htm";
+		return "redirect:/curso/listar";
 	}
 	
-	@RequestMapping(value = "/adicionar.htm")
+	@RequestMapping(value = "/adicionar")
 	public String adicionar(ModelMap modelMap){
 		modelMap.addAttribute("curso", new Curso());
 		return "curso/adicionar";
 	}
 	
-	@RequestMapping(value="/adicionar.htm",method = RequestMethod.POST)
+	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
 	public String adicionar(@Valid Curso curso, BindingResult result, final RedirectAttributes redirectAttributes) {
 		
 		if(result.hasErrors())
@@ -82,15 +82,15 @@ public class CursoController {
 		
 		if(cursoService.buscar(curso.getSigla(), curso.getCodigo()) == null) {
 			cursoService.adicionar(curso);
-			return "redirect:/curso/listar.htm";
+			return "redirect:/curso/listar";
 		
 		} else {
 			redirectAttributes.addFlashAttribute("message", "Curso não pode ser adicionado pois já existe semelhante registrada");
-			return "redirect:/curso/adicionar.htm";
+			return "redirect:/curso/adicionar";
 		}
 	}
 	
-	/*@RequestMapping(value="/adicionar.htm",method = RequestMethod.POST)
+	/*@RequestMapping(value="/adicionar",method = RequestMethod.POST)
 	public @ResponseBody Curso adicionar(@RequestBody Curso curso, BindingResult result, SessionStatus status) {
 		
 		ModelMap modelMap = new ModelMap();
@@ -109,7 +109,7 @@ public class CursoController {
 		return curso;
 	}*/
 	
-	@RequestMapping("/buscar.htm")
+	@RequestMapping("/buscar")
 	public String buscar(ModelMap model, Integer codigo) {
 		model.addAttribute("cursos", cursoService.findByCodigoList(codigo));
 		return "cursos/listar";

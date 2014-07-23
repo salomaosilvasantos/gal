@@ -25,7 +25,7 @@
 
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<form:form action="/gal_npi/curso/editar.htm" method="post" modelAttribute="curso" role="form" class="form-horizontal">
+		<form:form action="/gal_npi/curso/editar" method="post" modelAttribute="curso" role="form" class="form-horizontal">
 			<form:input path="id" type="hidden" />
 			<div class="form-group" style="text-align: center;">
 				<label class="control-label" style="font-size: 20px;">Editar Curso</label>
@@ -52,11 +52,12 @@
 			    </div>
 			</div>
 			
-			<a class="btn btn-primary" href="/gal_npi/curso/listar.htm">Voltar</a>
+			<a class="btn btn-primary" href="/gal_npi/curso/listar">Voltar</a>
 			<div class="btn-group">
 				<input id="criar" class="btn btn-primary" type="submit" value="Editar"/>
 			</div>
 		</form:form>
+		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 
 </body>

@@ -9,7 +9,7 @@
 <head>
 	<title>Cursos</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<jsp:include page="../fragments/headTag.jsp" />
+	<jsp:include page="../fragments/htmlHead.jsp" />
 	
 	<script type="text/javascript">
 		$(document)
@@ -53,7 +53,7 @@
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<a class="btn btn-primary" href="/gal_npi/curso/adicionar.htm">Adicionar</a>
+		<a class="btn btn-primary" href="/gal_npi/curso/adicionar">Adicionar</a>
 		<div style="text-align: center; margin-bottom: 30px;">
 			<label class="control-label" style="font-size: 20px;">Cursos</label>
 		</div>
@@ -71,10 +71,10 @@
 					  <div class="col-md-3">
 					  	<div class="row">
 						  	<div class="col-md-5">
-						  	<a class="btn btn-primary" href="<c:url value = "/curso/${curso.id}/editar.htm"></c:url>"><span class="glyphicon glyphicon-edit"></span> Editar</a>
+						  	<a class="btn btn-primary" href="<c:url value = "/curso/${curso.id}/editar"></c:url>"><span class="glyphicon glyphicon-edit"></span> Editar</a>
 							</div>
 							<div class="col-md-5">
-							<c:url value = "excluir.htm" var = "delete"></c:url>
+							<c:url value = "excluir" var = "delete"></c:url>
 				    		<form:form id = "deletePerson" action="${delete}" method ="post" onsubmit="return verificarDeletarCurso(this.name.value)">
 				    			
 				    			<input name = "name" value ="${curso.nome}"  type = "hidden"/>
@@ -112,11 +112,11 @@
 									</datatables:column>
 						
 <%-- 									<datatables:column title="Editar"> --%>
-<%-- 										<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/editar.htm"></c:url>">Editar</a> --%>
+<%-- 										<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/editar"></c:url>">Editar</a> --%>
 <%-- 									</datatables:column> --%>
 						
 <%-- 									<datatables:column title="Deletar"> --%>
-<%-- 										<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir.htm"></c:url>">Deletar</a> --%>
+<%-- 										<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir"></c:url>">Deletar</a> --%>
 <%-- 									</datatables:column> --%>
 								</datatables:table>
 					            <p></p>
@@ -146,7 +146,7 @@
 
 <!-- 					<div class="modal-body"> -->
 
-<%-- 						<form class="form-horizontal" id="add-curso-form" action="<c:url value = "/curso/adicionar.htm"></c:url>"> --%>
+<%-- 						<form class="form-horizontal" id="add-curso-form" action="<c:url value = "/curso/adicionar"></c:url>"> --%>
 
 <!-- 							<input type="hidden" name="id" id="id" />  -->
 
