@@ -1,33 +1,63 @@
 package br.ufc.npi.gal.repository.jpa;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.stereotype.Repository;
+import javax.inject.Named;
 
+import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.repository.TituloRespository;
 
-@Repository
+@Named
 public class TituloRespositoryImpl extends GenericRepositoryImpl<Titulo> implements TituloRespository {
 
-	public TituloRespositoryImpl() {
-		super();
-		this.persistentClass = Titulo.class;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Titulo> listar() {
-		return em.createQuery("select t from Titulo t").getResultList();
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Titulo> findByIsbn(String isbn) {
-		return em.createQuery("select t from Titulo t where isbn = :isbn").setParameter("isbn", isbn).getResultList();
+	@Override
+	public Titulo getTituloByNome(String nome) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("nome", nome);
+		List<Titulo> result = find(QueryType.JPQL, "from Titulo where nome = :nome", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Titulo> findByNome(String nome) {
-		return em.createQuery("select t from Titulo t where nome = :nome").setParameter("nome", nome).getResultList();
+	@Override
+	public Titulo getTituloByIsbn(String isbn) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("isbn", isbn);
+		List<Titulo> result = find(QueryType.JPQL, "from Titulo where isbn = :isbn", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
 	}
+
+	@Override
+	public Titulo getOutroTituloByNome(Integer id, String nome) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("nome", nome);
+		params.put("id", id);
+		List<Titulo> result = find(QueryType.JPQL, "from Titulo where id != :id and nome = :nome", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public Titulo getOutroTituloByIsbn(Integer id, String isbn) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("isbn", isbn);
+		params.put("id", id);
+		List<Titulo> result = find(QueryType.JPQL, "from Titulo where id != :id and isbn = :isbn", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
+	}
+
 
 }

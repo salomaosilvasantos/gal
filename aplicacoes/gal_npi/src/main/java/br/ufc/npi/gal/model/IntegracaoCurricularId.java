@@ -5,6 +5,10 @@ import java.io.Serializable;
 
 public class IntegracaoCurricularId implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer id_disciplina;
 	private Integer id_curriculo;
 	

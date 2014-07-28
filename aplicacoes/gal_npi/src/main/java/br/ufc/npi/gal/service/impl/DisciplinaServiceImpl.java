@@ -1,48 +1,37 @@
 package br.ufc.npi.gal.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.repository.DisciplinaRepository;
 import br.ufc.npi.gal.service.DisciplinaService;
 
 
-@Service
-public class DisciplinaServiceImpl implements DisciplinaService {
-
-    @Autowired
-    private DisciplinaRepository disciplinaRepository;
-     
-    public List<Disciplina> listar(){
-    	return disciplinaRepository.listar();
-    }
-    
-    public void excluir(Integer id){
-    	this.disciplinaRepository.excluir(disciplinaRepository.buscar(id));
-    }
-
-	public Disciplina findById(Integer id) {
-		Disciplina disciplina = this.disciplinaRepository.buscar(id);
-		return disciplina;
-	}
-
-	public void atualizar(Disciplina disciplina) {
-		this.disciplinaRepository.adicionarOuAtualizar(disciplina);
-	}
+@Named
+public class DisciplinaServiceImpl extends GenericServiceImpl<Disciplina> implements DisciplinaService {
 	
-	public Disciplina buscar(String codigo, String nome) {
-		return disciplinaRepository.buscar(codigo, nome);
+	@Inject
+	private DisciplinaRepository disciplinaRepository;
+
+	@Override
+	public Disciplina getDisciplinaByNome(String nome) {
+		return disciplinaRepository.getDisciplinaByNome(nome);
 	}
 
-	public void adicionar(Disciplina disciplina) {
-		disciplinaRepository.adicionarOuAtualizar(disciplina);
+	@Override
+	public Disciplina getDisciplinaByCodigo(String codigo) {
+		return disciplinaRepository.getDisciplinaByCodigo(codigo);
 	}
 
-	public List<Disciplina> findByCodigo(String codigo) {
-		List<Disciplina> disciplinas = disciplinaRepository.findByCodigo(codigo);
-		return disciplinas;
+	@Override
+	public Disciplina getOutraDisciplinaByNome(Integer id, String nome) {
+		return disciplinaRepository.getOutraDisciplinaByNome(id, nome);
 	}
+
+	@Override
+	public Disciplina getOutraDisciplinaByCodigo(Integer id, String codigo) {
+		return disciplinaRepository.getOutraDisciplinaByCodigo(id, codigo);
+	}
+
 }

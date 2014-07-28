@@ -32,20 +32,20 @@ public class Curso implements Serializable{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
-	@NotNull(message="Campo Código não pode ficar vazio")
+	@NotNull(message="Campo obrigatório")
 	@Column(name = "cod_c")
 	@NumberFormat(style = Style.NUMBER)
 	private Integer codigo;
 
-	@NotEmpty(message="Campo Nome não pode ficar vazio")
+	@NotEmpty(message="Campo obrigatório")
 	@Column(name = "nome_c")
 	@Pattern(regexp="[a-zA-Z\\sà-ùÀ-Ù]{0,}",message="O campo Nome não pode possuir caracteres especiais ou números.")
 	private String nome;
 	
-	@NotEmpty(message="Campo Sigla não pode ficar vazio")
+	@NotEmpty(message="Campo obrigatório")
 	@Column(name = "sigla")
-	@Pattern(regexp="[A-Z]{0,}",message="O campo sigla não pode possuir caracteres especiais ou números, e precisar ser toda em maiúscula.")
-	@Size(min = 2, max = 3, message = "O sigla deve conter entre 2 e 3 caracteres")
+	@Pattern(regexp="[a-zA-Z]{0,}",message="O campo sigla não pode possuir caracteres especiais ou números.")
+	@Size(min = 2, max = 3, message = "A sigla deve conter entre 2 e 3 caracteres")
 	private String sigla;	
 	
 	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class)

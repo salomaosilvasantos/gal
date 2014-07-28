@@ -1,48 +1,63 @@
 package br.ufc.npi.gal.repository.jpa;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.persistence.NoResultException;
+import javax.inject.Named;
 
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
+import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.repository.DisciplinaRepository;
 
-@Repository(value = "disciplina")
-@Transactional
+@Named
 public class JpaDisciplinaRepository extends GenericRepositoryImpl<Disciplina> implements DisciplinaRepository {
 
-	public JpaDisciplinaRepository() {
-		super();
-		this.persistentClass = Disciplina.class;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Disciplina> listar() {
-		return em.createQuery("select d from Disciplina d order by d.id").getResultList();
-	}
-	
-	/**
-	 * Verifica se possui disciplina com o mesmo codigo cadastrada, para não ter conflito de id.
-	 * */
-	public Disciplina buscar(String codigo, String nome) {
-		List<Disciplina> results = null;
-
-		try {
-			results = em.createQuery("from Disciplina where codigo =:codigo", Disciplina.class).setParameter("codigo", codigo).getResultList();
-
-		} catch (NoResultException nre) {
-			
+	@Override
+	public Disciplina getDisciplinaByNome(String nome) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("nome", nome);
+		List<Disciplina> result = find(QueryType.JPQL, "from Disciplina where nome = :nome", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
 		}
-		if (!(results.isEmpty()))
-			return results.get(0);
-		
-		else return null;
+		return null;
 	}
 
-	public List<Disciplina> findByCodigo(String codigo) {
-		return em.createQuery("from Disciplina where codigo =:codigo", Disciplina.class).setParameter("codigo", codigo).getResultList();
+	@Override
+	public Disciplina getDisciplinaByCodigo(String codigo) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("codigo", codigo);
+		List<Disciplina> result = find(QueryType.JPQL, "from Disciplina where codigo = :codigo", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
 	}
+
+	@Override
+	public Disciplina getOutraDisciplinaByNome(Integer id, String nome) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("nome", nome);
+		params.put("id", id);
+		List<Disciplina> result = find(QueryType.JPQL, "from Disciplina where id != :id and nome = :nome", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public Disciplina getOutraDisciplinaByCodigo(Integer id, String codigo) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("codigo", codigo);
+		params.put("id", id);
+		List<Disciplina> result = find(QueryType.JPQL, "from Disciplina where id != :id and codigo = :codigo", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
+	}
+
+	
 }

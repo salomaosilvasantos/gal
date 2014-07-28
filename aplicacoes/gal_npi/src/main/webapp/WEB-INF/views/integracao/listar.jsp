@@ -10,42 +10,6 @@
 	<title>Integração Curricular</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<jsp:include page="../fragments/htmlHead.jsp" />
-	<script type="text/javascript">
-		$(document)
-				.ready(
-						function() {
-							$.fn.dataTableExt.sErrMode = 'throw';
-							$('#integracao').dataTable(
-								{
-									"sPaginationType" : "full_numbers",
-									"oLanguage" : {
-										"sEmptyTable" : "Nenhum registro encontrado na tabela",
-										"sInfo" : "Mostrar _START_ até _END_ do _TOTAL_ registros",
-										"sInfoEmpty" : "Mostrar 0 até 0 de 0 Registros",
-										"sInfoFiltered" : "(Filtrar de _MAX_ total registros)",
-										"sInfoPostFix" : "",
-										"sInfoThousands" : ".",
-										"sLengthMenu" : "Mostrar _MENU_ registros por pagina",
-										"sLoadingRecords" : "Carregando...",
-										"sProcessing" : "Processando...",
-										"sZeroRecords" : "Nenhum registro encontrado",
-										"sSearch" : "Pesquisar",
-										"oPaginate" : {
-											"sNext" : "Proximo",
-											"sPrevious" : "Anterior",
-											"sFirst" : "Primeiro",
-											"sLast" : "Ultimo"
-										},
-										"oAria" : {
-											"sSortAscending" : ": Ordenar colunas de forma ascendente",
-											"sSortDescending" : ": Ordenar colunas de forma descendente"
-										}
-									}
-								}
-							);
-	
-						});
-	</script>
 </head>
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">

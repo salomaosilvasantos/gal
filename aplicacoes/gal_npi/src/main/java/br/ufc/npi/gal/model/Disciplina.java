@@ -24,16 +24,16 @@ public class Disciplina {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@NotEmpty(message="Campo Nome não pode ficar vazio")
+	@NotEmpty(message="Campo obrigatório")
 	@Column(name = "nome")
 	@Pattern(regexp="[a-zA-Z\\sà-ùÀ-Ù]{0,}",message="O campo Nome não pode possuir caracteres especiais ou números.")
-	@Size(min = 6, max = 40, message = "O nome deve estar entre 6 e 40 caracteres")
+	@Size(min = 6, message = "O nome deve ter no mínimo 6 caracteres")
 	private String nome;
 	
-	@NotEmpty(message="Campo Código não pode ficar vazio")
+	@NotEmpty(message="Campo obrigatório")
 	@Column(name = "cod_d")
 	@Pattern(regexp="[a-zA-Z\\sà-ùÀ-Ù0-9]{0,}",message="O campo código não pode possuir caracteres especiais.")
-	@Size(min = 6, max = 12, message = "O código deve estar entre 6 e 12 caracteres")
+	@Size(min = 6, max = 12, message = "O código deve ter entre 6 e 12 caracteres")
 	private String codigo;	
 	
 	@OneToMany(mappedBy = "disciplina", targetEntity = IntegracaoCurricular.class, fetch = FetchType.LAZY)

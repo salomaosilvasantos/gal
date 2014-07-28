@@ -35,8 +35,8 @@ public class Titulo {
 	private String nome;
 	
 	@Pattern.List({
-		@Pattern(regexp = "([^\\s]{0,})", message = "O campo Isbn não pode conter espaços"), 
-		@Pattern(regexp = "(.){13}|(.){10}", message = "O campo deve conter 10 ou 13 caracteres"),
+		@Pattern(regexp = "([^\\s]{0,})", message = "O isbn não pode conter espaços"), 
+		@Pattern(regexp = "(.){13}|(.){10}", message = "O isbn deve conter 10 ou 13 caracteres"),
 		@Pattern(regexp = "[a-zA-Z\\sà-ùÀ-Ù0-9]{0,}", message = "O campo não pode contar caracteres especiais")
 	})
 	@NotEmpty(message="Campo obrigatório")

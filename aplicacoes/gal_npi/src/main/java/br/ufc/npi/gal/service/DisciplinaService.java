@@ -1,23 +1,15 @@
 package br.ufc.npi.gal.service;
 
-import java.util.List;
-
 import br.ufc.npi.gal.model.Disciplina;
 
-
-public interface DisciplinaService {
+public interface DisciplinaService extends GenericService<Disciplina> {
     
-	public void adicionar(Disciplina disciplina);
+	public abstract Disciplina getDisciplinaByNome(String nome);
 	
-	public void atualizar(Disciplina disciplina);
+	public abstract Disciplina getDisciplinaByCodigo(String codigo);
 	
-	public void excluir(Integer id);
+	public abstract Disciplina getOutraDisciplinaByNome(Integer id, String nome);
 	
-    public List<Disciplina> listar();    
-    
-    public Disciplina findById(Integer id);
-
-    public Disciplina buscar(String codigo, String nome);
-    
-    public abstract List<Disciplina> findByCodigo(String codigo);
+	public abstract Disciplina getOutraDisciplinaByCodigo(Integer id, String codigo);
+	
 }

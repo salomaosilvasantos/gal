@@ -1,8 +1,8 @@
 package br.ufc.npi.gal.web;
 
+import javax.inject.Inject;
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -10,7 +10,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Curso;
@@ -20,51 +19,55 @@ import br.ufc.npi.gal.service.CursoService;
 @RequestMapping("curso")
 public class CursoController {
 
-	@Autowired
+	@Inject
 	private CursoService cursoService;
 
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
-		modelMap.addAttribute("cursos", this.cursoService.listar());
-
+		modelMap.addAttribute("cursos", this.cursoService.find(Curso.class));
 		return "curso/listar";
 	} 
 
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, Model model) {
-
-		Curso curso = this.cursoService.findById(id);
+		Curso curso = this.cursoService.find(Curso.class, id);
 
 		if (curso == null) {
-			return "curso/editar";
-
-		} else {
-			model.addAttribute("curso", curso);
+			return "redirect:/curso/listar";
 		}
-			return "curso/editar";
+		model.addAttribute("curso", curso);
+		return "curso/editar";
 	}
 	
 	@RequestMapping(value = "/editar", method=RequestMethod.POST)
-	public String atualizar(@Valid Curso curso, BindingResult result){
-		
-		if(result.hasErrors()){
+	public String atualizar(@Valid Curso curso, BindingResult result, RedirectAttributes redirectAttributes){
+		if (result.hasErrors()) {
 			return "curso/editar";
 		}
-
-		this.cursoService.atualizar(curso);
+		
+		if(cursoService.getOutroCursoByCodigo(curso.getId(), curso.getCodigo()) != null) {
+			result.rejectValue("codigo", "Repeat.curso.codigo", "Já existe um curso com esse código");
+			return "curso/editar";
+		}
+		if(cursoService.getOutroCursoBySigla(curso.getId(), curso.getSigla().toUpperCase()) != null) {
+			result.rejectValue("sigla", "Repeat.curso.sigla", "Já existe um curso com essa sigla");
+			return "curso/editar";
+		}
+		
+		curso.setSigla(curso.getSigla().toUpperCase());
+		cursoService.update(curso);
+		redirectAttributes.addFlashAttribute("info", "Curso atualizado com sucesso.");
 		return "redirect:/curso/listar";
 		
 	}
 	
-	@RequestMapping(value = "/excluir", method = RequestMethod.POST)
-	//ResquestParam("id") where name = "id"
-	public String excluir(@RequestParam("id") Integer id) {
-		this.cursoService.excluir(id);
-		return "redirect:/curso/listar";
-	}
-	
-	@RequestMapping("/adicionado")
-	public String confirm(){
+	@RequestMapping(value = "/{id}/excluir", method = RequestMethod.GET)
+	public String excluir(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+		Curso curso = cursoService.find(Curso.class, id);
+		if(curso != null) {
+			this.cursoService.delete(curso);
+			redirectAttributes.addFlashAttribute("info", "Curso removido com sucesso.");
+		}
 		return "redirect:/curso/listar";
 	}
 	
@@ -76,46 +79,22 @@ public class CursoController {
 	
 	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
 	public String adicionar(@Valid Curso curso, BindingResult result, final RedirectAttributes redirectAttributes) {
-		
-		if(result.hasErrors())
+		if (result.hasErrors()) {
 			return "curso/adicionar";
-		
-		if(cursoService.buscar(curso.getSigla(), curso.getCodigo()) == null) {
-			cursoService.adicionar(curso);
-			return "redirect:/curso/listar";
-		
-		} else {
-			redirectAttributes.addFlashAttribute("message", "Curso não pode ser adicionado pois já existe semelhante registrada");
-			return "redirect:/curso/adicionar";
-		}
-	}
-	
-	/*@RequestMapping(value="/adicionar",method = RequestMethod.POST)
-	public @ResponseBody Curso adicionar(@RequestBody Curso curso, BindingResult result, SessionStatus status) {
-		
-		ModelMap modelMap = new ModelMap();
-		if(result.hasErrors()) {
-			modelMap.addAttribute("status", "ERROR");
-			return curso;
 		}
 		
-		if(cursoService.buscar(curso.getSigla(), curso.getCodigo()) == null) {
-			cursoService.adicionar(curso);
-			modelMap.addAttribute("status", "SUCESS");
-		
-		} else {
-			modelMap.addAttribute("status", "ERROR");
+		if(cursoService.getCursoByCodigo(curso.getCodigo()) != null) {
+			result.rejectValue("codigo", "Repeat.curso.codigo", "Já existe um curso com esse código");
+			return "curso/adicionar";
 		}
-		return curso;
-	}*/
-	
-	@RequestMapping("/buscar")
-	public String buscar(ModelMap model, Integer codigo) {
-		model.addAttribute("cursos", cursoService.findByCodigoList(codigo));
-		return "cursos/listar";
-	}
-	
-	public void setProductManager(CursoService productManager) {
-		this.cursoService = productManager;
+		if(cursoService.getCursoBySigla(curso.getSigla().toUpperCase()) != null) {
+			result.rejectValue("sigla", "Repeat.sigla.sigla", "Já existe um curso com essa sigla");
+			return "curso/adicionar";
+		}
+		
+		curso.setSigla(curso.getSigla().toUpperCase());
+		cursoService.save(curso);
+		redirectAttributes.addFlashAttribute("info", "Curso adicionado com sucesso.");
+		return "redirect:/curso/listar";
 	}
 }

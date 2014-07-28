@@ -1,54 +1,62 @@
 package br.ufc.npi.gal.repository.jpa;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.persistence.NoResultException;
+import javax.inject.Named;
 
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
+import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Curso;
 import br.ufc.npi.gal.repository.CursoRepository;
 
-@Repository(value = "curso")
-@Transactional
+@Named
 public class JpaCursoRepository extends GenericRepositoryImpl<Curso> implements CursoRepository {
 
-	public JpaCursoRepository() {
-		super();
-		this.persistentClass = Curso.class;
+	@Override
+	public Curso getCursoBySigla(String sigla) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("sigla", sigla);
+		List<Curso> result = find(QueryType.JPQL, "from Curso where sigla = :sigla", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Curso> listar() {
-		return em.createQuery("select c from Curso c order by c.id").getResultList();
-	}
-	
-	/**
-	 * Verifica se possui curso com o mesmo codigo cadastrada, para não ter conflito de id.
-	 * */
-	
-	public Curso buscar(String sigla, Integer codigo) {
-		List<Curso> results = null;
 
-		try {
-			results = em.createQuery("from Curso where codigo =:codigo or sigla =:sigla", Curso.class).setParameter("codigo", codigo).setParameter("sigla", sigla).getResultList();
-
-		} catch (NoResultException nre) {
-			
+	@Override
+	public Curso getCursoByCodigo(Integer codigo) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("codigo", codigo);
+		List<Curso> result = find(QueryType.JPQL, "from Curso where codigo = :codigo", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
 		}
-		if (!(results.isEmpty())) {
-			return results.get(0);
-		}
-		
-		else {
-			return null;
-		}
+		return null;
 	}
-	
-	
-	public List<Curso> findByCodigo(Integer codigo) {
-		return em.createQuery("from Curso where codigo =:codigo", Curso.class).setParameter("codigo", codigo).getResultList();
+
+	@Override
+	public Curso getOutroCursoBySigla(Integer id, String sigla) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("sigla", sigla);
+		params.put("id", id);
+		List<Curso> result = find(QueryType.JPQL, "from Curso where id != :id and sigla = :sigla", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public Curso getOutroCursoByCodigo(Integer id, Integer codigo) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("codigo", codigo);
+		params.put("id", id);
+		List<Curso> result = find(QueryType.JPQL, "from Curso where id != :id and codigo = :codigo", params);
+		if(result != null && !result.isEmpty()) {
+			return result.get(0);
+		}
+		return null;
 	}
 	
 }

@@ -1,15 +1,16 @@
 package br.ufc.npi.gal.repository;
 
 
-import java.util.List;
-
 import br.ufc.npi.gal.model.Curso;
 
-public interface CursoRepository extends GenericRepository<Curso>{
+public interface CursoRepository extends GenericRepository<Curso> {
+	
+	public abstract Curso getCursoBySigla(String sigla);
+	
+	public abstract Curso getCursoByCodigo(Integer codigo);
+	
+	public abstract Curso getOutroCursoBySigla(Integer id, String sigla);
+	
+	public abstract Curso getOutroCursoByCodigo(Integer id, Integer codigo);
 
-	public List<Curso> listar();
-	
-	public Curso buscar(String sigla, Integer codigo);
-	
-	public abstract List<Curso> findByCodigo(Integer codigo);
 }

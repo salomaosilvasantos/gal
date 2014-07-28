@@ -1,50 +1,36 @@
 package br.ufc.npi.gal.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import br.ufc.npi.gal.model.Curso;
 import br.ufc.npi.gal.repository.CursoRepository;
 import br.ufc.npi.gal.service.CursoService;
 
+@Named
+public class CursoServiceImpl extends GenericServiceImpl<Curso> implements CursoService {
+	
+	@Inject
+	private CursoRepository cursoRepository;
 
-@Service
-public class CursoServiceImpl implements CursoService {
-
-	@Autowired
-    private CursoRepository cursoRepository;
-     
-    public List<Curso> listar(){
-    	return cursoRepository.listar();
-    }
-    
-    public void excluir(Integer id){
-    	this.cursoRepository.excluir(cursoRepository.buscar(id));
-    }
-
-	public void atualizar(Curso curso) {
-		this.cursoRepository.adicionarOuAtualizar(curso);
+	@Override
+	public Curso getCursoBySigla(String sigla) {
+		return cursoRepository.getCursoBySigla(sigla);
 	}
 
-	public void adicionar(Curso curso) {
-		cursoRepository.adicionarOuAtualizar(curso);
+	@Override
+	public Curso getCursoByCodigo(Integer codigo) {
+		return cursoRepository.getCursoByCodigo(codigo);
 	}
-	
-	
-	public List<Curso> findByCodigoList(Integer codigo) {
-		List<Curso> cursos = cursoRepository.findByCodigo(codigo);
-		return cursos;
+
+	@Override
+	public Curso getOutroCursoBySigla(Integer id, String sigla) {
+		return cursoRepository.getOutroCursoBySigla(id, sigla);
 	}
-	
-	public Curso findById(Integer id) {
-		Curso curso = this.cursoRepository.buscar(id);
-		return curso;
-	}
-	
-	public Curso buscar(String sigla, Integer codigo) {
-		return cursoRepository.buscar(sigla, codigo);
+
+	@Override
+	public Curso getOutroCursoByCodigo(Integer id, Integer codigo) {
+		return cursoRepository.getOutroCursoByCodigo(id, codigo);
 	}
 
 	

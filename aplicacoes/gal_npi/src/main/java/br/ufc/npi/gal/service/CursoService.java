@@ -1,24 +1,15 @@
 package br.ufc.npi.gal.service;
 
-import java.util.List;
-
 import br.ufc.npi.gal.model.Curso;
 
-
-public interface CursoService {
+public interface CursoService extends GenericService<Curso> {
     
-	public void adicionar(Curso curso);
+	public abstract Curso getCursoBySigla(String sigla);
 	
-	public void atualizar(Curso curso);
+	public abstract Curso getCursoByCodigo(Integer codigo);
 	
-	public void excluir(Integer id);
+	public abstract Curso getOutroCursoBySigla(Integer id, String sigla);
 	
-    public List<Curso> listar();
-    
-    public Curso findById(Integer id);
-
-    public Curso buscar(String sigla, Integer codigo);
-    
-    public abstract List<Curso> findByCodigoList(Integer codigo);
+	public abstract Curso getOutroCursoByCodigo(Integer id, Integer codigo);
 
 }

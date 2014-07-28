@@ -5,47 +5,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Adicionar Curso</title>
 	<jsp:include page="../fragments/htmlHead.jsp" />
-	<script type="text/javascript">
-		$( document ).ready(function() {
-			$('div:has(span.error)').find('span.error').css('color', '#a94442');
-			$('div:has(span.error)').find('span.error').parent().parent().addClass('has-error has-feedback');
-		});
-	</script>
 </head>
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<form:form action="/gal_npi/curso/adicionar" method="post" modelAttribute="curso" role="form" class="form-horizontal">
+		<form:form servletRelativeAction="/curso/adicionar" method="post" modelAttribute="curso" role="form" class="form-horizontal">
 			<div class="form-group" style="text-align: center;">
 				<label class="control-label" style="font-size: 20px;">Adicionar Curso</label>
 			</div>
+			
 			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">Código</label>
-			    <div class="col-sm-8">
+			    <div class="col-sm-10">
 			    	<form:input id="codigo" class="form-control" placeholder="Código" path="codigo"/>
 			    	<form:errors path="codigo" cssClass="error" />
 			    </div>
 			</div>
+			
 			<div class="form-group">
 			    <label for="nome" class="col-sm-1 control-label">Nome</label>
-			    <div class="col-sm-8">
+			    <div class="col-sm-10">
 			    	<form:input id="nome" class="form-control" placeholder="Nome" path="nome"/>
 			    	<form:errors path="nome" cssClass="error" />
 			    </div>
 			</div>
+			
 			<div class="form-group">
 			    <label for="sigla" class="col-sm-1 control-label">Sigla</label>
-			    <div class="col-sm-8">
+			    <div class="col-sm-10">
 			    	<form:input id="sigla" class="form-control" placeholder="Sigla" path="sigla"/>
 			    	<form:errors path="sigla" cssClass="error" />
 			    </div>
 			</div>
-			<a class="btn btn-primary" href="/gal_npi/curso/listar">Voltar</a>
-			<div class="btn-group">
+			
+			<div class="controls">
 				<input id="criar" class="btn btn-primary" type="submit" value="Adicionar"/>
+				<a href="<c:url value="/curso/listar"></c:url>" class="btn btn-default">Cancelar</a>
 			</div>
 		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />
