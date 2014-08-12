@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<org.eclipse.epf.uma:TaskDescription xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:org.eclipse.epf.uma="http://www.eclipse.org/epf/uma/1.0.6/uma.ecore" xmlns:epf="http://www.eclipse.org/epf" epf:version="1.5.1" xmi:id="-psM-XJxaH10pBuWYK97vmA" name=",_BpUvsJ-6EeKL2OX-ZFDXHA" guid="-psM-XJxaH10pBuWYK97vmA">
-  <sections xmi:id="_J49DkJ-6EeKL2OX-ZFDXHA" name="1) Realizar Reunião de Encerramento do Projeto   " guid="_J49DkJ-6EeKL2OX-ZFDXHA">
-    <sectionDescription>&lt;span style=&quot;TEXT-ALIGN: left; TEXT-TRANSFORM: none; BACKGROUND-COLOR: rgb(255,255,255); TEXT-INDENT: 0px; LETTER-SPACING: normal; DISPLAY: inline !important; FONT: 13px arial, helvetica, sans-serif, kanji2; WHITE-SPACE: normal; FLOAT: none; COLOR: rgb(0,0,0); WORD-SPACING: 0px; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px&quot;>&#xD;
-O encerramento do projeto deve ser realizado visando obter um aceite do produto final do cliente, caso o produto tenha sido&#xD;
-concluído. Se necessário um termo de aceite deve ser formalizado. Todas as atividades do projeto devem ser finalizadas e os&#xD;
-recursos devem ser desalocados.&lt;/span></sectionDescription>
-  </sections>
-</org.eclipse.epf.uma:TaskDescription>
