@@ -40,6 +40,8 @@
 		            <li class="divider"></li>
 		            <li><a href="<c:url value='/titulo/listar'/>">Listar</a></li>
 		          </ul>
+		       </li>
+		    </ul>
 	    </div>
 	</div>
 </nav>
