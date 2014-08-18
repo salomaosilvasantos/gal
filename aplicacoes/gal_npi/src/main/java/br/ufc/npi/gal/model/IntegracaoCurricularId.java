@@ -25,6 +25,7 @@ public class IntegracaoCurricularId implements Serializable{
 	public void setId_curriculo(Integer id_curriculo) {
 		this.id_curriculo = id_curriculo;
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
