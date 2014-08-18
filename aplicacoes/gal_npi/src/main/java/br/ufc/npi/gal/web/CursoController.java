@@ -31,6 +31,8 @@ public class CursoController {
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, Model model) {
 		Curso curso = this.cursoService.find(Curso.class, id);
+		
+		
 
 		if (curso == null) {
 			return "redirect:/curso/listar";
@@ -97,4 +99,13 @@ public class CursoController {
 		redirectAttributes.addFlashAttribute("info", "Curso adicionado com sucesso.");
 		return "redirect:/curso/listar";
 	}
+	
+//	public String testar(){
+//		List<Curso> cursos = cursoService.find(Curso.class);
+//		for(Curso c: cursos){
+//			c.getCurriculos().get(1).getCurriculos().get(0).getDisciplina().get
+//			
+//		}
+//		return "";
+//	}
 }
