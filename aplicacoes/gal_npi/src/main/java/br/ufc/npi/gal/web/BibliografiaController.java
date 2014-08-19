@@ -21,4 +21,6 @@ public class BibliografiaController {
 		modelMap.addAttribute("bibliografia", this.bibliografiaService.find(Bibliografia.class));
 		return "bibliografia/listar";
 	} 
+	
+	
 }

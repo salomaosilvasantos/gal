@@ -26,13 +26,11 @@ public class CursoController {
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("cursos", this.cursoService.find(Curso.class));
 		return "curso/listar";
-	} 
+	}
 
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, Model model) {
 		Curso curso = this.cursoService.find(Curso.class, id);
-		
-		
 
 		if (curso == null) {
 			return "redirect:/curso/listar";
@@ -40,72 +38,81 @@ public class CursoController {
 		model.addAttribute("curso", curso);
 		return "curso/editar";
 	}
-	
-	@RequestMapping(value = "/editar", method=RequestMethod.POST)
-	public String atualizar(@Valid Curso curso, BindingResult result, RedirectAttributes redirectAttributes){
+
+	@RequestMapping(value = "/editar", method = RequestMethod.POST)
+	public String atualizar(@Valid Curso curso, BindingResult result,
+			RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return "curso/editar";
 		}
-		
-		if(cursoService.getOutroCursoByCodigo(curso.getId(), curso.getCodigo()) != null) {
-			result.rejectValue("codigo", "Repeat.curso.codigo", "Já existe um curso com esse código");
+
+		if (cursoService
+				.getOutroCursoByCodigo(curso.getId(), curso.getCodigo()) != null) {
+			result.rejectValue("codigo", "Repeat.curso.codigo",
+					"Já existe um curso com esse código");
 			return "curso/editar";
 		}
-		if(cursoService.getOutroCursoBySigla(curso.getId(), curso.getSigla().toUpperCase()) != null) {
-			result.rejectValue("sigla", "Repeat.curso.sigla", "Já existe um curso com essa sigla");
+		if (cursoService.getOutroCursoBySigla(curso.getId(), curso.getSigla()
+				.toUpperCase()) != null) {
+			result.rejectValue("sigla", "Repeat.curso.sigla",
+					"Já existe um curso com essa sigla");
 			return "curso/editar";
 		}
-		
+
 		curso.setSigla(curso.getSigla().toUpperCase());
 		cursoService.update(curso);
-		redirectAttributes.addFlashAttribute("info", "Curso atualizado com sucesso.");
+		redirectAttributes.addFlashAttribute("info",
+				"Curso atualizado com sucesso.");
 		return "redirect:/curso/listar";
-		
+
 	}
-	
+
 	@RequestMapping(value = "/{id}/excluir", method = RequestMethod.GET)
-	public String excluir(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+	public String excluir(@PathVariable("id") Integer id,
+			RedirectAttributes redirectAttributes) {
 		Curso curso = cursoService.find(Curso.class, id);
-		if(curso != null) {
+		if (curso != null) {
 			this.cursoService.delete(curso);
-			redirectAttributes.addFlashAttribute("info", "Curso removido com sucesso.");
+			redirectAttributes.addFlashAttribute("info",
+					"Curso removido com sucesso.");
 		}
 		return "redirect:/curso/listar";
 	}
-	
+
 	@RequestMapping(value = "/adicionar")
-	public String adicionar(ModelMap modelMap){
+	public String adicionar(ModelMap modelMap) {
 		modelMap.addAttribute("curso", new Curso());
 		return "curso/adicionar";
 	}
-	
-	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
-	public String adicionar(@Valid Curso curso, BindingResult result, final RedirectAttributes redirectAttributes) {
+
+	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
+	public String adicionar(@Valid Curso curso, BindingResult result,
+			final RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return "curso/adicionar";
 		}
-		
-		if(cursoService.getCursoByCodigo(curso.getCodigo()) != null) {
-			result.rejectValue("codigo", "Repeat.curso.codigo", "Já existe um curso com esse código");
+
+		if (cursoService.getCursoByCodigo(curso.getCodigo()) != null) {
+			result.rejectValue("codigo", "Repeat.curso.codigo",
+					"Já existe um curso com esse código");
 			return "curso/adicionar";
 		}
-		if(cursoService.getCursoBySigla(curso.getSigla().toUpperCase()) != null) {
-			result.rejectValue("sigla", "Repeat.sigla.sigla", "Já existe um curso com essa sigla");
+		if (cursoService.getCursoBySigla(curso.getSigla().toUpperCase()) != null) {
+			result.rejectValue("sigla", "Repeat.sigla.sigla",
+					"Já existe um curso com essa sigla");
 			return "curso/adicionar";
 		}
-		
+
 		curso.setSigla(curso.getSigla().toUpperCase());
 		cursoService.save(curso);
-		redirectAttributes.addFlashAttribute("info", "Curso adicionado com sucesso.");
+		redirectAttributes.addFlashAttribute("info",
+				"Curso adicionado com sucesso.");
 		return "redirect:/curso/listar";
 	}
 	
-//	public String testar(){
-//		List<Curso> cursos = cursoService.find(Curso.class);
-//		for(Curso c: cursos){
-//			c.getCurriculos().get(1).getCurriculos().get(0).getDisciplina().get
-//			
-//		}
-//		return "";
-//	}
+	public String testar(){
+		
+		return "";
+	}
+
 }
