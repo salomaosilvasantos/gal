@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import br.ufc.npi.gal.model.Bibliografia;
 import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.service.DisciplinaService;
 
@@ -100,4 +101,9 @@ public class DisciplinaController {
 		return "redirect:/disciplina/listar";
 	}
 	
+	@RequestMapping(value = "/vincular_bibliografia")
+	public String vincular_bibliografia(ModelMap modelMap) {
+		modelMap.addAttribute("disciplina", this.disciplinaService.find(Disciplina.class));
+		return "disciplina/vincular_bibliografia";
+	}
 }
