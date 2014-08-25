@@ -1,4 +1,4 @@
-package br.ufc.npi.gal.enumeration;
+package br.ufc.npi.gal.model;
 
 public enum TipoTitulo {
 	

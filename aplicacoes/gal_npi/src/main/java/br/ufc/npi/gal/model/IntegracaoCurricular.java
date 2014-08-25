@@ -83,6 +83,7 @@ public class IntegracaoCurricular {
 	public void setSemestreOferta(Integer semestreOferta) {
 		this.semestreOferta = semestreOferta;
 	}
+	
 
 	@Override
 	public String toString() {

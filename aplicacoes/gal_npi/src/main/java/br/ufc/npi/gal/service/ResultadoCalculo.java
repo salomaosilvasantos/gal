@@ -1,4 +1,6 @@
-package br.ufc.npi.gal.model;
+package br.ufc.npi.gal.service;
+
+import br.ufc.npi.gal.model.Titulo;
 
 public class ResultadoCalculo {
 

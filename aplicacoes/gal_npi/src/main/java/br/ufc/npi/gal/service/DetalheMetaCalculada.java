@@ -1,4 +1,4 @@
-package br.ufc.npi.gal.model;
+package br.ufc.npi.gal.service;
 
 public class DetalheMetaCalculada {
 

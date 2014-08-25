@@ -1,19 +1,19 @@
-package br.ufc.npi.gal.model;
+package br.ufc.npi.gal.service;
 
 import java.util.List;
 
 public class MetaCalculada {
 
-	private String nome;
+	private String nomeMeta;
 	private List<DetalheMetaCalculada> detalhePar;
 	private List<DetalheMetaCalculada> detalheImpar;
 
 	public String getNome() {
-		return nome;
+		return nomeMeta;
 	}
 
 	public void setNome(String nome) {
-		this.nome = nome;
+		this.nomeMeta = nome;
 	}
 
 	public List<DetalheMetaCalculada> getDetalheMetaCalculadaPar() {
@@ -36,7 +36,7 @@ public class MetaCalculada {
 
 	@Override
 	public String toString() {
-		return "MetaCalculada [nome=" + nome + ", detalhePar=" + detalhePar
+		return "MetaCalculada [nome=" + nomeMeta + ", detalhePar=" + detalhePar
 				+ ", detalheImpar=" + detalheImpar + "]";
 	}
 	
