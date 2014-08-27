@@ -1,26 +1,28 @@
 package br.ufc.npi.gal.service.impl;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 
+import br.ufc.npi.gal.model.Titulo;
+import br.ufc.npi.gal.service.CalculadorMeta;
+import br.ufc.npi.gal.service.CalculoMetaService;
+import br.ufc.npi.gal.service.ResultadoCalculo;
+import br.ufc.npi.gal.service.TituloService;
 
-public class CalculoMetaServiceImpl extends TituloServiceImpl {
+@Named
+public class CalculoMetaServiceImpl implements CalculoMetaService {
+
+	@Inject
+	TituloService tituloService;
+	@Inject
+	CalculadorMeta calculo;
 	
-//	@Inject
-//	private static TituloService tituloService;
-//	
-//	private static CalculadorMeta calculadorMeta;
-//	
-//	static List<Titulo> titulos = tituloService.find(Titulo.class);
-//	
-//	
-//	public static void main(String[] args) {
-//		System.out.println(titulos.get(0).getNome());
-//		calculadorMeta.calcular(tituloService.find(Titulo.class));
-//		
-//	}
-	pub
-	
-	
-	
-	
+	ResultadoCalculo resultado;
+
+	public ResultadoCalculo chamar() {
+
+		return calculo.calcular(tituloService.find(Titulo.class));
+
+	}
 
 }

@@ -6,7 +6,7 @@ public class DetalheMetaCalculada {
 	private String curso;
 	private String tipoBibliografia;
 	private String curriculo;
-	private String calculo;
+	private double calculo;
 
 	public String getDisciplina() {
 		return disciplina;
@@ -40,11 +40,11 @@ public class DetalheMetaCalculada {
 		this.curriculo = curriculo;
 	}
 
-	public String getCalculo() {
+	public double getCalculo() {
 		return calculo;
 	}
 
-	public void setCalculo(String calculo) {
+	public void setCalculo(double calculo) {
 		this.calculo = calculo;
 	}
 
