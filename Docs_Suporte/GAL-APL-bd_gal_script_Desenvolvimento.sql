@@ -2,9 +2,9 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.1.12
--- Dumped by pg_dump version 9.1.12
--- Started on 2014-05-19 08:54:01 BRT
+-- Dumped from database version 9.3.4
+-- Dumped by pg_dump version 9.3.4
+-- Started on 2014-08-27 10:12:03 BRT
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -20,9 +20,11 @@ DROP TABLE IF EXISTS curriculo;
 DROP TABLE IF EXISTS titulos;
 DROP TABLE IF EXISTS curso;
 DROP TABLE IF EXISTS disciplinas;
-
+DROP TABLE IF EXISTS papel_usuario;
+DROP TABLE IF EXISTS papel;
+DROP TABLE IF EXISTS usuario;
 --
--- TOC entry 173 (class 3079 OID 11681)
+-- TOC entry 188 (class 3079 OID 11791)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -30,8 +32,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 1979 (class 0 OID 0)
--- Dependencies: 173
+-- TOC entry 2099 (class 0 OID 0)
+-- Dependencies: 188
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -45,8 +47,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 161 (class 1259 OID 17478)
--- Dependencies: 6
+-- TOC entry 170 (class 1259 OID 18330)
 -- Name: bibliografias; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -60,8 +61,7 @@ CREATE TABLE bibliografias (
 ALTER TABLE public.bibliografias OWNER TO postgres;
 
 --
--- TOC entry 162 (class 1259 OID 17484)
--- Dependencies: 6
+-- TOC entry 171 (class 1259 OID 18336)
 -- Name: curriculo; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -75,8 +75,7 @@ CREATE TABLE curriculo (
 ALTER TABLE public.curriculo OWNER TO postgres;
 
 --
--- TOC entry 163 (class 1259 OID 17490)
--- Dependencies: 6
+-- TOC entry 172 (class 1259 OID 18342)
 -- Name: curso; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -91,8 +90,7 @@ CREATE TABLE curso (
 ALTER TABLE public.curso OWNER TO postgres;
 
 --
--- TOC entry 164 (class 1259 OID 17496)
--- Dependencies: 6
+-- TOC entry 173 (class 1259 OID 18348)
 -- Name: disciplinas; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -106,8 +104,7 @@ CREATE TABLE disciplinas (
 ALTER TABLE public.disciplinas OWNER TO postgres;
 
 --
--- TOC entry 165 (class 1259 OID 17502)
--- Dependencies: 6
+-- TOC entry 174 (class 1259 OID 18354)
 -- Name: exemplares; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -121,8 +118,7 @@ CREATE TABLE exemplares (
 ALTER TABLE public.exemplares OWNER TO postgres;
 
 --
--- TOC entry 166 (class 1259 OID 17508)
--- Dependencies: 1830 1831 6
+-- TOC entry 175 (class 1259 OID 18360)
 -- Name: integracao_curricular; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -139,8 +135,57 @@ CREATE TABLE integracao_curricular (
 ALTER TABLE public.integracao_curricular OWNER TO postgres;
 
 --
--- TOC entry 167 (class 1259 OID 17513)
--- Dependencies: 6
+-- TOC entry 176 (class 1259 OID 18365)
+-- Name: papel; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE papel (
+    id bigint NOT NULL,
+    nome character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.papel OWNER TO postgres;
+
+--
+-- TOC entry 177 (class 1259 OID 18368)
+-- Name: papel_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE papel_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.papel_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2100 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: papel_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE papel_id_seq OWNED BY papel.id;
+
+
+--
+-- TOC entry 178 (class 1259 OID 18370)
+-- Name: papel_usuario; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE papel_usuario (
+    usuario_id bigint NOT NULL,
+    papel_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.papel_usuario OWNER TO postgres;
+
+--
+-- TOC entry 179 (class 1259 OID 18373)
 -- Name: titulos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -155,20 +200,24 @@ CREATE TABLE titulos (
 ALTER TABLE public.titulos OWNER TO postgres;
 
 --
--- TOC entry 168 (class 1259 OID 17519)
--- Dependencies: 1960 6
+-- TOC entry 180 (class 1259 OID 18379)
 -- Name: quantidade_exemplares_view; Type: VIEW; Schema: public; Owner: postgres
 --
 
 CREATE VIEW quantidade_exemplares_view AS
-    SELECT titulos.id_t AS id_titulo, count(exemplares.id_titulo) AS quant_exemplares FROM (titulos LEFT JOIN exemplares ON ((titulos.id_t = exemplares.id_titulo))) GROUP BY titulos.id_t HAVING (count(exemplares.id_titulo) >= 0) ORDER BY titulos.id_t;
+ SELECT titulos.id_t AS id_titulo,
+    count(exemplares.id_titulo) AS quant_exemplares
+   FROM (titulos
+   LEFT JOIN exemplares ON ((titulos.id_t = exemplares.id_titulo)))
+  GROUP BY titulos.id_t
+ HAVING (count(exemplares.id_titulo) >= 0)
+  ORDER BY titulos.id_t;
 
 
 ALTER TABLE public.quantidade_exemplares_view OWNER TO postgres;
 
 --
--- TOC entry 169 (class 1259 OID 17523)
--- Dependencies: 162 6
+-- TOC entry 181 (class 1259 OID 18383)
 -- Name: seq_id_curriculo; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -183,8 +232,8 @@ CREATE SEQUENCE seq_id_curriculo
 ALTER TABLE public.seq_id_curriculo OWNER TO postgres;
 
 --
--- TOC entry 1980 (class 0 OID 0)
--- Dependencies: 169
+-- TOC entry 2101 (class 0 OID 0)
+-- Dependencies: 181
 -- Name: seq_id_curriculo; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -192,8 +241,31 @@ ALTER SEQUENCE seq_id_curriculo OWNED BY curriculo.id_c;
 
 
 --
--- TOC entry 170 (class 1259 OID 17525)
--- Dependencies: 6 164
+-- TOC entry 182 (class 1259 OID 18385)
+-- Name: seq_id_curso; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seq_id_curso
+    START WITH 0
+    INCREMENT BY 1
+    MINVALUE 0
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seq_id_curso OWNER TO postgres;
+
+--
+-- TOC entry 2102 (class 0 OID 0)
+-- Dependencies: 182
+-- Name: seq_id_curso; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seq_id_curso OWNED BY curso.id_crs;
+
+
+--
+-- TOC entry 183 (class 1259 OID 18387)
 -- Name: seq_id_disciplina; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -208,8 +280,8 @@ CREATE SEQUENCE seq_id_disciplina
 ALTER TABLE public.seq_id_disciplina OWNER TO postgres;
 
 --
--- TOC entry 1981 (class 0 OID 0)
--- Dependencies: 170
+-- TOC entry 2103 (class 0 OID 0)
+-- Dependencies: 183
 -- Name: seq_id_disciplina; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -217,8 +289,7 @@ ALTER SEQUENCE seq_id_disciplina OWNED BY disciplinas.id_d;
 
 
 --
--- TOC entry 171 (class 1259 OID 17527)
--- Dependencies: 6 165
+-- TOC entry 184 (class 1259 OID 18389)
 -- Name: seq_id_exemplar; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -233,36 +304,16 @@ CREATE SEQUENCE seq_id_exemplar
 ALTER TABLE public.seq_id_exemplar OWNER TO postgres;
 
 --
--- TOC entry 1982 (class 0 OID 0)
--- Dependencies: 171
+-- TOC entry 2104 (class 0 OID 0)
+-- Dependencies: 184
 -- Name: seq_id_exemplar; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
 ALTER SEQUENCE seq_id_exemplar OWNED BY exemplares.id_e;
 
 
-CREATE SEQUENCE seq_id_curso
-    START WITH 0
-    INCREMENT BY 1
-    MINVALUE 0
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.seq_id_curso OWNER TO postgres;
-
 --
--- TOC entry 1982 (class 0 OID 0)
--- Dependencies: 171
--- Name: seq_id_exemplar; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE seq_id_curso OWNED BY curso.id_crs;
-
-
---
--- TOC entry 172 (class 1259 OID 17529)
--- Dependencies: 6 167
+-- TOC entry 185 (class 1259 OID 18391)
 -- Name: seq_id_titulo; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -277,8 +328,8 @@ CREATE SEQUENCE seq_id_titulo
 ALTER TABLE public.seq_id_titulo OWNER TO postgres;
 
 --
--- TOC entry 1983 (class 0 OID 0)
--- Dependencies: 172
+-- TOC entry 2105 (class 0 OID 0)
+-- Dependencies: 185
 -- Name: seq_id_titulo; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -286,8 +337,46 @@ ALTER SEQUENCE seq_id_titulo OWNED BY titulos.id_t;
 
 
 --
--- TOC entry 1827 (class 2604 OID 17531)
--- Dependencies: 169 162
+-- TOC entry 186 (class 1259 OID 18393)
+-- Name: usuario; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE usuario (
+    id bigint NOT NULL,
+    habilitado boolean NOT NULL,
+    login character varying(255) NOT NULL,
+    senha character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public.usuario OWNER TO postgres;
+
+--
+-- TOC entry 187 (class 1259 OID 18399)
+-- Name: usuario_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE usuario_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.usuario_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2106 (class 0 OID 0)
+-- Dependencies: 187
+-- Name: usuario_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE usuario_id_seq OWNED BY usuario.id;
+
+
+--
+-- TOC entry 1922 (class 2604 OID 18401)
 -- Name: id_c; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -295,8 +384,15 @@ ALTER TABLE ONLY curriculo ALTER COLUMN id_c SET DEFAULT nextval('seq_id_curricu
 
 
 --
--- TOC entry 1828 (class 2604 OID 17532)
--- Dependencies: 170 164
+-- TOC entry 1923 (class 2604 OID 18402)
+-- Name: id_crs; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY curso ALTER COLUMN id_crs SET DEFAULT nextval('seq_id_curso'::regclass);
+
+
+--
+-- TOC entry 1924 (class 2604 OID 18403)
 -- Name: id_d; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -304,18 +400,23 @@ ALTER TABLE ONLY disciplinas ALTER COLUMN id_d SET DEFAULT nextval('seq_id_disci
 
 
 --
--- TOC entry 1829 (class 2604 OID 17533)
--- Dependencies: 171 165
+-- TOC entry 1925 (class 2604 OID 18404)
 -- Name: id_e; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY exemplares ALTER COLUMN id_e SET DEFAULT nextval('seq_id_exemplar'::regclass);
 
-ALTER TABLE ONLY curso ALTER COLUMN id_crs SET DEFAULT nextval('seq_id_curso'::regclass);
 
 --
--- TOC entry 1832 (class 2604 OID 17534)
--- Dependencies: 172 167
+-- TOC entry 1928 (class 2604 OID 18405)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY papel ALTER COLUMN id SET DEFAULT nextval('papel_id_seq'::regclass);
+
+
+--
+-- TOC entry 1929 (class 2604 OID 18406)
 -- Name: id_t; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -323,8 +424,16 @@ ALTER TABLE ONLY titulos ALTER COLUMN id_t SET DEFAULT nextval('seq_id_titulo'::
 
 
 --
--- TOC entry 1961 (class 0 OID 17478)
--- Dependencies: 161 1972
+-- TOC entry 1930 (class 2604 OID 18407)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY usuario ALTER COLUMN id SET DEFAULT nextval('usuario_id_seq'::regclass);
+
+
+--
+-- TOC entry 2075 (class 0 OID 18330)
+-- Dependencies: 170
 -- Data for Name: bibliografias; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -374,7 +483,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (102, 619, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (103, 631, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (105, 914, 'Básica');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 700, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (44, 237, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 750, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (10, 481, 'Complementar');
@@ -383,7 +491,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 310, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 466, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 34, 'Básica');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 734, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 313, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 579, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 199, 'Básica');
@@ -483,7 +590,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (43, 107, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 138, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 37, 'Básica');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 694, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 114, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 207, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 208, 'Complementar');
@@ -495,6 +601,7 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 396, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 810, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 379, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (2, 142, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 376, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 383, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (7, 395, 'Complementar');
@@ -562,8 +669,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 167, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 172, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 173, 'Básica');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 667, 'Complementar');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 668, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 176, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 120, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 125, 'Complementar');
@@ -651,7 +756,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 131, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 471, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 236, 'Complementar');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 853, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 280, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 275, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 801, 'Básica');
@@ -662,6 +766,8 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (26, 786, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 514, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 509, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 174, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (25, 282, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 447, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 507, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (30, 506, 'Complementar');
@@ -706,7 +812,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 345, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (38, 406, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 806, 'Básica');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 853, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 850, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (40, 314, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (41, 280, 'Complementar');
@@ -939,7 +1044,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 60, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (88, 428, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 588, 'Básica');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 664, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 663, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 591, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 197, 'Complementar');
@@ -956,7 +1060,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 372, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 394, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 379, 'Complementar');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 807, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 790, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 819, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (98, 948, 'Básica');
@@ -979,7 +1082,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 161, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 125, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 20, 'Básica');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 598, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 6, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 323, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (99, 444, 'Complementar');
@@ -993,6 +1095,8 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 97, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 283, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 599, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (90, 297, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (96, 608, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 98, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 644, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (100, 643, 'Complementar');
@@ -1113,7 +1217,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (119, 893, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 356, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 357, 'Básica');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 795, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 796, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 793, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 465, 'Complementar');
@@ -1121,7 +1224,6 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 354, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 356, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 357, 'Básica');
-INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 795, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 796, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 793, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 465, 'Complementar');
@@ -1163,6 +1265,7 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 529, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 344, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 104, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (37, 355, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 530, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 527, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (45, 318, 'Complementar');
@@ -1227,11 +1330,15 @@ INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 945, 'Básica');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 9, 'Complementar');
 INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (130, 968, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (36, 355, 'Básica');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (15, 175, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 286, 'Complementar');
+INSERT INTO bibliografias (id_disciplina, id_titulo, tipo_bibliografia) VALUES (39, 282, 'Complementar');
 
 
 --
--- TOC entry 1962 (class 0 OID 17484)
--- Dependencies: 162 1972
+-- TOC entry 2076 (class 0 OID 18336)
+-- Dependencies: 171
 -- Data for Name: curriculo; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1242,20 +1349,20 @@ INSERT INTO curriculo (id_c, ano_semestre, id_curso) VALUES (4, '2013.1', 4);
 
 
 --
--- TOC entry 1963 (class 0 OID 17490)
--- Dependencies: 163 1972
+-- TOC entry 2077 (class 0 OID 18342)
+-- Dependencies: 172
 -- Data for Name: curso; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO curso (id_crs,cod_c, nome_c, sigla) VALUES (1,401, 'Sistemas de Informação', 'SI');
-INSERT INTO curso (id_crs,cod_c, nome_c, sigla) VALUES (2,402, 'Engenharia de Software', 'ES');
-INSERT INTO curso (id_crs,cod_c, nome_c, sigla) VALUES (3,403, 'Redes de Computadores', 'RC');
-INSERT INTO curso (id_crs,cod_c, nome_c, sigla) VALUES (4,404, 'Ciência da Computação', 'CC');
+INSERT INTO curso (id_crs, cod_c, nome_c, sigla) VALUES (1, 401, 'Sistemas de Informação', 'SI');
+INSERT INTO curso (id_crs, cod_c, nome_c, sigla) VALUES (2, 402, 'Engenharia de Software', 'ES');
+INSERT INTO curso (id_crs, cod_c, nome_c, sigla) VALUES (3, 403, 'Redes de Computadores', 'RC');
+INSERT INTO curso (id_crs, cod_c, nome_c, sigla) VALUES (4, 404, 'Ciência da Computação', 'CC');
 
 
 --
--- TOC entry 1964 (class 0 OID 17496)
--- Dependencies: 164 1972
+-- TOC entry 2078 (class 0 OID 18348)
+-- Dependencies: 173
 -- Data for Name: disciplinas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1391,8 +1498,8 @@ INSERT INTO disciplinas (id_d, cod_d, nome) VALUES (130, 'QXD114', 'MATEMÁTICA 
 
 
 --
--- TOC entry 1965 (class 0 OID 17502)
--- Dependencies: 165 1972
+-- TOC entry 2079 (class 0 OID 18354)
+-- Dependencies: 174
 -- Data for Name: exemplares; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1631,11 +1738,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (232, 41, '14041429');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (233, 41, '14041428');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (234, 41, '13987778');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (235, 41, '14041427');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (236, 42, '14019962');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (237, 42, '14019964');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (238, 42, '14019961');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (239, 42, '14019963');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (240, 42, '14019960');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (241, 43, '14056783');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (242, 43, '14056779');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (243, 43, '14056781');
@@ -1773,25 +1875,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (374, 63, '13984974');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (375, 63, '14061434');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (376, 63, '13984986');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (377, 63, '13940741');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (378, 79, '14031423');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (379, 79, '14031421');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (380, 79, '14031420');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (381, 79, '14031422');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (382, 79, '13985407');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (383, 79, '14031419');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (384, 79, '14056574');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (385, 79, '14031424');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (386, 79, '14056577');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (387, 79, '14056578');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (388, 79, '14056575');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (389, 79, '13985406');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (390, 79, '14056579');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (391, 79, '13985412');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (392, 79, '13985410');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (393, 79, '14056576');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (394, 79, '13985408');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (395, 79, '13985409');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (396, 79, '13985411');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (397, 80, '14050993');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (398, 80, '13984353');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (399, 80, '14050992');
@@ -2132,7 +2215,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (733, 159, '13986385');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (734, 159, '13983998');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (735, 159, '14054984');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (736, 159, '13970975');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (737, 159, '13986386');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (738, 159, '14019729');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (739, 159, '13983996');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (740, 159, '13983997');
@@ -2242,15 +2324,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (843, 173, '13985290');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (844, 174, '13984022');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (845, 174, '13984023');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (846, 174, '13984024');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (847, 175, '13941157');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (848, 175, '13941153');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (849, 175, '13941151');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (850, 175, '13941156');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (851, 175, '13941152');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (852, 175, '13941509');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (853, 175, '13941508');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (854, 175, '13941154');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (855, 175, '13941155');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (856, 176, '14051505');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (857, 176, '14051503');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (858, 176, '14051500');
@@ -2279,13 +2352,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (884, 180, '13985327');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (885, 181, '13985390');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (886, 182, '14053714');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (887, 182, '14053716');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (888, 188, '13983716');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (889, 188, '13983678');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (890, 188, '13983680');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (891, 188, '13983715');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (892, 188, '13983696');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (893, 188, '13983714');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (894, 188, '13983681');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (895, 189, '14012462');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (896, 189, '14012461');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (897, 190, '14037209');
@@ -2343,48 +2409,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (946, 205, '14012452');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (947, 206, '13985443');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (948, 206, '13985442');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (949, 206, '13985445');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (950, 207, '14058617');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (951, 207, '14051016');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (952, 207, '14058614');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (953, 207, '13986042');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (954, 207, '14051014');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (955, 207, '13986039');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (956, 207, '14058618');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (957, 207, '14058616');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (958, 207, '13986049');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (959, 207, '13986048');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (960, 207, '13986041');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (961, 207, '14058613');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (962, 207, '13986044');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (963, 207, '13986040');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (964, 207, '13986047');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (965, 207, '13986038');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (966, 207, '14051015');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (967, 207, '13986055');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (968, 207, '13986051');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (969, 207, '13986052');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (970, 207, '13986046');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (971, 207, '14054430');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (972, 207, '14058612');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (973, 207, '14054428');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (974, 207, '14054429');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (975, 207, '13986054');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (976, 207, '13986043');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (977, 208, '14042769');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (978, 208, '14042772');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (979, 208, '14059302');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (980, 208, '14042763');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (981, 208, '14042766');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (982, 208, '14052435');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (983, 208, '14042764');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (984, 208, '14059303');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (985, 208, '14042762');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (986, 208, '14042765');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (987, 208, '14042771');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (988, 208, '14042770');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (989, 208, '14042768');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (990, 208, '14059304');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (991, 208, '14059305');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (992, 209, '14057174');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (993, 210, '13985461');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (994, 210, '13985459');
@@ -2416,12 +2440,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1019, 216, '13937923');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1020, 216, '13986163');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1021, 216, '13986167');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1022, 217, '14061584');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1023, 221, '14056339');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1024, 221, '14056340');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1025, 221, '14056341');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1026, 221, '14051040');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1027, 221, '14051041');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1028, 221, '14056338');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1029, 222, '13986736');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1030, 222, '14056232');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1031, 222, '13986735');
@@ -2445,12 +2463,9 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1048, 224, '13983734');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1049, 224, '13983736');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1050, 224, '13983730');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1051, 224, '13983735');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1052, 225, '14033250');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1053, 225, '14033252');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1054, 225, '14033244');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1055, 225, '14033243');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1056, 225, '14033242');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1057, 225, '14033248');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1058, 227, '14058593');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1059, 227, '14058594');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1060, 228, '14059046');
@@ -2537,18 +2552,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1140, 240, '14019739');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1141, 240, '14019740');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1142, 240, '14019741');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1143, 240, '14019742');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1144, 241, '13931519');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1145, 241, '13931521');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1146, 241, '14055330');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1147, 241, '14055331');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1148, 241, '13931522');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1149, 241, '13931526');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1150, 241, '13931520');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1151, 241, '13931525');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1152, 241, '13931524');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1153, 241, '13931523');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1154, 241, '13931527');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1155, 241, '14055332');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1156, 242, '13986092');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1157, 242, '14056371');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1158, 242, '14056377');
@@ -2775,8 +2778,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1378, 274, '13986127');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1379, 274, '14055052');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1380, 274, '13986126');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1381, 275, '14056570');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1382, 276, '14056573');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1383, 276, '14056572');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1384, 280, '13985483');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1385, 280, '13985482');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1386, 280, '13985484');
@@ -2930,13 +2931,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1533, 304, '13983655');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1534, 304, '13984017');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1535, 304, '13983654');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1536, 304, '13983653');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1537, 305, '13983652');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1538, 305, '13983651');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1539, 305, '13983642');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1540, 305, '13983643');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1541, 305, '13983645');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1542, 305, '13983657');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1543, 305, '13983644');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1544, 306, '13986199');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1545, 306, '13986198');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1546, 306, '14050891');
@@ -3189,21 +3183,12 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1792, 354, '14059393');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1793, 354, '14059394');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1794, 354, '13987243');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1795, 355, '13941257');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1796, 355, '13941135');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1797, 355, '13986744');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1798, 355, '13941264');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1799, 355, '13986743');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1800, 355, '13941130');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1801, 355, '13941258');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1802, 355, '13941256');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1803, 355, '13986745');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1804, 355, '13986751');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1805, 355, '13941259');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1806, 355, '13941265');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1807, 355, '13986752');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1808, 355, '13986742');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1809, 355, '13986753');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1810, 355, '13986750');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1811, 355, '13941255');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1812, 356, '13934910');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (1813, 356, '13937051');
@@ -3593,41 +3578,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2196, 446, '13937627');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2197, 446, '13976714');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2198, 446, '13976716');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2199, 446, '13976715');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2200, 447, '13998532');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2201, 447, '14020911');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2202, 447, '14020901');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2203, 447, '13940724');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2204, 447, '13940719');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2205, 447, '13940708');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2206, 447, '13940726');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2207, 447, '13940732');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2208, 447, '13937874');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2209, 447, '13937873');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2210, 447, '13998531');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2211, 447, '13998530');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2212, 447, '14020905');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2213, 447, '14033654');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2214, 447, '14033649');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2215, 447, '14020912');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2216, 447, '13940700');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2217, 447, '13998534');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2218, 447, '14020902');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2219, 447, '14033553');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2220, 447, '14020903');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2221, 447, '13940722');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2222, 447, '13998533');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2223, 447, '14020900');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2224, 447, '13940720');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2225, 447, '13998536');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2226, 447, '13940725');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2227, 447, '13940699');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2228, 447, '14033550');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2229, 447, '14020892');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2230, 447, '14020904');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2231, 447, '13998535');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2232, 447, '13940731');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2233, 447, '14033653');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2234, 447, '13940723');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2235, 448, '14057351');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2236, 448, '14032131');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2237, 448, '14032130');
@@ -3982,7 +3932,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2590, 396, '14088701');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2591, 396, '14081046');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2592, 396, '14081045');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2593, 396, '14085112');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2594, 372, '14085108');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2595, 905, '14085111');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2596, 904, '14085109');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2597, 903, '14085107');
@@ -4013,14 +3962,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2621, 165, '14081166');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2622, 165, '14081168');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2623, 165, '14081167');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2624, 165, '14081165');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2625, 79, '14081424');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2626, 79, '14081448');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2627, 79, '14081425');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2628, 79, '14081447');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2629, 79, '14081453');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2630, 79, '14081442');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2631, 79, '14081427');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2632, 79, '14081426');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2633, 378, '14086736');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2634, 378, '14086735');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2635, 378, '14086729');
@@ -4134,48 +4075,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2742, 145, '14081220');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2743, 145, '14081218');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2744, 145, '14081217');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2745, 145, '14081207');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2746, 608, '14088763');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2747, 608, '14088778');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2748, 608, '14088779');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2749, 608, '14088757');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2750, 608, '14088748');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2751, 608, '14088760');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2752, 608, '14088759');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2753, 608, '14088762');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2754, 608, '14088764');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2755, 608, '14088773');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2756, 608, '14088745');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2757, 608, '14088761');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2758, 608, '14088780');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2759, 608, '14088740');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2760, 608, '14088742');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2761, 608, '14088768');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2762, 608, '14088752');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2763, 608, '14088758');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2764, 608, '14088769');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2765, 608, '14088749');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2766, 608, '14088772');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2767, 608, '14088744');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2768, 608, '14088781');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2769, 608, '14088770');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2770, 608, '14088777');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2771, 608, '14088753');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2772, 608, '14088755');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2773, 608, '14088766');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2774, 608, '14088774');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2775, 608, '14088771');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2776, 608, '14088775');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2777, 608, '14088741');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2778, 608, '14088747');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2779, 608, '14088765');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2780, 608, '14088756');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2781, 608, '14088776');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2782, 608, '14088751');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2783, 608, '14088743');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2784, 608, '14088746');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2785, 608, '14088750');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2786, 608, '14088754');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2787, 608, '14088767');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2788, 1, '14091188');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2789, 1, '14091187');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (2790, 1, '14091192');
@@ -4447,66 +4346,6 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3055, 20, '14088027');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3056, 20, '14088020');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3057, 20, '14088029');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3058, 901, '14085114');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3059, 221, '14088085');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3060, 221, '14088039');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3061, 221, '14088045');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3062, 221, '14088079');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3063, 221, '14088059');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3064, 221, '14081365');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3065, 221, '14088095');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3066, 221, '14088043');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3067, 221, '14088071');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3068, 221, '14088090');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3069, 221, '14088035');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3070, 221, '14088036');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3071, 221, '14088047');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3072, 221, '14088055');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3073, 221, '14088069');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3074, 221, '14088073');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3075, 221, '14088054');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3076, 221, '14088080');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3077, 221, '14088088');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3078, 221, '14088042');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3079, 221, '14088056');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3080, 221, '14088077');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3081, 221, '14088093');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3082, 221, '14081382');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3083, 221, '14088052');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3084, 221, '14088074');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3085, 221, '14088083');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3086, 221, '14088058');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3087, 221, '14088086');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3088, 221, '14088053');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3089, 221, '14088076');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3090, 221, '14088092');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3091, 221, '14081366');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3092, 221, '14088049');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3093, 221, '14088072');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3094, 221, '14088084');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3095, 221, '14088034');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3096, 221, '14088037');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3097, 221, '14088038');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3098, 221, '14088051');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3099, 221, '14088087');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3100, 221, '14088050');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3101, 221, '14088082');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3102, 221, '14088089');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3103, 221, '14088091');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3104, 221, '14088041');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3105, 221, '14088094');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3106, 221, '14081381');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3107, 221, '14081380');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3108, 221, '14088044');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3109, 221, '14088060');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3110, 221, '14088070');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3111, 221, '14088081');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3112, 221, '14088046');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3113, 221, '14088078');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3114, 221, '14088040');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3115, 221, '14081367');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3116, 221, '14088057');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3117, 221, '14088075');
-INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3118, 221, '14088048');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3119, 62, '14081435');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3120, 62, '14081437');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3121, 62, '14081433');
@@ -4979,11 +4818,1552 @@ INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3587, 727, '14098114');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (865, 693, '13983756');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (866, 693, '13983758');
 INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3588, 177, '13983755');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3590, 589, '14031902 ');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3591, 589, '14031903');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3592, 589, '14031904');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3594, 589, '14055800');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3595, 589, '14055801 ');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3596, 589, '14055802');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3597, 589, '14055803');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3598, 589, '14055804');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3599, 589, '14055805');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3600, 589, '14055807');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3601, 589, '14055808');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3602, 589, '14055809');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3603, 589, '14055810');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3604, 129, '14057010');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3606, 129, '14124164');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3607, 129, '14124165');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3608, 129, '14124166');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3609, 129, '14124167');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3610, 129, '14124168');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3611, 129, '14124169');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3612, 129, '14124170');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3613, 129, '14124171');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3614, 129, '14124172');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3615, 129, '14124173');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3616, 129, '14124174');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3617, 129, '14124175');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3618, 129, '14124176');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3619, 129, '14124177');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3620, 129, '14124178');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3621, 129, '14124179');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3622, 129, '14124180');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3623, 129, '14124181');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3624, 129, '14124182');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3625, 129, '14124183');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3626, 199, '13985436');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3628, 199, '13985438');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3629, 199, '13985439');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3630, 297, '13987257 ');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3640, 355, '13941254');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3641, 168, '14057295');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3642, 168, '14124264');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3643, 168, '14124265');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3644, 168, '14124266');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3645, 168, '14124267');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3646, 182, '14053713');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3647, 182, '14053715');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3648, 182, '14053717');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3649, 182, '14053718');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3650, 182, '14053719');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3651, 182, '14053720');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3652, 182, '14122070');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3653, 182, '14122071');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3654, 182, '14122072');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3655, 182, '14122073');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3656, 182, '14122074');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3657, 182, '14122075');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3658, 182, '14122076');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3659, 182, '14122077');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3660, 182, '14122078');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3661, 182, '14122079');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3662, 182, '14122080');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3663, 182, '14122081');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3664, 182, '14122082');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3665, 182, '14122083');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3666, 182, '14122084');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3667, 182, '14122085');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3668, 182, '14123298');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3669, 182, '14123299');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3670, 182, '14123300');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3671, 182, '14123301');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3672, 182, '14123302');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3673, 182, '14123303');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3674, 182, '14123304');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3675, 191, '13984979');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3676, 191, '13984980');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3677, 191, '13984981');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3678, 191, '13984982');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3679, 191, '14031358');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3680, 191, '14031359');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3681, 191, '14031360');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3682, 191, '14056332');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3683, 191, '14056333');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3684, 191, '14056334');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3685, 191, '14056335');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3686, 191, '14056336');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3687, 191, '14056337');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3688, 191, '14060073');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3689, 191, '14060075');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3690, 191, '14122156');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3691, 191, '14122157');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3692, 191, '14122158');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3693, 191, '14122159');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3694, 191, '14122160');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3695, 191, '14122161');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3696, 191, '14122162');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3697, 191, '14122163');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3698, 191, '14122164');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3699, 191, '14122165');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3700, 191, '14122166');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3701, 509, '13984297');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3702, 509, '13984298');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3703, 509, '13984299');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3704, 509, '13984300');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3705, 509, '14054436');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3706, 509, '14054438');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3707, 155, '14057689');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3708, 495, '13922209');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3709, 495, '13922256');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3710, 495, '13922257');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3711, 495, '13922258');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3712, 502, '14055015');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3713, 28, '14057309');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3714, 28, '14123191');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3715, 28, '14123192');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3716, 28, '14123193');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3717, 28, '14123194');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3718, 28, '14123305');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3719, 28, '14123306');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3720, 28, '14123307');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3721, 28, '14123308');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3722, 97, '14032066');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3723, 116, '14057178');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3724, 116, '14127213');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3725, 116, '14127214');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3726, 116, '14127215');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3727, 116, '14127216');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3728, 43, '14056778');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3729, 320, '14059370');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3730, 321, '13987033');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3731, 280, '13934681');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3732, 239, '13987802');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3733, 138, '13934103');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3734, 415, '14019958');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3735, 415, '14122596');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3736, 415, '14122597');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3737, 415, '14122598');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3738, 415, '14122599');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3739, 415, '14122600');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3740, 415, '14122601');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3741, 415, '14122602');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3742, 415, '14122603');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3743, 415, '14122604');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3744, 415, '14122605');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3745, 415, '14122606');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3746, 34, '14056170');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3747, 34, '14123632');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3748, 34, '14123633');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3749, 34, '14123634');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3750, 34, '14123635');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3751, 34, '14123636');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3752, 34, '14123637');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3753, 34, '14123638');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3754, 34, '14123639');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3755, 34, '14123640');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3756, 34, '14123641');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3757, 479, '13931571');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3758, 479, '13948665');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3759, 235, '14057611');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3760, 167, '13999443');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3761, 167, '14126307');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3762, 167, '14126308');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3763, 167, '14126309');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3764, 167, '14126310');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3765, 167, '14126311');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3766, 167, '14126312');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3767, 167, '14126313');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3768, 167, '14126314');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3769, 167, '14126315');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3770, 167, '14126316');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3771, 167, '14126317');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3772, 167, '14126318');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3773, 167, '14126319');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3774, 167, '14126320');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3775, 167, '14126321');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3776, 167, '14126322');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3777, 167, '14126323');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3778, 167, '14126324');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3779, 167, '14126325');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3780, 167, '14126326');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3781, 167, '14126327');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3782, 167, '14126328');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3783, 167, '14126329');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3784, 167, '14126330');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3785, 167, '14126331');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3786, 167, '14126340');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3787, 167, '14126341');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3788, 167, '14126342');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3789, 167, '14126343');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3790, 167, '14126345');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3791, 167, '14126346');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3792, 167, '14126347');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3793, 167, '14126348');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3794, 167, '14126349');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3795, 172, '14019781');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3796, 172, '14123667');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3797, 172, '14123668');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3798, 172, '14123669');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3799, 172, '14123670');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3800, 172, '14123671');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3801, 172, '14123672');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3802, 172, '14123673');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3803, 172, '14123674');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3804, 172, '14123675');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3805, 172, '14123676');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3806, 172, '14123677');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3807, 172, '14123678');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3808, 172, '14123679');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3809, 172, '14123680');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3810, 172, '14123681');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3811, 386, '14055910');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3812, 386, '14123463');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3813, 386, '14123464');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3814, 386, '14123465');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3815, 386, '14123466');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3816, 386, '14123467');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3817, 386, '14123468');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3818, 386, '14123469');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3819, 386, '14123470');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3820, 309, '14057298');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3821, 51, '13985396');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3822, 221, '14051039');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3823, 221, '14051040');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3824, 221, '14051041');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3825, 221, '14056338');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3826, 221, '14056339');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3827, 221, '14081365');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3828, 221, '14081366');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3829, 221, '14081367');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3830, 221, '14088034');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3831, 221, '14088035');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3832, 221, '14088036');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3833, 221, '14088037');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3834, 221, '14088038');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3835, 221, '14088039');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3836, 221, '14088040');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3837, 221, '14088041');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3838, 221, '14088042');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3839, 221, '14088043');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3840, 221, '14088044');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3841, 221, '14088045');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3842, 221, '14088046');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3843, 221, '14088047');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3844, 221, '14088048');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3845, 221, '14088049');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3846, 221, '14088050');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3847, 221, '14088051');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3848, 221, '14088052');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3849, 221, '14088053');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3850, 221, '14088054');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3851, 221, '14088055');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3852, 221, '14088056');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3853, 221, '14088057');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3854, 221, '14088058');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3855, 221, '14088059');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3856, 221, '14088060');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3857, 514, '13984179');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3858, 514, '14126572');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3859, 514, '14126573');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3860, 514, '14126574');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3861, 514, '14126575');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3862, 514, '14126577');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3863, 514, '14126578');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3864, 514, '14126579');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3865, 514, '14126580');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3866, 514, '14126581');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3867, 514, '14126582');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3868, 514, '14126583');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3869, 514, '14126584');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3870, 514, '14126585');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3871, 514, '14126586');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3872, 295, '14052223');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3873, 54, '13983978');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3874, 54, '14127481');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3875, 54, '14127482');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3876, 54, '14127483');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3877, 54, '14127484');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3878, 54, '14127485');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3879, 54, '14127486');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3880, 54, '14127487');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3881, 54, '14127488');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3882, 54, '14127489');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3883, 54, '14127490');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3884, 54, '14127491');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3885, 54, '14127492');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3886, 54, '14127493');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3887, 54, '14127494');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3888, 54, '14127495');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3889, 54, '14127496');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3890, 54, '14127497');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3891, 54, '14127498');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3892, 54, '14127499');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3893, 261, '13984004');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3894, 261, '14123749');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3895, 261, '14123750');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3896, 261, '14123751');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3897, 261, '14123752');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3898, 261, '14123753');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3899, 261, '14123754');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3900, 261, '14123755');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3901, 261, '14123756');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3902, 261, '14123757');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3903, 261, '14123758');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3904, 261, '14123759');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3905, 261, '14123760');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3906, 261, '14123761');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3907, 261, '14123762');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3908, 261, '14123763');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3909, 261, '14123764');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3910, 196, '13985322');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3911, 173, '13941080');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3912, 173, '14123425');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3913, 173, '14123426');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3914, 173, '14123427');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3915, 173, '14123428');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3916, 173, '14123429');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3917, 173, '14123430');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3918, 173, '14123431');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3919, 173, '14123432');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3920, 173, '14123433');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3921, 173, '14123434');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3922, 173, '14123435');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3923, 173, '14123436');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3924, 173, '14123437');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3925, 173, '14123438');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3926, 173, '14123439');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3927, 165, '13985309');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3928, 165, '14123605');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3929, 165, '14123606');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3930, 165, '14123607');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3931, 165, '14123608');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3932, 30, '13985828');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3933, 222, '13986734');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3934, 12, '13986746');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3935, 294, '14055786');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3936, 294, '14122811');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3937, 294, '14122812');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3938, 294, '14122813');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3939, 294, '14122814');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3940, 294, '14122815');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3941, 294, '14122816');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3942, 294, '14122817');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3943, 294, '14122818');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3944, 294, '14122819');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3945, 294, '14122820');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3946, 294, '14122821');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3947, 294, '14122822');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3948, 294, '14122823');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3949, 294, '14122824');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3950, 294, '14122825');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3951, 294, '14122826');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3952, 294, '14122827');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3953, 294, '14122828');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3954, 387, '14012278');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3955, 210, '13985458');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3956, 210, '14127151');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3957, 210, '14127152');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3958, 210, '14127153');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3959, 210, '14127154');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3960, 210, '14127155');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3961, 210, '14127156');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3962, 210, '14127157');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3963, 210, '14127159');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3964, 210, '14127160');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3965, 210, '14127161');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3966, 210, '14127162');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3967, 210, '14127163');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3968, 210, '14127164');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3969, 210, '14127165');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3970, 210, '14127166');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3971, 210, '14127167');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3972, 210, '14127168');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3973, 210, '14127169');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3974, 210, '14127170');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3975, 210, '14127171');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3976, 210, '14127172');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3977, 210, '14127173');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3978, 434, '13923180');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3979, 434, '14122567');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3980, 434, '14122568');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3981, 434, '14122569');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3982, 434, '14122570');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3983, 434, '14122571');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3984, 434, '14122572');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3985, 434, '14122573');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3986, 434, '14122574');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3987, 434, '14122575');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3988, 434, '14122576');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3989, 434, '14122577');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3990, 434, '14122578');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3991, 434, '14122579');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3992, 160, '14019798');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3993, 159, '14019730');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3994, 159, '14122333');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3995, 159, '14122334');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3996, 159, '14122335');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3997, 159, '14122336');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3998, 159, '14122337');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (3999, 159, '14122338');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4000, 159, '14122339');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4001, 159, '14122340');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4002, 159, '14122341');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4003, 159, '14122342');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4004, 159, '14122343');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4005, 159, '14122344');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4006, 159, '14122345');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4007, 159, '14122346');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4008, 159, '14122347');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4009, 159, '14122348');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4010, 159, '14122349');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4011, 159, '14122350');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4012, 159, '14122351');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4013, 62, '14050980');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4014, 62, '14050981');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4015, 62, '14050982');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4016, 62, '14050983');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4017, 62, '14050984');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4018, 62, '14050985');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4019, 62, '14050986');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4020, 62, '14050987');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4021, 62, '14050988');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4022, 62, '14051479');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4023, 62, '14051480');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4024, 62, '14051481');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4025, 62, '14051482');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4026, 62, '14051483');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4027, 62, '14051485');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4028, 62, '14051486');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4029, 62, '14051487');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4030, 62, '14051488');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4031, 62, '14051489');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4032, 62, '14051490');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4033, 62, '14051491');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4034, 62, '14051492');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4035, 62, '14051493');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4036, 62, '14051494');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4037, 62, '14051495');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4038, 62, '14051496');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4039, 62, '14051497');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4040, 62, '14051498');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4041, 62, '14051499');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4042, 176, '13985446');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4043, 176, '14122900');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4044, 176, '14122901');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4045, 176, '14122902');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4046, 176, '14122903');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4047, 176, '14122904');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4048, 176, '14122905');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4049, 176, '14122906');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4050, 176, '14122907');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4051, 176, '14122908');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4052, 176, '14122909');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4053, 176, '14122910');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4054, 176, '14122911');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4055, 176, '14122912');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4056, 176, '14122913');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4057, 176, '14122914');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4058, 176, '14122915');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4059, 176, '14122916');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4060, 176, '14122917');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4061, 176, '14122918');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4062, 176, '14122919');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4063, 176, '14122920');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4064, 413, '14056295');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4065, 413, '14127246');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4066, 413, '14127247');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4067, 413, '14127248');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4068, 413, '14127249');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4069, 413, '14127250');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4070, 413, '14127252');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4071, 413, '14127253');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4072, 413, '14127254');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4073, 413, '14127255');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4074, 413, '14127256');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4075, 413, '14127257');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4076, 275, '14056584');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4077, 275, '14056585');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4078, 275, '14127415');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4079, 275, '14127416');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4080, 275, '14127417');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4081, 275, '14127418');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4082, 275, '14127419');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4083, 275, '14127420');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4084, 275, '14127421');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4085, 275, '14127422');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4086, 275, '14056571');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4087, 275, '14056572');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4088, 275, '14056573');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4089, 275, '14056583');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4090, 114, '13983626');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4091, 114, '14123315');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4092, 114, '14123316');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4093, 114, '14123317');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4094, 114, '14123318');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4095, 114, '14123319');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4096, 114, '14123331');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4097, 114, '14123332');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4098, 114, '14123333');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4099, 114, '14123334');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4100, 114, '14123335');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4101, 114, '14123336');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4102, 114, '14123337');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4103, 114, '14123338');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4104, 114, '14123339');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4105, 114, '14123340');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4106, 114, '14123341');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4107, 114, '14123342');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4108, 114, '14123343');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4109, 114, '14123344');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4110, 114, '14123345');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4111, 114, '14123346');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4112, 114, '14123347');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4113, 114, '14123348');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4114, 114, '14123349');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4115, 244, '13984141');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4116, 515, '13937558');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4117, 515, '14123440');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4118, 515, '14123441');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4119, 515, '14123442');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4120, 515, '14123443');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4121, 107, '13985432');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4122, 110, '14055821');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4123, 128, '13985004');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4124, 31, '14018072');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4125, 198, '14056845');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4126, 198, '14122880');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4127, 198, '14123957');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4128, 198, '14123958');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4129, 198, '14123959');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4130, 198, '14123960');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4131, 310, '13936895');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4132, 447, '13937624');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4133, 447, '13940699');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4134, 447, '13940719');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4135, 447, '13940720');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4136, 447, '13940724');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4137, 447, '13940723');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4138, 447, '13998530');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4139, 447, '13998531');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4140, 447, '13998533');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4141, 447, '13998534');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4142, 447, '13998532');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4143, 447, '14020903');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4144, 447, '14020905');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4145, 447, '14020892');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4146, 447, '14033649');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4147, 311, '13987229');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4148, 230, '13984153');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4149, 291, '13936869');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4150, 390, '13941113');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4151, 390, '13941715');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4152, 390, '14127500');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4153, 390, '14127501');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4154, 390, '14127502');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4155, 390, '14127503');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4156, 390, '14127504');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4157, 390, '14127505');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4158, 390, '14127506');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4159, 390, '14127507');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4160, 390, '14127508');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4161, 390, '14127509');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4162, 390, '14127510');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4163, 390, '14127511');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4164, 390, '14127512');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4165, 390, '14127513');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4166, 390, '14127514');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4167, 390, '14127515');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4168, 390, '14127516');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4169, 390, '14127517');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4170, 390, '14127518');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4171, 608, '14088740');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4172, 608, '14088741');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4173, 608, '14088742');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4174, 608, '14088743');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4175, 608, '14088744');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4176, 608, '14088745');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4177, 608, '14088746');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4178, 608, '14088747');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4179, 608, '14088748');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4180, 608, '14088749');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4181, 608, '14088750');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4182, 608, '14088751');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4183, 608, '14088752');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4184, 608, '14088753');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4185, 608, '14088754');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4186, 608, '14088755');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4187, 608, '14088756');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4188, 608, '14088757');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4189, 608, '14088758');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4190, 608, '14088759');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4191, 608, '14088760');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4192, 608, '14124355');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4193, 608, '14124356');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4194, 608, '14124357');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4195, 608, '14124358');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4196, 608, '14124359');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4197, 608, '14124360');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4198, 608, '14124361');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4199, 608, '14124362');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4200, 608, '14124363');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4201, 19, '14054867');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4202, 19, '14127425');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4203, 19, '14127426');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4204, 19, '14127427');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4205, 19, '14127428');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4206, 19, '14127429');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4207, 19, '14127430');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4208, 19, '14127431');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4209, 19, '14127432');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4210, 126, '14042834');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4211, 126, '14126650');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4212, 126, '14126651');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4213, 126, '14126652');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4214, 126, '14126653');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4215, 126, '14126654');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4216, 126, '14126655');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4217, 126, '14126656');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4218, 126, '14126657');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4219, 126, '14126658');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4220, 126, '14126659');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4221, 126, '14126660');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4222, 126, '14126661');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4223, 126, '14126662');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4224, 126, '14126663');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4225, 126, '14126664');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4226, 126, '14126665');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4227, 126, '14126666');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4228, 126, '14126667');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4229, 126, '14126668');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4230, 126, '14126669');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4231, 126, '14126670');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4232, 126, '14126671');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4233, 126, '14126672');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4234, 126, '14126673');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4235, 126, '14126674');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4236, 47, '13985818');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4237, 306, '13986202');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4238, 145, '13934650');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4239, 274, '13934654');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4240, 465, '14057832');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4241, 466, '13971106');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4242, 175, '13941150');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4243, 175, '13941151');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4244, 175, '13941152');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4245, 175, '13941153');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4246, 175, '13941508');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4247, 658, '14056586');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4248, 658, '14056587');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4249, 658, '14056588');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4250, 658, '14057874');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4251, 658, '14057875');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4252, 658, '14057876');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4253, 174, '13984021');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4254, 286, '13984194');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4255, 282, '13952540');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4256, 672, '13987773');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4257, 672, '13987774');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4258, 672, '13987775');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4259, 672, '13987776');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4260, 146, '13934658');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4261, 146, '14127386');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4262, 146, '14127387');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4263, 146, '14127388');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4264, 146, '14127389');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4265, 146, '14127390');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4266, 146, '14127391');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4267, 146, '14127392');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4268, 146, '14127393');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4269, 146, '14127394');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4270, 146, '14127395');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4271, 146, '14127396');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4272, 146, '14127397');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4273, 146, '14127398');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4274, 416, '14056165');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4275, 209, '14057173');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4276, 131, '13986990');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4277, 131, '13986991');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4278, 131, '13986993');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4279, 290, '14057870');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4280, 398, '13984816');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4281, 398, '13984818');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4282, 398, '13984819');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4283, 44, '14056205');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4284, 392, '14056764');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4285, 181, '13928030');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4286, 181, '13928031');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4287, 181, '13928032');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4288, 181, '13928033');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4289, 181, '13985389');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4290, 181, '13985391');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4291, 181, '13985392');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4292, 40, '13987764');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4293, 170, '14042720');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4294, 170, '14126519');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4295, 242, '13941129');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4296, 157, '13987815');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4297, 345, '13987270');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4298, 507, '13937965');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4299, 41, '13987777');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4300, 130, '13985450');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4301, 79, '13985405');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4302, 79, '13985406');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4303, 79, '13985407');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4304, 79, '13985408');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4305, 79, '14031419');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4306, 79, '14031420');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4307, 79, '14031421');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4308, 79, '14056574');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4309, 79, '14056575');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4310, 79, '14056576');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4311, 79, '14081424');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4312, 79, '14081425');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4313, 79, '14081426');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4314, 79, '14081427');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4315, 79, '14122512');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4316, 79, '14122513');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4317, 79, '14122514');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4318, 79, '14122515');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4319, 79, '14122516');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4320, 113, '13934662');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4321, 422, '13984338');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4322, 303, '13987156');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4323, 207, '13986037');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4324, 207, '13986038');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4325, 207, '13986039');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4326, 207, '13986040');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4327, 207, '13986041');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4328, 207, '13986042');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4329, 207, '13986043');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4330, 207, '13986044');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4331, 207, '14051014');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4332, 207, '14051015');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4333, 207, '14051016');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4334, 207, '14054428');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4335, 207, '14054429');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4336, 207, '14054430');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4337, 234, '14012338');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4338, 394, '13984836');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4339, 493, '14019226');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4340, 292, '13988676');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4341, 385, '13937605');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4342, 506, '13937054');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4343, 506, '14123392');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4344, 506, '14123393');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4345, 506, '14123394');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4346, 506, '14123395');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4347, 506, '14123396');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4348, 506, '14123397');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4349, 54, '14130839');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4350, 468, '14019684');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4351, 296, '13986063');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4352, 296, '13986065');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4353, 153, '13923706');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4354, 241, '13931518');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4355, 241, '13931520');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4356, 241, '13931521');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4357, 241, '13931522');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4358, 241, '13931523');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4359, 241, '14055330');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4360, 241, '14055331');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4361, 241, '14055332');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4362, 16, '13988602');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4363, 312, '13985301');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4364, 42, '14019959');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4365, 42, '14019960');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4366, 42, '14019961');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4367, 294, '13985285');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4368, 371, '14057452');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4369, 98, '13985929');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4370, 139, '13984998');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4371, 285, '14051017');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4372, 252, '13984692');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4373, 161, '13983662');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4374, 115, '13985313');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4375, 115, '14018162');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4376, 38, '13984170');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4377, 370, '14057542');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4378, 188, '13983678');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4379, 188, '13983679');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4380, 188, '13983680');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4381, 188, '13983681');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4382, 304, '14122303');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4383, 304, '14122304');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4384, 304, '14122305');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4385, 304, '14122306');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4386, 304, '14122307');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4387, 304, '14122308');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4388, 304, '14122309');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4389, 304, '14122310');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4390, 304, '14122311');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4391, 304, '14122312');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4392, 304, '14122313');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4393, 304, '14122314');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4394, 214, '14012530');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4395, 32, '13934630');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4396, 406, '13986738');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4397, 120, '13960335');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4398, 120, '13960336');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4399, 120, '13960337');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4400, 120, '13960588');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4401, 120, '13988627');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4402, 299, '13984935');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4403, 299, '14122111');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4404, 299, '14122112');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4405, 299, '14122113');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4406, 299, '14122114');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4407, 299, '14122115');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4408, 299, '14122116');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4409, 299, '14122117');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4410, 236, '13986705');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4411, 208, '13890943');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4412, 208, '14042762');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4413, 208, '14042763');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4414, 208, '14042764');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4415, 208, '14042765');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4416, 208, '14042766');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4417, 208, '14052435');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4418, 208, '14059302');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4419, 208, '14059303');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4420, 21, '13985457');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4421, 163, '13984971');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4422, 249, '13984137');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4423, 249, '14057965');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4424, 137, '13924463');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4425, 57, '13936925');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4426, 18, '13936865');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4427, 305, '13983642');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4428, 305, '13983643');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4429, 305, '13983644');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4430, 305, '13983645');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4431, 229, '13983637');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4432, 36, '13985760');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4433, 151, '14057872');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4434, 150, '13987272');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4435, 969, '14124013');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4436, 969, '14124022');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4437, 969, '14124021');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4438, 969, '14124014');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4439, 969, '14124018');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4440, 969, '14126209');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4441, 969, '14124020');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4442, 969, '14124015');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4443, 969, '14126208');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4444, 969, '14126207');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4445, 969, '14124016');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4446, 969, '14126206');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4447, 969, '14124012');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4448, 969, '14124019');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4449, 969, '14124017');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4450, 970, '14126479');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4451, 970, '14126482');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4452, 970, '14126480');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4453, 970, '14126481');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4454, 885, '14124229');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4455, 885, '14124222');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4456, 885, '14124228');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4457, 885, '14124227');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4458, 885, '14124226');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4459, 885, '14124225');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4460, 885, '14124224');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4461, 885, '14124223');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4462, 435, '14127180');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4463, 435, '14127182');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4464, 435, '14127185');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4465, 435, '14127181');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4466, 435, '14127183');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4467, 435, '14127179');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4468, 435, '14127184');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4469, 435, '14127187');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4470, 435, '14127186');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4471, 435, '14127178');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4472, 37, '14126371');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4473, 37, '14126374');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4474, 37, '14126388');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4475, 37, '14126373');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4476, 37, '14126369');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4477, 37, '14126391');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4478, 37, '14126390');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4479, 37, '14126392');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4480, 37, '14126385');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4481, 37, '14126387');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4482, 37, '14126377');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4483, 37, '14126376');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4484, 37, '14126389');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4485, 37, '14126372');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4486, 37, '14126386');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4487, 37, '14126384');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4488, 37, '14126370');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4489, 37, '14126375');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4490, 37, '14126383');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4491, 608, '14124374');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4492, 608, '14124375');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4493, 608, '14124373');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4494, 608, '14124378');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4495, 608, '14124379');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4496, 608, '14124376');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4497, 608, '14124372');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4498, 608, '14124380');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4499, 608, '14124377');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4500, 971, '14123125');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4501, 971, '14123127');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4502, 971, '14123128');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4503, 971, '14123126');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4504, 326, '14123451');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4505, 326, '14123448');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4506, 326, '14126442');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4507, 326, '14123447');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4508, 326, '14123453');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4509, 326, '14123449');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4510, 326, '14126441');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4511, 326, '14123452');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4512, 326, '14126443');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4513, 326, '14123445');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4514, 326, '14123450');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4515, 326, '14126439');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4516, 326, '14126440');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4517, 326, '14126438');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4518, 326, '14123446');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4519, 304, '14122299');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4520, 474, '14127194');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4521, 474, '14127188');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4522, 474, '14127193');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4523, 474, '14127191');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4524, 474, '14127189');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4525, 474, '14127192');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4526, 474, '14127190');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4527, 1, '14126999');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4528, 1, '14127001');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4529, 1, '14127000');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4530, 389, '14123943');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4531, 389, '14123933');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4532, 389, '14123928');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4533, 389, '14123934');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4534, 389, '14123942');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4535, 389, '14123940');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4536, 389, '14123925');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4537, 389, '14123939');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4538, 389, '14123931');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4539, 389, '14123929');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4540, 389, '14123941');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4541, 389, '14123938');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4542, 389, '14123930');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4543, 389, '14123936');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4544, 389, '14123932');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4545, 389, '14123927');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4546, 389, '14123926');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4547, 389, '14123935');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4548, 389, '14123937');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4549, 315, '14124051');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4550, 315, '14124047');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4551, 315, '14124049');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4552, 315, '14124048');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4553, 315, '14124053');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4554, 315, '14124050');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4555, 315, '14124052');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4556, 972, '14124273');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4557, 972, '14124275');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4558, 972, '14124274');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4559, 972, '14124276');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4560, 445, '14126499');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4561, 445, '14126498');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4562, 445, '14126497');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4563, 445, '14126501');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4564, 445, '14126500');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4565, 445, '14126495');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4566, 445, '14126496');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4567, 254, '14123739');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4568, 254, '14123740');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4569, 254, '14123741');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4570, 254, '14123742');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4571, 271, '14124239');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4572, 271, '14124235');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4573, 271, '14124238');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4574, 271, '14124221');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4575, 271, '14124237');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4576, 271, '14124236');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4577, 271, '14124217');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4578, 271, '14124218');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4579, 271, '14124220');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4580, 271, '14124219');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4581, 975, '14126424');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4582, 975, '14126425');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4583, 975, '14126420');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4584, 975, '14126426');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4585, 975, '14126422');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4586, 975, '14126419');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4587, 975, '14126418');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4588, 975, '14126427');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4589, 975, '14126423');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4590, 975, '14126421');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4591, 20, '14122850');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4592, 20, '14122860');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4593, 20, '14122848');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4594, 20, '14122855');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4595, 20, '14122846');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4596, 20, '14122862');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4597, 20, '14122845');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4598, 20, '14122857');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4599, 20, '14122858');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4600, 20, '14122852');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4601, 20, '14122859');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4602, 20, '14122847');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4603, 20, '14122861');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4604, 20, '14122851');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4605, 20, '14122853');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4606, 20, '14122849');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4607, 20, '14122854');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4608, 20, '14122856');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4609, 99, '14123981');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4610, 99, '14123982');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4611, 99, '14123983');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4612, 99, '14123984');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4613, 112, '14123543');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4614, 112, '14123551');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4615, 112, '14123550');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4616, 112, '14123548');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4617, 112, '14123542');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4618, 112, '14123549');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4619, 112, '14123545');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4620, 112, '14123546');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4621, 112, '14123544');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4622, 112, '14123547');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4623, 3, '14126546');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4624, 3, '14126545');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4625, 3, '14126539');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4626, 3, '14126541');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4627, 3, '14126540');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4628, 3, '14126543');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4629, 3, '14126544');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4630, 3, '14126542');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4631, 3, '14126547');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4632, 486, '14124333');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4633, 486, '14124334');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4634, 486, '14124332');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4635, 486, '14124335');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4636, 621, '14123172');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4637, 621, '14123179');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4638, 621, '14123183');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4639, 621, '14123173');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4640, 621, '14123181');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4641, 621, '14123180');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4642, 621, '14123178');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4643, 621, '14123170');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4644, 621, '14123182');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4645, 621, '14123184');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4646, 621, '14123175');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4647, 621, '14123174');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4648, 621, '14123176');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4649, 621, '14123171');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4650, 621, '14123177');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4651, 621, '14123169');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4652, 144, '14122804');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4653, 144, '14122805');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4654, 144, '14122806');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4655, 144, '14122803');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4656, 976, '14124200');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4657, 976, '14124199');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4658, 976, '14124198');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4659, 976, '14124201');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4660, 679, '14127329');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4661, 679, '14127341');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4662, 679, '14127337');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4663, 679, '14127327');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4664, 679, '14127338');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4665, 679, '14127340');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4666, 679, '14127326');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4667, 679, '14127334');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4668, 679, '14127328');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4669, 679, '14127336');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4670, 679, '14127333');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4671, 679, '14127339');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4672, 679, '14127342');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4673, 679, '14127332');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4674, 679, '14127335');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4675, 679, '14127331');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4676, 679, '14127330');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4677, 784, '14124189');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4678, 784, '14124188');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4679, 784, '14124190');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4680, 784, '14124187');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4681, 784, '14124186');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4682, 610, '14123656');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4683, 610, '14123649');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4684, 610, '14123657');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4685, 610, '14123654');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4686, 610, '14123647');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4687, 610, '14123648');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4688, 610, '14123655');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4689, 610, '14123646');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4690, 610, '14123651');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4691, 610, '14123645');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4692, 610, '14123659');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4693, 610, '14123653');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4694, 610, '14123643');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4695, 610, '14123644');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4696, 610, '14123652');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4697, 610, '14123658');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4698, 610, '14123650');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4699, 767, '14126638');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4700, 767, '14126637');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4701, 767, '14126642');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4702, 767, '14126639');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4703, 767, '14126636');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4704, 767, '14126635');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4705, 767, '14126644');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4706, 767, '14126634');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4707, 767, '14126641');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4708, 767, '14126646');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4709, 767, '14126648');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4710, 767, '14126647');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4711, 767, '14126645');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4712, 767, '14126643');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4713, 767, '14126640');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4714, 451, '14126929');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4715, 451, '14126920');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4716, 451, '14126928');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4717, 451, '14126924');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4718, 451, '14126931');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4719, 451, '14126934');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4720, 451, '14126923');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4721, 451, '14126921');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4722, 451, '14126930');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4723, 451, '14126922');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4724, 451, '14126932');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4725, 451, '14126933');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4726, 451, '14126927');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4727, 451, '14126925');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4728, 451, '14126926');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4729, 443, '14127041');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4730, 443, '14127046');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4731, 443, '14127042');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4732, 443, '14127040');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4733, 443, '14127045');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4734, 443, '14127043');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4735, 443, '14127044');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4736, 504, '14127218');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4737, 504, '14127217');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4738, 442, '14127023');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4739, 442, '14127026');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4740, 442, '14127024');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4741, 442, '14127022');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4742, 442, '14127025');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4743, 442, '14127029');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4744, 442, '14127028');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4745, 442, '14127027');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4746, 9, '14122723');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4747, 9, '14122722');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4748, 9, '14122720');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4749, 9, '14122721');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4750, 118, '14123787');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4751, 118, '14123783');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4752, 118, '14123786');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4753, 118, '14123781');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4754, 118, '14123780');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4755, 118, '14123777');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4756, 118, '14123779');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4757, 118, '14123784');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4758, 118, '14123776');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4759, 118, '14123945');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4760, 118, '14123778');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4761, 118, '14123785');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4762, 118, '14123782');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4763, 118, '14123775');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4764, 58, '14126701');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4765, 58, '14126697');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4766, 58, '14126692');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4767, 58, '14126687');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4768, 58, '14126699');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4769, 58, '14126681');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4770, 58, '14126700');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4771, 58, '14126689');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4772, 58, '14126682');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4773, 58, '14126679');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4774, 58, '14126684');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4775, 58, '14126691');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4776, 58, '14126688');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4777, 58, '14126690');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4778, 58, '14126685');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4779, 58, '14126698');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4780, 58, '14126686');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4781, 58, '14126694');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4782, 58, '14126683');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4783, 58, '14126696');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4784, 58, '14126695');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4785, 58, '14126680');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4786, 528, '14124065');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4787, 528, '14124064');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4788, 528, '14124066');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4789, 528, '14124067');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4790, 473, '14122732');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4791, 473, '14122730');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4792, 473, '14122738');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4793, 473, '14122737');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4794, 473, '14122731');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4795, 473, '14122740');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4796, 473, '14122739');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4797, 473, '14122729');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4798, 475, '14123106');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4799, 313, '14124543');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4800, 313, '14124544');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4801, 313, '14124561');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4802, 313, '14124554');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4803, 313, '14124541');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4804, 313, '14124564');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4805, 313, '14124542');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4806, 313, '14124558');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4807, 313, '14124557');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4808, 313, '14124547');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4809, 313, '14124566');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4810, 313, '14124545');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4811, 313, '14124540');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4812, 313, '14124546');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4813, 899, '14126560');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4814, 899, '14126561');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4815, 899, '14126564');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4816, 899, '14126565');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4817, 899, '14126563');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4818, 899, '14126548');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4819, 899, '14126562');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4820, 899, '14126559');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4821, 681, '14123164');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4822, 681, '14123165');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4823, 681, '14123166');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4824, 681, '14123161');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4825, 681, '14123167');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4826, 681, '14123163');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4827, 681, '14123168');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4828, 681, '14123162');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4829, 637, '14123367');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4830, 637, '14123363');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4831, 637, '14123355');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4832, 637, '14123369');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4833, 637, '14123351');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4834, 637, '14123372');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4835, 637, '14123359');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4836, 637, '14123371');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4837, 637, '14123356');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4838, 637, '14123353');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4839, 637, '14123354');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4840, 637, '14123360');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4841, 637, '14123362');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4842, 637, '14123374');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4843, 637, '14123365');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4844, 637, '14123373');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4845, 637, '14123364');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4846, 637, '14123352');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4847, 637, '14123366');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4848, 637, '14123370');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4849, 637, '14123361');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4850, 637, '14123375');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4851, 637, '14123357');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4852, 637, '14123368');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4853, 637, '14123358');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4854, 626, '14123138');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4855, 626, '14123149');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4856, 626, '14123141');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4857, 626, '14123146');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4858, 626, '14123145');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4859, 626, '14123143');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4860, 626, '14123144');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4861, 626, '14123148');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4862, 626, '14123140');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4863, 626, '14123139');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4864, 626, '14123147');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4865, 626, '14123142');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4866, 427, '14124337');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4867, 427, '14124338');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4868, 978, '14126945');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4869, 978, '14126946');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4870, 979, '14124195');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4871, 979, '14124196');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4872, 979, '14124193');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4873, 979, '14124197');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4874, 979, '14124192');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4875, 979, '14124194');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4876, 980, '14123697');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4877, 980, '14123701');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4878, 980, '14123702');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4879, 980, '14123696');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4880, 980, '14123689');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4881, 980, '14123699');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4882, 980, '14123694');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4883, 980, '14123691');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4884, 980, '14123704');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4885, 980, '14123695');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4886, 980, '14123690');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4887, 980, '14123703');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4888, 980, '14123700');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4889, 980, '14123698');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4890, 980, '14123692');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4891, 980, '14123693');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4892, 981, '14126873');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4893, 981, '14126882');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4894, 981, '14126865');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4895, 981, '14126858');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4896, 981, '14126859');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4897, 981, '14126883');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4898, 981, '14126871');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4899, 981, '14126864');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4900, 981, '14126878');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4901, 981, '14126866');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4902, 981, '14126884');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4903, 981, '14126874');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4904, 981, '14126862');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4905, 981, '14126870');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4906, 981, '14126879');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4907, 981, '14126861');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4908, 981, '14126869');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4909, 981, '14126872');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4910, 981, '14126881');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4911, 981, '14126856');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4912, 981, '14126857');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4913, 981, '14126863');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4914, 981, '14126875');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4915, 981, '14126877');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4916, 981, '14126867');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4917, 981, '14126868');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4918, 981, '14126876');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4919, 981, '14126880');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4920, 982, '14124157');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4921, 982, '14124158');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4922, 982, '14124135');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4923, 982, '14124142');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4924, 982, '14124146');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4925, 982, '14124149');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4926, 982, '14124156');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4927, 982, '14124144');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4928, 982, '14124160');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4929, 982, '14124141');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4930, 982, '14124145');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4931, 982, '14124153');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4932, 982, '14124138');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4933, 982, '14124151');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4934, 982, '14124152');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4935, 982, '14124161');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4936, 982, '14124136');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4937, 982, '14124140');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4938, 982, '14124147');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4939, 982, '14124150');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4940, 982, '14124155');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4941, 982, '14124162');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4942, 982, '14124154');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4943, 982, '14124139');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4944, 982, '14124159');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4945, 982, '14124137');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4946, 982, '14124143');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4947, 982, '14124148');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4948, 356, '14123628');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4949, 356, '14123631');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4950, 356, '14123629');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4951, 356, '14123630');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4952, 939, '14124215');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4953, 939, '14124210');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4954, 939, '14124214');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4955, 939, '14124212');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4956, 939, '14124211');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4957, 939, '14124213');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4958, 983, '14126449');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4959, 983, '14126447');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4960, 983, '14126448');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4961, 983, '14126446');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4962, 984, '14126451');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4963, 984, '14126453');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4964, 984, '14126454');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4965, 984, '14126452');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4966, 985, '14124408');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4967, 985, '14124407');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4968, 985, '14124406');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4969, 985, '14124409');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4970, 985, '14124405');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4971, 985, '14124411');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4972, 985, '14124404');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4973, 985, '14124410');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4974, 985, '14124403');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4975, 985, '14124412');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4976, 985, '14124413');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4977, 985, '14124414');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4978, 986, '14124477');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4979, 986, '14124481');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4980, 986, '14124482');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4981, 986, '14124483');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4982, 986, '14124479');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4983, 986, '14124480');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4984, 986, '14124478');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4985, 986, '14124485');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4986, 986, '14124484');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4987, 987, '14125214');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4988, 987, '14125217');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4989, 987, '14125216');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4990, 987, '14125215');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4991, 988, '14124456');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4992, 988, '14124454');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4993, 988, '14124452');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4994, 988, '14124453');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4995, 988, '14124458');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4996, 988, '14124451');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4997, 988, '14124455');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4998, 988, '14124457');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (4999, 988, '14124450');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5000, 989, '14125251');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5001, 989, '14125264');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5002, 989, '14125259');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5003, 989, '14125263');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5004, 989, '14125258');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5005, 989, '14125260');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5006, 989, '14125265');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5007, 989, '14125252');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5008, 989, '14125262');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5009, 989, '14125255');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5010, 989, '14125256');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5011, 989, '14125257');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5012, 989, '14125254');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5013, 989, '14125250');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5014, 989, '14125261');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5015, 989, '14125253');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5016, 990, '14124510');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5017, 990, '14124508');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5018, 990, '14124504');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5019, 990, '14124511');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5020, 990, '14124493');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5021, 990, '14124494');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5022, 990, '14124492');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5023, 990, '14124495');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5024, 991, '14124104');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5025, 991, '14124102');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5026, 991, '14124103');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5027, 991, '14124106');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5028, 991, '14124105');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5029, 992, '14127235');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5030, 992, '14127236');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5031, 992, '14127237');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5032, 992, '14127238');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5033, 993, '14123814');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5034, 993, '14123822');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5035, 993, '14123818');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5036, 993, '14123821');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5037, 993, '14123815');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5038, 993, '14123825');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5039, 993, '14123823');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5040, 993, '14123817');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5041, 993, '14123820');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5042, 993, '14123824');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5043, 993, '14123816');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5044, 993, '14123819');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5045, 811, '14127142');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5046, 811, '14126484');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5047, 811, '14126475');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5048, 811, '14126474');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5049, 811, '14127150');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5050, 811, '14127141');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5051, 811, '14126483');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5052, 811, '14127143');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5053, 994, '14124088');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5054, 994, '14124090');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5055, 994, '14124092');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5056, 994, '14124085');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5057, 994, '14124091');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5058, 994, '14124094');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5059, 994, '14124093');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5060, 994, '14124086');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5061, 994, '14124087');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5062, 994, '14124089');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5063, 995, '14124326');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5064, 995, '14124325');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5065, 995, '14124327');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5066, 995, '14124324');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5067, 996, '14124347');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5068, 996, '14124352');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5069, 996, '14124346');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5070, 996, '14124345');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5071, 996, '14124353');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5072, 996, '14124348');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5073, 996, '14124351');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5074, 996, '14124349');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5075, 996, '14124350');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5076, 936, '14124310');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5077, 936, '14124302');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5078, 936, '14124306');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5079, 936, '14124307');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5080, 936, '14124298');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5081, 936, '14124309');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5082, 936, '14124313');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5083, 936, '14124301');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5084, 936, '14124312');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5085, 936, '14124308');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5086, 936, '14124299');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5087, 936, '14124305');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5088, 936, '14124300');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5089, 936, '14124303');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5090, 936, '14124311');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5091, 936, '14124304');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5092, 997, '14127351');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5093, 997, '14127354');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5094, 997, '14127348');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5095, 997, '14127346');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5096, 997, '14127352');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5097, 997, '14127347');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5098, 997, '14127355');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5099, 997, '14127353');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5100, 997, '14127350');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5101, 997, '14127349');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5102, 998, '14125347');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5103, 998, '14125351');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5104, 998, '14125349');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5105, 998, '14125353');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5106, 998, '14125346');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5107, 998, '14125348');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5108, 998, '14125350');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5109, 998, '14125352');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5110, 630, '14125378');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5111, 630, '14125379');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5112, 630, '14125377');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5113, 630, '14125380');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5114, 746, '14125597');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5115, 746, '14125601');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5116, 746, '14125599');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5117, 746, '14125603');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5118, 746, '14125602');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5119, 746, '14125596');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5120, 746, '14125595');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5121, 746, '14125598');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5122, 746, '14125600');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5123, 999, '14127057');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5124, 999, '14127071');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5125, 999, '14127059');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5126, 999, '14127083');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5127, 999, '14127097');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5128, 999, '14127084');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5129, 999, '14127096');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5130, 999, '14127060');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5131, 999, '14127095');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5132, 999, '14127053');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5133, 999, '14127056');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5134, 999, '14127089');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5135, 999, '14127055');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5136, 999, '14127058');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5137, 999, '14127054');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5138, 999, '14127094');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5139, 369, '14127242');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5140, 369, '14127244');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5141, 369, '14127243');
+INSERT INTO exemplares (id_e, id_titulo, cod_e) VALUES (5142, 369, '14127245');
 
 
 --
--- TOC entry 1966 (class 0 OID 17508)
--- Dependencies: 166 1972
+-- TOC entry 2080 (class 0 OID 18360)
+-- Dependencies: 175
 -- Data for Name: integracao_curricular; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -5193,8 +6573,35 @@ INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, seme
 
 
 --
--- TOC entry 1984 (class 0 OID 0)
--- Dependencies: 169
+-- TOC entry 2081 (class 0 OID 18365)
+-- Dependencies: 176
+-- Data for Name: papel; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO papel (id, nome) VALUES (1, 'ROLE_ADMIN');
+
+
+--
+-- TOC entry 2107 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: papel_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('papel_id_seq', 1, true);
+
+
+--
+-- TOC entry 2083 (class 0 OID 18370)
+-- Dependencies: 178
+-- Data for Name: papel_usuario; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO papel_usuario (usuario_id, papel_id) VALUES (1, 1);
+
+
+--
+-- TOC entry 2108 (class 0 OID 0)
+-- Dependencies: 181
 -- Name: seq_id_curriculo; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -5202,8 +6609,17 @@ SELECT pg_catalog.setval('seq_id_curriculo', 4, true);
 
 
 --
--- TOC entry 1985 (class 0 OID 0)
--- Dependencies: 170
+-- TOC entry 2109 (class 0 OID 0)
+-- Dependencies: 182
+-- Name: seq_id_curso; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seq_id_curso', 4, true);
+
+
+--
+-- TOC entry 2110 (class 0 OID 0)
+-- Dependencies: 183
 -- Name: seq_id_disciplina; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -5211,26 +6627,26 @@ SELECT pg_catalog.setval('seq_id_disciplina', 130, true);
 
 
 --
--- TOC entry 1986 (class 0 OID 0)
--- Dependencies: 171
+-- TOC entry 2111 (class 0 OID 0)
+-- Dependencies: 184
 -- Name: seq_id_exemplar; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('seq_id_exemplar', 3588, true);
+SELECT pg_catalog.setval('seq_id_exemplar', 5142, true);
 
 
 --
--- TOC entry 1987 (class 0 OID 0)
--- Dependencies: 172
+-- TOC entry 2112 (class 0 OID 0)
+-- Dependencies: 185
 -- Name: seq_id_titulo; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('seq_id_titulo', 968, true);
+SELECT pg_catalog.setval('seq_id_titulo', 999, true);
 
 
 --
--- TOC entry 1967 (class 0 OID 17513)
--- Dependencies: 167 1972
+-- TOC entry 2084 (class 0 OID 18373)
+-- Dependencies: 179
 -- Data for Name: titulos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -5249,7 +6665,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (15, '85352153
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (16, '852160372X', 'GUIMARÃES, Ângelo de Moura; LAGES, Newton Alberto de Castilho. INTRODUÇÃO a ciencia da computacao. Rio de Janeiro: Livros Técnicos e Científicos, 1984. 165p. (Ciência da computação)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (17, '9788587918888', 'CAPRON, H. L.; JOHNSON, J. A. INTRODUÇÃO à informatica. 8. ed. São Paulo: Prentice Hall, Pearson, 2004. 350 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (18, '9788535222067', 'TURBAN, Efraim. Introdução a sistemas de informação: uma abordagem GERÊNCIAl. Rio de Janeiro, RJ: Elsevier, 2007. xi, 364 p.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (19, '9788522104999', 'SIPSER, Michael. Introdução à teoria da computação. 2. ed. São Paulo, SP: Cengage Learning, 2011. xxi, 459 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (20, '9788535235227', 'WAZLAWICK, Raul Sidnei. Metodologia de pesquisa para ciência da computação. Rio de Janeiro, RJ: Elsevier, 2008. 159 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (21, '8536302313', 'SCOTT, Kendall. O processo unificado explicado. Porto Alegre: Bookman, 2003. 160 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (22, '9788599593097', 'MORIMOTO, Carlos E. Redes, guia prático. Porto Alegre, RS: Sul Editores, 2009. 555 p.', 'Físico');
@@ -5318,7 +6733,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (112, '9788577
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (113, '8535209263', 'CORMEN, Thomas H. Algoritmos: teoria e prática. Rio de Janeiro: Elsevier, 2002. xvii , 916 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (114, '857522073X', 'MEDINA, Marco; FERTIG, Cristina. Algoritmos e programação: teoria e prática. 2. ed. São Paulo, SP: Novatec, 2006. 384 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (115, '0735619670', 'MCCONNELL, Steve. Code Complete: um guia prático para a construção de software . 2. ed. Porto Alegre, RS: Bookman, 2005. xv, 928 p.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (116, '8576082675', 'MARTIN, Robert C. Código limpo: habilidades práticas do Agile Software . Rio de Janeiro: Alta Books, 2011. xxi, 413 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (117, '8573934069', 'GIMENES, Itana Maria de Souza; HUZITA, Elisa Hatsue Moriya. Desenvolvimento baseado em componentes: conceitos e técnicas . Rio de Janeiro, RJ: Ciência Moderna, 2005. xvi, 282 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (118, '9788577808076', 'COHN, Mike; SILVA, Aldir José Coelho da. Desenvolvimento de software com scrum: aplicando métodos ágeis com sucesso . Porto Alegre: Bookman, 2011. xii, 496 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (119, '9788534602372', 'PRESSMAN, Roger S. Engenharia de software. São Paulo: Pearson/ Makron Books, 2009. xxxii, 1056 p.', 'Físico');
@@ -5358,6 +6772,7 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (157, '9780596
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (147, '9780471684176', 'THAYER, Richard H.; CHRISTENSEN, M. J. Software Engineering, Volume 1,  The Development Process, 3rd Edition', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (681, '9788577807253', 'MOHER, M.; HAYKIN, S. Sistemas de Comunicação. Bookman, 2011.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (164, '8575220470', 'TELES, Vinícius Manhães. Extreme programming: aprenda como encantar seus usuários desenvolvendo software com agilidade e alta qualidade. São Paulo, SP: Novatec, 2006. 316 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (622, '8575220241', 'OLIVEIRA, CelsoH. Poderosode. SQL: curso prático. São Paulo:Novatec, 2002. 272p. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (165, '8573076100', 'GAMMA, Erich. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. Porto Alegre: Bookman, 2000. 364 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (166, '9788560031511', 'HORSTMANN, Cay S. Padrões e projeto orientados a objetos. 2. ed. Porto Alegre: Bookman, 2007. 423 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (167, '9788535216967', 'BEZERRA, Eduardo. Princípios de análise e projeto de sistemas com UML. 2. ed. rev. e atual. Rio de Janeiro: Elsevier: Campus, c2007. 369 p.', 'Físico');
@@ -5378,7 +6793,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (182, '9788577
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (188, '9788578730871', 'MOREIRA NETO, Oziel. Entendendo e dominando o Java para a internet. 2. ed. São Paulo: Digerati Books, 2009. 318 + DVD', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (189, '8575220950', 'SÁ, Claudio Cesar de. Haskell: uma abordagem prática. São Paulo, SP: Novatec, 2006. 287 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (190, '8589579565', 'GONÇALVES, Enyo José Tavares; CARNEIRO, Domingos Sávio Silva. Linguagem de programação II. Fortaleza, CE: UECE, 2011. 97 p.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (191, '9788577260447', 'TUCKER, Allen B. |; NOONAN, Robert. Linguagens de programação: princípios e paradigmas. São Paulo, SP: McGraw-Hill, 2008. xxi, 599 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (192, '9788573936841', 'XAVIER, Fabrício S. V. PHP: do básico à orientação a objetos . Rio de Janeiro, RJ: Ciência Moderna, 2008. x, 234 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (193, '9788575222003', 'DALL´OGLIO, Pablo. PHP: programando com orientação a objetos. 2.ed.-. São Paulo, SP: Novatec, 2009. 574 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (194, '9788576081210', 'MONTGOMERY, Eduard. Programando com C: simples & prático. Rio de Janeiro, RJ: Alta Books, 2006. 157 p.', 'Físico');
@@ -5456,7 +6870,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (272, '9788571
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (273, '9788561893040', 'BATTISTI, Júlio; SANTANA, Fabiano de. Windows Server 2008: guia de estudos completo : implementação, administração e certificado . Rio de Janeiro, RJ: Novaterra, 2009. xxx, 1751p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (274, '9788576051428', 'TANENBAUM, Andrew S.; STEEN, Van Maarten; MARQUES, Arlete Simille. Sistemas distribuídos: princípios e paradigmas. 2. ed. São Paulo, SP: Prentice Hall, 2007. viii, 402 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (275, '9788522104222', 'LOUDEN, Kenneth C. Compiladores: princípios e práticas . São Paulo, SP: Cengage Learning, 2004. xiv, 569 p.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (276, '8522104220', 'LOUDEN, Kenneth C. Compiladores: princípios e práticas . São Paulo, SP: Thomson, c2004. xiv, 569 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (280, '9788588639249', 'AHO, Alfred V. et al. (). Compiladores :: príncípios, técnicas e ferramentas. 2. ed. São Paulo, SP: Pearson/Addison Wesley, 2007. 634 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (281, '9788574524344', 'COSTA, Daniel Gouveia. Administração de redes com scripts: Bash script, Python, VBscript. 2. ed. Rio de Janeiro, RJ: Brasport, 2010. 186 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (282, '0321197860', 'SHNEIDERMAN, Ben. Designing the user interface: strategies for effective human-computer interaction . 4th ed. Boston: Pearson/Addison Wesley, c2005. xviii, 652 p. :', 'Físico');
@@ -5484,6 +6897,7 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (302, '8536304
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (572, '8536800763', 'POMPÉIA, Raul. O Ateneu. São Paulo, SP: DCL, 2005. 223 p. (Coleção Nossa Literatura Clássica Grandes Nomes da Literatura)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (303, '9781590597842', 'DASWANI, Neil; KERN, Christoph; KESAVAN, Anita. Foundations of security: what every programmer needs to know . Berkeley, Ca: Apress, c2007. xxvii, 290 p. (The Expert’s voice in security)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (304, '9788575221365', 'NAKAMURA, Emilio Tissato; GEUS, Paulo Lício de. Segurança de redes em ambientes cooperativos. São Paulo: Novatec, c2007.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (349, '8530801172', 'KAMII, Constance; DECLARK, Georgia. Reinventando a aritmética: implicações da teoria de Piaget . 4.ed. Campinas, SP: Papirus, 1992. 308 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (305, '9788578730529', 'ULBRICH, Henrique Cesar; DELLA VALLE, James. Universidade H4CK3R: desvende todos os segredos do submundo dos hackers . 6. ed. São Paulo: Digerati Books, 2009. 348p. + DVD (Série Universidade)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (306, '9788576051190', 'STALLINGS, William. Criptografia e segurança de redes: princípios e práticas. 4. ed. São Paulo: Pearson/ Prentice Hall, 2008. xvii, 492 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (307, '9780470519462', 'WOOLDRIDGE, Michael J. An introduction to multiagent systems. 2nd ed. New York: J. Wiley & Sons, c2009. xxii, 461 p.', 'Físico');
@@ -5527,7 +6941,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (346, '8521904
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (574, '8536800720', 'ALENCAR, José de. Senhora. São Paulo: DCL, 2005. 144 p. (Grandes Nomes da Literatura)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (347, '9788572822855', 'HISTÓRIA da educação:. arquivos, documentos, historiografia, narrativas orais e outros rastros. Fortaleza, CE: Edições UFC, 2008. 176 p. (Diálogos intempestivos ; 58)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (348, '9788572823883', 'EPISTEMOLOGIAS e metodologias para avaliação educacional:. múltiplas visões e abordagens. Fortaleza, CE: Edições UFC, 2010. 252 p. (Nave , 8)', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (349, '8530801172', 'KAMII, Constance; DECLARK, Georgia. Reinventando a aritmética: implicações da teoria de Piaget . 4.ed. Campinas, SP: Papirus, 1992. 308 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (350, '9788578261191', 'SANTOS, Deribaldo; SOUSA, Francisco Edisom Eugenio de; NASCIMENTO, Arnaldo Ricardo do. Caderno de pesquisas socioeducativas do Sertão Central. Quixadá: EdUECE, 2012. 150 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (351, '9788560031993', 'HAYKIN, Simon S. Sistemas modernos de comunicações wireless. Porto Alegre: Bookman, 2008. x, 579 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (352, '9788533623323', 'LEVINSON, Stephen C. Pragmática. São Paulo: Martins Fontes, 2007. xiv, 548 p. ;', 'Físico');
@@ -5680,6 +7093,7 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (524, '0130323
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (525, '8534613737', 'DEITEL, Harvey M.; DEITEL, Paul J.; STEINBUHLER, K. E-business e e-commerce para administradores. São Paulo: Makron Books, 2004. xxii, 456 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (526, '8561381000', 'LIMA, Roberto Galvão; OLIVEIRA, Almir Leal de; UNIVERSIDADE FEDERAL DO CEARÁ. A escola invisível: artes pláticas em Fortaleza 1928-1958. Fortaleza, CE: Quadricolor, 2008. 215 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (527, '9788522106387', 'BERTOMEU, João Vicente Cegato. Criação visual e multimídia. São Paulo, SP: Cengage Learning, 2010. 149 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (577, '8536800712', 'HERCULANO, Alexandre. Eurico, o presbítero. São Paulo, SP: DCL, 2005. 96 p. (O Monasticon ; v. 1 Grandes Nomes da Literatura)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (528, '9788577807383', 'LIDWELL, William; HOLDEN, Kritina; BUTLER, Jill. Princípios universais do design: 125 maneiras de aprimorar a usabilidade, influenciar a percepção, aumentar o apelo e ensinar por meio do design. Porto Alegre, RS: Bookman, 2010. 272 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (529, '9788574163871', 'WILLIAMS, Robin. Design para quem nao é designer: noções básicas de planejamento visual . 3. ed. São Paulo, SP: Callis, 2009. 191 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (530, '9788532305305', 'MOLETTA, Alex. Criação de curta-metragem em vídeo digital: uma proposta para produções de baixo custo. São Paulo, SP: Summus, 2009. 142 p. ((Biblioteca fundamental de cinema) ; 3)', 'Físico');
@@ -5726,7 +7140,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (801, '9780470
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (571, '8536800798', 'ASSIS, Machado de. Memórias Póstumas de Brás Cubas. São Paulo, SP: DCL, 2005. 112 p. (Coleção Nossa Literatura Clássica Grandes Nomes da Literatura)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (575, '8572821406', 'CAMPOS, Natércia Maria Alcides. A casa. Fortaleza, CE: Ed. UFC, 2004. 89 p. (Coleção Literatura no Vestibular ; 2)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (576, '8536800747', 'BARRETO, Lima. Os Bruzundangas. Fortaleza: DCL, 2005. 88 p. (Coleção Literatura no Vestibular ; 1 Grandes Nomes da Literatura)', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (577, '8536800712', 'HERCULANO, Alexandre. Eurico, o presbítero. São Paulo, SP: DCL, 2005. 96 p. (O Monasticon ; v. 1 Grandes Nomes da Literatura)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (578, '0471314250', 'CHRISMAN, Nicholas. Exploring geographic information systems. 2nd. ed. New York, NY: John Wiley, 2002. xvi, 289 p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (579, '9781589482609', 'ORMSBY, Tim. Getting to know ArcGIS desktop. 2nd. ed., atualizado para ArcGis 10. Redlands, Calif.: ESRI Press, 2010. xii, 584 p. + CD-ROM', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (580, '8508067712', 'POLIZZI, Valéria Piassa. Depois daquela viagem: diário de bordo de uma jovem que aprendeu a viver com AIDS. 18. ed. São Paulo, SP: Ática, 1999. 279 p.', 'Físico');
@@ -5745,7 +7158,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (594, '0452284
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (595, '0321154959', 'BASS, Len; CLEMENTS, Paul; KAZMAN, Rick. Software architecture in practice. 2. ed. Boston: Addison-Wesley, 2003. 528p. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (596, '9788580630534', 'BASTOS, Aderson et al. Base de conhecimento em teste de software. 3. ed. São Paulo: Martins Fontes, 2012. 263p. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (597, '157586374X', 'BARWISE, Jon; ETCHEMENDY, John; ALLWEIN, Gerard; BARKER-PLUMMER, Dave;LIU, Albert. Language, proof and logic. Stanford:CSLI, 2008. 587p. ;(CSLI lecture notes;v23)', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (598, '8535205624', 'BOOCH, Grady; RUMBAUGH, James; JACOBSON, Ivar. UML: guia do usuário. 2. ed. Rio de Janeiro, RJ: Campus, 2005. 474p. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (599, '0471958697', 'BUSCHMANN, Franketal. Pattern-oriented software architecture: volume4: a system of patterns. New York: John Wiley & Sons, 1996. 457p. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (600, '9780131479415', 'COHN, Mike; HIGHSMITH, Jim. . Agile estimating and planning. Upper Saddle River, NJ: Prentice Hall PTR, 2006. 330p. (Robert C. Martin series)', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (601, '1591392705', 'CROSS, RobertL. ;PARKER, Andrew. The hidden power of social networks: understanding how work really gets done in organizations. Boston: Harvard Business School, 2004. 213p. ', 'Físico');
@@ -5769,7 +7181,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (618, '9780071
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (619, '9780071717915', 'HILL, P. Practical Software Project Estimation: a toolkit for estimating software development effort & duration. New York: McGraw-Hill Osborne Media, 2011. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (620, '9780735605350', 'MCCONNELL, Steve. Software estimation: demystifying the black art. Redmond, Wa.: MicrosoftPress, 2006. 308p. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (621, '9788535232493', 'FEOFILOFF, Paulo. . Algoritmos em linguagem C. Rio de Janeiro: Elsevier, 2009. 208p. ', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (622, '8575220241', 'OLIVEIRA, CelsoH. Poderosode. SQL: curso prático. São Paulo:Novatec, 2002. 272p. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (623, '857001841X', 'RUMBAUGH, James. Modelagem e projetos baseados em objetos. Rio de Janeiro: Campus, 2006. 652p. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (624, '0136291554', 'MEYER, Bertrand. Object-oriented software construction. 2nd. ed. New Jersey: Prentice Hall PTR, 1997. 1254p', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (625, '9781412947152', 'PRELL, Christina. Social network analysis: history, theory and methodology. California: Sage Publications Ltd, 2011. ', 'Físico');
@@ -5801,8 +7212,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (659, '9999995
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (660, '999999582', 'UM GUIA para o corpo de conhecimento de análise de negócios: guia BABOK: versão 2.0. Toronto: IIBA International Institutute of Business Analysis, 2011. Disponível em: <http://books.google.com.br/books?id=wZvSEEg39N4C&printsec=frontcover&hl=pt-BR&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false>. Acesso em: 07 nov. 2012', 'Virtual');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (671, '999999593', 'SOFTEX Brasil. Guias MPS.BR. Disponível em: <http://www.softex.br/mpsbr/_home/default.asp>. Acesso em: 23 jan. 2013', 'Virtual');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (673, '079237990X', 'JURISTO, Natalia; MORENO, Ana M. Basics of software engineering experimentation. Boston: Kluwer Academic Publishers, 2001. 395p. ', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (675, '97885739366742', 'GONÇALVES, Edson. Desenvolvendo aplicações Web com NetBeans IDE 6. Rio de Janeiro, RJ: Ciência Moderna, 2008. xix, 581p. ', 'Fisico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (676, '8535206841', 'MURDOCCA, Miles; HEURING, Vincent P. Introdução a arquitetura de computadores. Rio de Janeiro, RJ: Elsevier, 2000. xxii, 512p. ', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (678, '9780471433019', 'BLUM, R. Network Performance: Tool kit Using Open Source Testing Tools. Wiley, 2003.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (679, '9788535246711', 'CHIAVENATO, I. Introdução à teoria geral da administração. 8ed. Campus, 2011.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (680, '9788539900459', 'MANSUR, Ricardo. Governança de ti verde: o ouro verde da nova TI. Rio de Janeiro: Ciência Moderna, 2011. 212p.', 'Fisico');
@@ -5813,11 +7222,8 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (687, '9788577
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (688, '0471333417', 'Trivedi, K. S. Probability & Statistics with Reliability, Queueing, and Computer Science Applications. JohnWilley, 2002.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (689, '9788532636904', 'VON BERTALANFFY, L. Teoria Geral dos Sistemas. Vozes, 2008.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (690, '0135259657', 'STALLINGS, W. High Speed Networks TCP IP and ATM Design Principles, 1ed Prentice Hall, 1998,', 'Fisico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (667, '9780471463610', 'ERIKSSON,Hans-Erik. UML 2 toolkit. New York: Wiley, 2004', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (654, '9781852335021', 'EZRAN, M. ; MORISIO, M. ; TULLY, C. Practical software reuse. Berlim: Springer, 200', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (699, '8536500271', 'GASPARINI, Anteu Fabiano Lúcio. Infraestrutura, protocolos e sistemas operacionais de LANs: redes locais. São Paulo: Érica, 2004. 334p.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (668, '788575221938', 'GUEDES, Gilleanes T. A. UML 2: uma abordagem prática. São Paulo: Novatec, 2009', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (664, '9780131587564', 'HAMBRICK, G. et al. Persistence in the enterprise: a guide to persistence technologies. Boston: IBM Press, 2008', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (653, '9781420068429', 'KANG, K. C.; SUGUMARAN, V.;PARK, S. Applied software product line engineering. Boca Raton, Florida: CRC Press,2010', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (670, '9780470746639', 'MOREIRA, Mario E. Adapting configuration management for agile teams: balancing sustainability and speed. New York: John Wiley & Sons, 2009', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (655, '9783540243724', 'POHL, K.; BÖCKLE, G.; LINDEN, F. J. Software product line engineering: foundations, principles and techniques. Berlim: Springer, 2005', 'Físico');
@@ -5825,10 +7231,8 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (661, '9780131
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (662, '9780470167748', 'TAYLOR, R. N.; MEDVIDOVIC, N. ; DASHOFTY, E. M. Software architecture: Foundations, Theory, and Practice. Wiley, 2009. 750p', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (672, '9780818677380', 'THAYER, Richard H. ; DORFMAN, M. ; BAILIN, Sidney C. Software requirements engineering. 2. ed. Los Alamitos, Calif.: IEEE Computer Society Press, 2000. 483p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (663, '9780136006374', 'ULLMAN,J.D.;WIDOW,J.First Course in database systems. 3. ed. São Paulo: Prentice Hall, 2007', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (700, '3540440089', 'ALONSO, G.; CASATI, F.; KUNO, K.; MACHIRAJU, V. Web Services: Concepts, Architectures and Applications. Springer, 2004. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (652, '9789727226665', 'DELGADO, José; RIBEIRO, Carlos. Arquitetura de computadores. 4. ed. rev. atual. Lisboa: FCA, 2010', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (696, '9788573037494', 'DINSMORE, Paul Campbell; CAVALIERI, Adriane(Coord.) Como se tornar um profissional em gerenciamento de projetos: livro base de preparação para certificação PMP Project Management Professional. 2.ed. Rio de Janeiro: Qualitymark, 2007. 342p.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (658, '9788576083603', 'EVANS, Eric. Domain-driven design: atacando as complexidades no coração do software. Rio de Janeiro, RJ: Alta Books, 2009. 499p', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (728, '9788576081883', 'ODOM, W. CCNA I CND2-Guia oficial de certificação do exame. 2ed. STARLIN ALTA, CONSULT,2008.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (691, '9789813083899', 'Smith, PeterJ. Into Statistics: A Guide to Understanding Statistical Concepts in Engineering and the Sciences,Springer , 2 edição, 1998.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (666, '999999588', 'KITCHENHAM, B. Procedures for Performing Systematic Reviews. Australia: Joint Technical Report Keele University/NICTA Technical/Keele University/ NICTA, 2004', 'Virtual');
@@ -5846,7 +7250,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (719, '9780130
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (735, '9788574523224', 'MANSUR, Ricardo. Governança de TI: metodologias, frameworks, melhores práticas. Rio de Janeiro: Brasport, 2007. xviii, 200p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (721, '9780130906731', 'MENASCÉ, D. A., ALMEIDA, V, Performance by Design: Computer Capacity Planning By Example., 1ªEdição, 2004, Prentice Hall Inc. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (738, '9788599593134', 'MORIMOTO, Carlos E. Servidores Linux: guiaprático. Porto Alegre: SulEditores, 2010. 735p.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (734, '8535221905', 'NIELSEN,Jakob; LORANGER, Hoa. Usabilidade na web. Rio de Janeiro: Campus, 2007. 406p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (724, '9780071760942', 'OSBORNE-MCGRAW-HIL, Wireless Network Security, PEARSON, BROCK, 2011', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (710, '9781118024485', 'PARKER, S. Shell Scripting Professional: Expert Recipes for Lixux, Bashandmore. John Willey,2011. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (747, '9788521614043', 'PETERSON, L. L.; DAVIE, B. S. REDES DE COMPUTADORES: UMA ABORDAGEM SISTÊMICA. 2ed. LTC, 2004.', 'Físico');
@@ -5866,15 +7269,14 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (717, '9788535
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (766, '999999691', 'KROETZ, César Eduardo S.. Apostilha Contabilidade de Custos. UNIJUI, RS, 2001.  http://apostilas.netsaber.com.br/apostilas/1029.pdf', 'Virtual');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (767, '9788522459407', 'MARTINS, E. Contabilidade de custos. Editora Atlas. 10ª ed. 2010.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (768, '9788522459353', 'MARTINS, E. Contabilidade de custos - Livro de Exercícios. Editora Atlas. 10ª ed.  2010.', 'Fisico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (843, '9788576050476', 'CERVO, A.; BERVIAN, P.A.; SILVA, R. Metodologia Científica. 6ª ed, Pearson, 2006.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (773, '9780471138235', 'EPSTEIN, R. G. The case of the killer robot: STORIES ABOUT THE PROFESSIONAL, ETHICAL, AND SOCIETAL DIMENSIONS OF COMPUTING. John Willey, 1996.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (774, '9780130323644', 'DEITEL, H. M.; DEITEL, P. J.; STEINBUHLER, K. E-busines e E-commerce para administradores. Pearson, 2004.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (775, '9788574524382', 'FREITAS, M.A.S. Fundamentos do Gerenciamento de Serviços de TI. Brasport. 2010.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (776, '9780130648396', 'KROENKE, D. M. Database Processing. 8. Ed. Prentice Hall, 2001. ', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (778, '0521779111', 'A. S. Troelstra, H. Schwichtenberg. Basic Proof Theory. Inseries Cambridge Tracts in Theoretical Computer Science, Cambridge University Press, Second Edition, 2000,', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (779, '0982106017', 'Al Sweigart. Invent Your Own Computer Games with Python, 2nd Edition. Creative Commons licenced.', 'Fisico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (780, '9780201530827', 'PAPADIMITROU, C. Computational complexity. Addison Wesley, 1994.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (781, '0471056693', 'Pattern Classification, 2nd edition, Wiley- Interscience, 2000. -R.O.Duda, P. E. Hart, D. G. Stork.', 'Fisico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (782, '9788522104994', 'SIPSER, M. Introdução à teoriada computação. 2ed. Thompson Learning, 2007.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (783, '0470853204', 'WATT, D. A. Programming language design concept. IE-Wiley, 2004.', 'Fisico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (759, '9788520436691', 'CHIAVENATO, Idalberto. Introdução à teoria geral da administração, 9 ed. ,2014.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (755, '9788522404223', 'BRAGA, Roberto. Fundamentos e técnicas de administração financeira. São Paulo: Atlas, 1995.', 'Físico');
@@ -5885,11 +7287,9 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (804, '8577804
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (763, '8502037226', 'BRITO, O. Controladoria De Risco-Retorno Em Instituiçoes. Ed. Saraiva, 2002.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (793, '9781424076673', 'COLLINS. COLLINS: dicionário escolar. Martins Fontes, 2009.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (764, '9788522456475', 'IUDICIBUS,S.; MARION,J.C. Curso de Contabilidade para nao Contadores. 6ª ed. Editora Atlas, 2009.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (798, '9780321295354', 'KLEINBERG, J.; TARDOS, E. Algorithm Design, Addison Wesley, 2005. 9780321295354', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (799, '9788535236996', 'LEISERSON, C.E., STEIN, C., RIVEST, R.L. & CORMEN T.H. Algoritmos: teoria e prática, Editora Campus, 3ª. Edição, 2012.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (800, '9780596155971', 'LEVINE, J., Flex & Bison: Text Processing Tools. O Reilly Media, 2009.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (754, '8571946353', 'MANAS, Antonio Vico. Administração de sistemas de informação; São Paulo, Erica, p. 282, 1999.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (795, '9780521537629', 'MURPHY, R. English Grammar in use.3 ed. Cambridge University, 2004.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (796, '9780136126591', 'PHILIPS, D. Longman Preparation Course for the TOEFL Test Ibt. Longman do Brasil, 2007.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (758, '9788522433131', 'REZENDE, Denis Alcides, Abreu, Aline Franca, Tecnologia da informação: integrada à inteligência empresarial. Alinhamento estratégico e análise da prática nas organizações.São Paulo : Atlas, 2002.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (762, '9788502126763', 'RIBEIRO, O.M. Contabilidade geral fácil. 7ª ed. Editora Saraiva, 2010.', 'Físico');
@@ -5917,13 +7317,12 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (852, '9788573
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (950, '857123440X', 'LABORIT, Emmanuelle. O Vôo da Gaivota. Best Seller, 1994.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (832, '9780074609446', 'Alfredo Steinbruch; Introduçao à Algebra Linear; Makron Books Editora; 1990;', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (830, '9780521780193', 'An Introduction to Support Vector Machines, Cambridge Univ. Press, 2000. - N. Cristianini and J. Shawe-Taylor', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (863, '0471636819', 'BAZARAA, M., JARVIS, A. & SHERALI, H. - Linear Programming and Network Flows. John Wiley, 2a. Ed., 1990.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (827, '9788521615521', 'Barbieri Filho, Plinio; Biscolla, Laura M. Da Cunha C. O.; Espinosa, Isabel C. O. N.; Fundamentos de Informática - Álgebra Linear para Computação; Editora LTC;', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (824, '8522106614', 'Cálculo, Stewart, James, V-2, 6.-Edição, 2009, Editora Cengage', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (825, '858863936X', 'Cálculo,, Thomas, George, Volume-2, B., 11.-Edição, 2008, Editora Addison Wesley Brasil', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (843, '9788576050476', 'CERVO, A.; BERVIAN, P.A.; SILVA, R. Metodologia Científica. 6ª ed, Pearson, 2006.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (856, '1558604383', 'Database: Principles, Programming and Performance, Patrick O’Neil and Elizabeth O’Neil, 2rd edition, Morgan Kaufmann, 2001.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (821, '1558609016', 'Data Mining: Concepts and Techniques, Morgan Kaufmann, 2nd Edition, 2007. - J. Han and M. Kamber.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (807, '9788522430352', 'SILVA, Sebastião Medeiros da, et al.; Matemática Básica para Cursos Superiores, 2002, Atlas.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (823, '9788581430966', 'Franklin D. Demana, Bert K. Waits, Gregory D. Foley e Daniel Kennedy. Pré-cálculo . 2a Ed. Pearson. 2013.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (844, '9788577531813', 'FREIRE, P. Extensão ou Comunicação. 15 ed. Paz e Terra. 2011.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (842, '9788535211481', 'LOPES, Raquel Vigolvino. Melhores Práticas para Gerência de Redes de Computadores. Campus, Editora Campus, 2003', 'Físico');
@@ -5936,7 +7335,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (835, '9780763
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (837, '9788521617709', 'PAULA FILHO, W. P. Multimídia: conceitos e aplicações. LTC, 2011.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (838, '9788586948121', 'PRADO, D. Teoria das Filas e da Simulação. 2a. Ed. IDNG, 2004.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (839, '9781558606531', 'Pyle D. (2003) Business Modeling and Data Mining. The Morgan Kaufmann Series in Data Management Systems. Morgan Kaufmann Publisher.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (853, '9780321197863', 'SHNEIDERMAN, Ben. Designing the user interface: strategies for effective human-computer interaction . 4 ed. Boston: Pearson/Addison Wesley, c2005.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (857, '9788574521503', 'SQL: Guia Prático. COSTA, Rogério Luis de C. Editora: Brasport, 2004.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (812, '9788573078473', 'Howard Anton,Chris Rorres; Algebra Linear com Aplicacoes; Editora Bookman 2002;', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (810, '9788535705492', 'IEZZI, G. Fundamentos de matemática elementar v.10: Geometria Espacial. 6 ed. Atual, 2005.', 'Físico');
@@ -5955,6 +7353,7 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (891, '0521527
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (892, '0792353358', 'M. Fitting, Richard L. Mendelsohn. First-Order Modal Logic. Springer. 1st ed. 1998 edition', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (893, '1107010527', 'Robert Goldblatt. Quantifiers, Propositions and Identity: Admissible Semantics for Quantified Modal and Substructural Logics (Lecture Notes in Logic). Cambridge University Press (August 22, 2011).', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (895, '9788574524726', 'DONDA, Daniel. Administração do windows server 2008 R2:server core. xvi, 428 p. Rio de Janeiro: Brasport, 2011.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (929, '3540212027', 'LEONID LIBKIN. ELEMENTS OF FINITE MODEL THEORY. SPRINGER VERLAG NY. FIRST EDITION. 2004.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (896, '9788576085140', 'FREDERICK, Gail Rahn; LAL, Rajesh. Dominando o desenvolvimento web para smartphone:construindo aplicativos baseados em JavaScript, CSS, HTML e Ajax para iPhone, Android, Palm Pre, BlackBerry, Windows Mobile e Nokia S60. 344 p. Rio de Janeiro: Alta Books, 2011.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (897, '9788564574168', 'ASCENCIO, Ana Fernanda Gomes; CAMPOS, Edilene Aparecida Veneruchi de. Fundamentos da programação de computadores:  algoritmos, Pascal, C/C++ e java. x, 569p. 3.ed. São Paulo, SP: Pearson Education do Brasil, 2012.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (898, '9788536303611', 'LIPSCHUTZ, Seymour; LIPSON, Marc. Teoria e problemas de matemática discreta. 511p. (Coleção Schaum) 2. ed.  Porto Alegre, RS: Bookman, 2004.', 'Físico');
@@ -5963,11 +7362,11 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (900, '9788579
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (901, '8570564112', 'DOLCE, Osvaldo; POMPEO, José Nicolau. Fundamentos de matemática elementar, 10:  geometria espacial, posição e métrica.  440 p. 5. ed. São Paulo, SP: Atual, 1993.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (902, '853570549X', 'DOLCE, Osvaldo; POMPEO, José Nicolau.  Fundamentos de matemática elementar 10 : geometria espacial, posição e métrica. 440p. 6.ed. São Paulo, SP: Atual, 2005.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (885, '8529400895', 'BARROSO, CAMPOS FILHO, CARVALHO, MAIA; CALCULO NUMERICO (COM APLICAÇOES); Editora HARBRA, 2a edição.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (863, '0471636819', 'BAZARAA, M., JARVIS, A. & SHERALI, H. - Linear Programming and Network Flows. John Wiley, 2a. Ed., 1990.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (862, '9781886529199', 'BERTSIMAS, D., TSITSIKLIS, J.N. Introduction to Linear Optimization. Athena Scientific, 1997. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (889, '9788570568830', 'CAIO SERGIO CALÇADA, JOSE LUIZ SAMPAIO; Física Clássica; Volume 1-Cinemática; ATUAL EDITORA;', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (861, '9788535205411', 'GOLBARG, M. C., LUNNA. H. P. L. Otimização Combinatória e Programação Linear - Modelos e Algoritmos. Editora Campus, 2000.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (858, '9788535207491', ' GARCIA-MOLINA, HECTOR & WIDOM, JENNIFER. Implementação de Sistemas de Bancos de Dados. Campus. 1ª. 2001', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (945, '8521615590', 'COLIN, EMERSON CARLOS. PESQUISA OPERACIONAL - 170 APLICAÇOES EM ESTRATEGIA, FINANÇAS, LOGISTICA, PRODUÇAO, MARKETING E VENDAS. LTC, 2007.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (883, '9788531403705', 'JACQUES BOUCHARA, Anna Catarina Pontone Hellmeister, Reinaldo Salvitti, Vera Lucia Carrara Zanetic, ANA CATARINA PONTONE HELLMEISTER; Cálculo Integral Avançado; EdUSP; 1996;', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (890, '9788521617105', 'MOSCA, GENE e TIPLER, PAUL A.; FISICA, V.1, PARA CIENTISTAS E ENGENHEIROS (MECANICA, OSCILAÇOES, ONDAS, TERMODINAMICA); Editora: LTC;', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (873, '9780471529743', 'R. Schalkoff. Pattern Recognition: Statistical, Structural and Neural Approaches. John Wiley and Sons, 1992.', 'Físico');
@@ -6000,7 +7399,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (925, '8521206
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (926, '0486247759', 'Gary Chartrand. Introductory Graph Theory. Dover Publications, 1984.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (927, '3540693181', 'WOLFRAM POHLERS. PROOF THEORY: THE FIRST STEP INTO IMPREDICATIVITY. IN UNIVERSITEXT. SPRINGER VERLAG POD. FIRST EDITION. 2008. ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (928, '1402003684', 'JEAN GOUBAULT-LARRECQ, IAN MACKIE. PROOF THEORY AND AUTOMATED DEDUCTION. KLUWER ACADEMIC. 2002.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (929, '3540212027', 'LEONID LIBKIN. ELEMENTS OF FINITE MODEL THEORY. SPRINGER VERLAG NY. FIRST EDITION. 2004.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (930, '0521865719', 'Christopher D. Manning, Prabhakar Raghavan, Hinrich Schütze. Introduction to Information Retrieval. Cambridge University Press; 1 edition, 2008.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (931, '1558605703', 'MOFFAT, ALISTAIR; WITTEN, IAN H. MANAGING GIGABYTES - COMPRESSING AND INDEXING DOCUMENTS AND IMAGES. MORGAN KAUFMANN. 2a ed., 1999.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (932, '0136072240', 'Bruce Croft, Donald Metzler, Trevor Strohman. Search Engines: Information Retrieval in Practice. Addison-Wesley; 1 edition, 2009.', 'Físico');
@@ -6015,7 +7413,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (940, '0470643
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (941, '0486402584', 'Christos H. Papadimitriou, Kenneth Steiglitz. Combinatorial Optimization: Algorithms and Complexity. Dover Publications, 1998.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (942, '013617549X', 'Ravindra K. Ahuja, Thomas L. Magnanti, James B. Orlin. Network Flows: Theory, Algorithms, and Applications. Prentice Hall; 1 ed. 1993.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (943, '8580551188', 'HILLIER, FREDERICK S.; LIEBERMAN, GERALD J. INTRODUÇAO A PESQUISA OPERACIONAL. MCGRAW HILL. 9a edição.', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (945, '8521615590', 'COLIN, EMERSON CARLOS. PESQUISA OPERACIONAL - 170 APLICAÇOES EM ESTRATEGIA, FINANÇAS, LOGISTICA, PRODUÇAO, MARKETING E VENDAS. LTC, 2007.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (946, '0471359432', 'Laurence A. Wolsey, George L. Nemhauser. Integer and Combinatorial Optimization. Wiley-Interscience; 1 edition, 1999.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (947, '3642244874', 'Korte, Bernhard and Vygen, Jens. Combinatorial Optimization: Theory and Algorithms. Springer; 5th ed. 2012 edition (January 10, 2012).', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (948, '9788531406683', 'CAPOVILLA, Fernando. C; RAPHAEL, Walkyria. D. Dicionário Enciclopédico Ilustrado Trilingue da Língua de Sinais. 3ª Ed. São Paulo: EDUSP, 2008', 'Físico');
@@ -6028,7 +7425,6 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (647, '9780321
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (723, '9780470741489', 'ALI, NAJAHABU, LTE, LTE - Advanced And Wimax,JOHN WILEY PROFESSIONAL, 2011', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (733, '8522440859', 'BEAL, Adriana. Segurança da informação: princípios e melhores práticas para a proteção dos ativos de informação nas organizações. SãoPaulo: Atlas, 2005. 175p.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (697, '8535210458', 'CHOWDHURY, D. D. PROJETOS AVANÇADOS DE REDES IP: ROTEAMENTO, QUALIDADE DE SERVIÇO E VOZ SOBRE IP. Campus, 2002. ', 'Físico');
-INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (694, '8576050242', 'FORBELLONE, A. L. V.; EBERSPACHER, H. F. Lógica de programação: a construção de algoritmos. 3ed. Prentice Hall, 2005 ', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (849, '9788535704570', 'IEZZI, GELSON et al; Fundamentos de matemática elementar v.3: Trigonometria, 8 ed., 2004, Saraiva.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (177, '9788574524061', 'SERSON, Roberto Rubinstein. A Bíblia: certificação JAVA 6. Rio de Janeiro: Brasport, 2009. V1.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (693, '9788574524078', 'SERSON, Roberto Rubinstein. A Bíblia: certificação JAVA 6. Rio de Janeiro: Brasport, 2009. V2', 'Físico');
@@ -6062,11 +7458,63 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (967, '1449314
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (712, '9788574524405', 'NEVES, J. C. Programação Shell Linux. 8ed. Brasport, 2010.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (869, '9780387848570', 'HASTIE, TREVOR; TIBSHIRANI, ROBERT; FRIEDMAN, JEROME. The Elements of Statistical Learning: Data Mining, Inference, and Prediction Springer. 2a edição, 2008.', 'Físico');
 INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (968, '0387303030', 'Jorge Nocedal, Stephen Wright. Numerical Optimization. Springer; 2nd edition, 2006.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (191, '9788577260447', 'TUCKER, Allen B. |; NOONAN, Robert. Linguagens de programação: princípios e paradigmas. São Paulo, SP: McGraw-Hill, 2009. xxi, 599 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (116, '9788576082675', 'MARTIN, Robert C. Código limpo: habilidades práticas do Agile Software . Rio de Janeiro: Alta Books, 2011. xxi, 413 p.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (19, '9788522104994', 'SIPSER, Michael. Introdução à teoria da computação. São Paulo, SP: Cengage Learning, 2007. xxi, 459 p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (658, '9788576085041', 'EVANS, Eric. Domain-driven design: atacando as complexidades no coração do software. Rio de Janeiro, RJ: Alta Books, 2009. 499p', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (969, '85294009411', 'LEITHOLD, Louis. O Cálculo com geometria analítica.   2 v.     3. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (970, '8534602042', 'RUGGIERO, Marcia A. Gomes; LOPES, Vera Lucia da Rocha. Cálculo númerico:   aspectos teóricos e computacionais . xvi, 406 p.     2. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (971, '852243493', 'SOUZA, Cesar Alexandre de.; SACCOL, Amarolinda Zanela. Sistemas ERP no Brasil:   (enterprise resource planning); teoria e casos. 368p.     ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (972, '9788522447077', 'CORRAR, Luiz J; PAULO, Edilson; DIAS FILHO, José Maria (Cord.) FUNDAÇÃO INSTITUTO DE PESQUISAS CONTÁBEIS, ATUARIAIS E FINANCEIRAS. Análise multivariada:   para os cursos de administração, ciências contábeis e economia . xxiv, 541 p.     ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (973, '857522073', 'MEDINA, Marco; FERTIG, Cristina. Algoritmos e programação:   teoria e prática. 384 p.     2. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (974, '139788522108459', 'FEDELI, Ricardo Daniel.; POLLONI, Enrico Giulio Franco; PERES, Fernando Eduardo. Introdução à ciência da computação.   xvi, 250 p.     2. ed. atual.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (975, '852130403', 'ALENCAR FILHO, Edgard de. Iniciação à lógica matemática.   203p     ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (976, '9788577804023', 'HAIR, Joseph F.  et al. Análise multivariada de dados.   688 p.     6. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (977, '97800733759779', 'PRESSMAN, Roger S. Engenharia de software:   uma abordagem profissional . xxvii, 779 p.     7. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (978, '8532631967', 'DEMO, Pedro. Auto-ajuda:   uma sociologia da ingenuidade como condição humana . 126 p.     ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (979, '978522475483', 'REZENDE, Denis Alcides; Abreu (Professora). Tecnologia da informação aplicada a sistemas de informação empresariais:   o papel estratégico da informação e dos sistemas de informação nas empresas. xxv, 345 p.     9. ed. rev. e amp.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (980, '9788582600535', 'COULOURIS, George F.; DOLLIMORE, Jean; KINDBERG, Tim; BLAIR, Gordon. Sistemas distribuídos:   conceitos e projeto. xvi, 1048 p.     5. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (981, '9788581486777', 'KUROSE, James F.; ROSS, Keith W. Redes de computadores e a Internet:   uma abordagem top-down. xxii, 634 p.     6. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (982, '9788535716801', 'IEZZI, Gelson; MURAKAMI, Carlos. Fundamentos de matemática elementar:   1, conjuntos, funções. 410 p.     9.ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (983, '9788573937077', 'PINHEIRO, Carlos André Reis. Inteligência analítica:   mineração de dados e descoberta de conhecimento . xxiv, 397 p.     ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (984, '9788573937619', 'TAN, Pang-Ning; STEINBACH, Michael; KUMAR, Vipin. Introdução ao DATAMINING: mineração de dados :  Pang- Ning Tan; Michel Steinbach; Vipin Kumar. xxi, 900 p.     ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (985, '9788535717501', 'HAZZAN, Samuel. Fundamentos de matemática elementar, 5:    combinatória, probabilidade : 481 exercícios  propostos com resposta, 181 questões de vestibulares com resposta. 203 p.     8. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (986, '9788535716849', 'IEZZI, Gelson. Fundamentos de matemática elementar:   3 : trigonometria . 311 p.     9. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (987, '9788574168364', 'WILLIAMS, Robin; MENEZES, Bárbara. Design para quem não é designer:   princípios de design e tipografia para inciantes. 215 p.     4. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (988, '9788535717525', 'IEZZI, Gelson. Fundamentos de matemática elementar, 6:   complexos, polinômios, equações . 250 p.     8. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (989, '9788535717563', 'IEZZI, Gelson; MURAKAMI, Carlos; MACHADO, Nílson José. Fundamentos de matemática elementar:   8 : limites, derivadas, noções de integral . 280 p.     7. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (990, '9788535715521', 'CALÇADA, Caio Sérgio; SAMPAIO, José Luiz. Física Clássica:   mecânica, v.1. 576 p. + 1 CD ROM     1. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (991, '9788522470969', 'ROSSETTI, José Paschoal; ANDRADE, Adriana. Governança corporativa:   fundamentos, desenvolvimento e tendências . 602 p.     6. ed. atual. e ampl.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (992, '9788521206804', 'BOAVENTURA NETTO, Paulo Oswaldo. Grafos:   teoria, modelos, algoritmos. xiii, 310 p.     5. ed. rev. e ampl.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (993, '9788580551181', 'Hillier  Frrederick S; LIEBERMAN, Gerald J. Introdução a pesquisa operacional.   xxii, 1005 p.     9.ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (994, '9788582600061', 'PREECE, Jennifer; ROGERS, Yvonne; SHARP, Helen. Design de interação:   além da interação homem-computador . xiv, 585 p.     3. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (995, '9788535257168', 'GOLDBARG, Marco Cesar; GOLDBARG, Elizabeth. Grafos:   conceitos, algoritmos e aplicações. 622 p.     ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (996, '978853650471', 'MANZANO, José Augusto N. G. Programação de computadores com C++:   guia prático de orientação e desenvolvimento. 318 p.     2. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (997, '9788581430850', 'SOBRAL, Filipe; PECI, Alketa. Administração:   teoria e prática no contexto brasileiro . 611 p.     2. ed.', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (998, '9788535237016', 'RUSSELL, Stuart J. |q (Stuart Jonathan), |d 1962-; NORVIG, Peter, |d 1956-. Inteligência artificial.   988 p.     ', 'Físico');
+INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (999, '9788574525938', 'NEVES, Julio Cezar. Programação SHELL LINUX.   xli, 559 p. + 1 CD-ROM      9. ed.', 'Físico');
 
 
 --
--- TOC entry 1834 (class 2606 OID 17536)
--- Dependencies: 161 161 161 161 1973
+-- TOC entry 2090 (class 0 OID 18393)
+-- Dependencies: 186
+-- Data for Name: usuario; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO usuario (id, habilitado, login, senha) VALUES (1, true, 'teste', '46070d4bf934fb0d4b06d9e2c46e346944e322444900a435d7d9a95e6d7435f5');
+
+
+--
+-- TOC entry 2113 (class 0 OID 0)
+-- Dependencies: 187
+-- Name: usuario_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('usuario_id_seq', 1, true);
+
+
+--
+-- TOC entry 1932 (class 2606 OID 18409)
 -- Name: bibliografias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -6075,18 +7523,16 @@ ALTER TABLE ONLY bibliografias
 
 
 --
--- TOC entry 1838 (class 2606 OID 17538)
--- Dependencies: 163 163 1973
+-- TOC entry 1936 (class 2606 OID 18411)
 -- Name: cod_c; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY curso
-    ADD CONSTRAINT id_crs PRIMARY KEY (id_crs);
+    ADD CONSTRAINT cod_c UNIQUE (cod_c);
 
 
 --
--- TOC entry 1840 (class 2606 OID 17540)
--- Dependencies: 164 164 1973
+-- TOC entry 1940 (class 2606 OID 18413)
 -- Name: cod_d; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -6095,8 +7541,7 @@ ALTER TABLE ONLY disciplinas
 
 
 --
--- TOC entry 1844 (class 2606 OID 17542)
--- Dependencies: 165 165 1973
+-- TOC entry 1944 (class 2606 OID 18415)
 -- Name: cod_e; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -6105,8 +7550,7 @@ ALTER TABLE ONLY exemplares
 
 
 --
--- TOC entry 1850 (class 2606 OID 17544)
--- Dependencies: 167 167 1973
+-- TOC entry 1952 (class 2606 OID 18417)
 -- Name: id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -6115,8 +7559,7 @@ ALTER TABLE ONLY titulos
 
 
 --
--- TOC entry 1836 (class 2606 OID 17546)
--- Dependencies: 162 162 1973
+-- TOC entry 1934 (class 2606 OID 18419)
 -- Name: id_c; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -6125,8 +7568,16 @@ ALTER TABLE ONLY curriculo
 
 
 --
--- TOC entry 1842 (class 2606 OID 17548)
--- Dependencies: 164 164 1973
+-- TOC entry 1938 (class 2606 OID 18421)
+-- Name: id_crs; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY curso
+    ADD CONSTRAINT id_crs PRIMARY KEY (id_crs);
+
+
+--
+-- TOC entry 1942 (class 2606 OID 18423)
 -- Name: id_d; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -6135,8 +7586,7 @@ ALTER TABLE ONLY disciplinas
 
 
 --
--- TOC entry 1846 (class 2606 OID 17550)
--- Dependencies: 165 165 1973
+-- TOC entry 1946 (class 2606 OID 18425)
 -- Name: id_e; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -6145,8 +7595,7 @@ ALTER TABLE ONLY exemplares
 
 
 --
--- TOC entry 1848 (class 2606 OID 17552)
--- Dependencies: 166 166 166 1973
+-- TOC entry 1948 (class 2606 OID 18427)
 -- Name: integracao_curricular_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -6155,20 +7604,43 @@ ALTER TABLE ONLY integracao_curricular
 
 
 --
--- TOC entry 1852 (class 2606 OID 17554)
--- Dependencies: 167 167 1973
+-- TOC entry 1954 (class 2606 OID 18429)
 -- Name: isbn; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY titulos
     ADD CONSTRAINT isbn UNIQUE (isbn);
 
-ALTER TABLE ONLY curso
-    ADD CONSTRAINT cod_c UNIQUE (cod_c);
 
 --
--- TOC entry 1857 (class 2606 OID 17555)
--- Dependencies: 162 166 1835 1973
+-- TOC entry 1950 (class 2606 OID 18431)
+-- Name: papel_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY papel
+    ADD CONSTRAINT papel_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1956 (class 2606 OID 18433)
+-- Name: uk_c32w9mwjyd60de9csqo2e5a6w; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY usuario
+    ADD CONSTRAINT uk_c32w9mwjyd60de9csqo2e5a6w UNIQUE (id, login);
+
+
+--
+-- TOC entry 1958 (class 2606 OID 18435)
+-- Name: usuario_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY usuario
+    ADD CONSTRAINT usuario_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1963 (class 2606 OID 18436)
 -- Name: curriculo_integracao_curricular; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -6177,8 +7649,7 @@ ALTER TABLE ONLY integracao_curricular
 
 
 --
--- TOC entry 1855 (class 2606 OID 17560)
--- Dependencies: 163 162 1837 1973
+-- TOC entry 1961 (class 2606 OID 18441)
 -- Name: curso_curriculo; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -6187,8 +7658,7 @@ ALTER TABLE ONLY curriculo
 
 
 --
--- TOC entry 1853 (class 2606 OID 17565)
--- Dependencies: 164 161 1841 1973
+-- TOC entry 1959 (class 2606 OID 18446)
 -- Name: disciplinas_bibliografias; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -6197,8 +7667,7 @@ ALTER TABLE ONLY bibliografias
 
 
 --
--- TOC entry 1858 (class 2606 OID 17570)
--- Dependencies: 164 166 1841 1973
+-- TOC entry 1964 (class 2606 OID 18451)
 -- Name: disciplinas_integracao_curricular; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -6207,8 +7676,25 @@ ALTER TABLE ONLY integracao_curricular
 
 
 --
--- TOC entry 1854 (class 2606 OID 17575)
--- Dependencies: 161 167 1849 1973
+-- TOC entry 1965 (class 2606 OID 18456)
+-- Name: fk_d03llnnn8u0h8y1rwn13hhtqs; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY papel_usuario
+    ADD CONSTRAINT fk_d03llnnn8u0h8y1rwn13hhtqs FOREIGN KEY (papel_id) REFERENCES papel(id);
+
+
+--
+-- TOC entry 1966 (class 2606 OID 18461)
+-- Name: fk_fgjk5k7a3xwxfhftgpugho3ls; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY papel_usuario
+    ADD CONSTRAINT fk_fgjk5k7a3xwxfhftgpugho3ls FOREIGN KEY (usuario_id) REFERENCES usuario(id);
+
+
+--
+-- TOC entry 1960 (class 2606 OID 18466)
 -- Name: titulo_bibliografias; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -6217,15 +7703,12 @@ ALTER TABLE ONLY bibliografias
 
 
 --
--- TOC entry 1856 (class 2606 OID 17580)
--- Dependencies: 1849 165 167 1973
+-- TOC entry 1962 (class 2606 OID 18471)
 -- Name: titulo_exemplares; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY exemplares
     ADD CONSTRAINT titulo_exemplares FOREIGN KEY (id_titulo) REFERENCES titulos(id_t) ON DELETE CASCADE;
-
-
 
 -- Sincronia de autoincrement --
 SELECT setval('seq_id_titulo', (SELECT MAX(id_t) FROM titulos));
@@ -6233,9 +7716,10 @@ SELECT setval('seq_id_disciplina', (SELECT MAX(id_d) FROM disciplinas));
 SELECT setval('seq_id_exemplar', (SELECT MAX(id_e) FROM exemplares));
 SELECT setval('seq_id_curriculo', (SELECT MAX(id_c) FROM curriculo));
 SELECT setval('seq_id_curso', (SELECT MAX(id_crs) FROM curso));
-
+SELECT setval('papel_id_seq', (SELECT MAX(id) FROM papel));
+SELECT setval('usuario_id_seq', (SELECT MAX(id) FROM usuario));
 --
--- TOC entry 1978 (class 0 OID 0)
+-- TOC entry 2098 (class 0 OID 0)
 -- Dependencies: 6
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
@@ -6246,7 +7730,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2014-05-19 08:54:01 BRT
+-- Completed on 2014-08-27 10:12:03 BRT
 
 --
 -- PostgreSQL database dump complete
