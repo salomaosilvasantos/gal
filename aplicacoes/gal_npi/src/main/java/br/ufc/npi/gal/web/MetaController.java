@@ -13,8 +13,8 @@ import br.ufc.npi.gal.service.CalculoMetaService;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 
 @Controller
-@RequestMapping("teste")
-public class TesteController {
+@RequestMapping("meta")
+public class MetaController {
 
 	@Inject
 	private CalculoMetaService calculo;
@@ -24,10 +24,8 @@ public class TesteController {
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
 		resultado = calculo.chamar();
-		
-		
 		modelMap.addAttribute("resultados", resultado);
-		return "teste/listar";
+		return "meta/listar";
 	}
 	
 	

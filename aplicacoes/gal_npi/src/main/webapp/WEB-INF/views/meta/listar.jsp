@@ -53,7 +53,7 @@
 					<c:out value="${resultado.metaCalculada.nome}"></c:out>
 				</datatables:column>
 				
-				<datatables:column title="Meta valor">
+				<datatables:column title="Valor da Meta">
 					<c:out value="${resultado.metaCalculada.calculo}"></c:out>
 				</datatables:column>
 	

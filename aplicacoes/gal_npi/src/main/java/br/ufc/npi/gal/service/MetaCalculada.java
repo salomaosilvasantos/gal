@@ -1,5 +1,6 @@
 package br.ufc.npi.gal.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MetaCalculada {
@@ -7,6 +8,15 @@ public class MetaCalculada {
 	private String nomeMeta;
 	private List<DetalheMetaCalculada> detalhePar;
 	private List<DetalheMetaCalculada> detalheImpar;
+	
+	
+
+	public MetaCalculada() {
+		super();
+		this.nomeMeta = new String();
+		this.detalhePar = new ArrayList<DetalheMetaCalculada>();
+		this.detalheImpar = new ArrayList<DetalheMetaCalculada>();
+	}
 
 	public String getNome() {
 		return nomeMeta;
@@ -45,21 +55,23 @@ public class MetaCalculada {
 	}
 
 	public double calcular() {
+		
 		double somatorioPar = new Double(0);
 		double somatorioImpar = new Double(0);
-
+        
 		for (DetalheMetaCalculada dmcPar : detalhePar) {
-			somatorioPar += dmcPar.getCalculo();
-			System.out.println("PAR "+somatorioPar);
+			somatorioPar = somatorioPar + dmcPar.getCalculo();
 		}
 		for (DetalheMetaCalculada dmcImpar : detalheImpar) {
-			somatorioImpar += dmcImpar.getCalculo();
-			System.out.println("IMPAR "+somatorioImpar);
+			somatorioImpar = somatorioImpar + dmcImpar.getCalculo();
 		}
-		if (somatorioPar >= somatorioImpar) {
-			return somatorioPar;
+		if (somatorioPar > somatorioImpar) {
+			
+			return ((int)(somatorioPar*10))/10.0;
+			
 		} else {
-			return somatorioImpar;
+			
+			return ((int)(somatorioImpar*10))/10.0;
 		}
 	}
 
