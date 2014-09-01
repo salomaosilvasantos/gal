@@ -51,6 +51,9 @@ public class Titulo {
 
 	@OneToMany(mappedBy = "titulo", targetEntity = Bibliografia.class, fetch = FetchType.LAZY)
 	private List<Bibliografia> bibliografias;
+	
+	@OneToMany(mappedBy = "titulo", targetEntity = Exemplar.class, fetch = FetchType.LAZY)
+	private List<Exemplar> exemplares;
 
 	public Integer getId() {
 		return id;
@@ -90,6 +93,16 @@ public class Titulo {
 
 	public void setBibliografias(List<Bibliografia> bibliografias) {
 		this.bibliografias = bibliografias;
+	}
+	
+	
+
+	public List<Exemplar> getExemplares() {
+		return exemplares;
+	}
+
+	public void setExemplares(List<Exemplar> exemplares) {
+		this.exemplares = exemplares;
 	}
 
 	@Override
