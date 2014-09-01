@@ -6,6 +6,14 @@ public class ResultadoCalculo {
 
 	private Titulo titulo;
 	private MetaCalculada metaCalculada;
+	
+	
+
+	public ResultadoCalculo() {
+		super();
+		titulo = titulo;
+		metaCalculada = metaCalculada;
+	}
 
 	public Titulo getTitulo() {
 		return titulo;
