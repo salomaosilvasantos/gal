@@ -11,9 +11,19 @@ public class ResultadoCalculo {
 
 	public ResultadoCalculo() {
 		super();
-		titulo = titulo;
-		metaCalculada = metaCalculada;
+		this.titulo = new Titulo();
+		this.metaCalculada = new MetaCalculada();
 	}
+	
+	
+
+	public ResultadoCalculo(Titulo titulo, MetaCalculada metaCalculada) {
+		super();
+		this.titulo = titulo;
+		this.metaCalculada = metaCalculada;
+	}
+
+
 
 	public Titulo getTitulo() {
 		return titulo;

@@ -1,8 +1,10 @@
 package br.ufc.npi.gal.service;
 
+import java.util.List;
+
 
 public interface CalculoMetaService  {
 	
-	public abstract ResultadoCalculo chamar();
+	public abstract List<ResultadoCalculo> chamar();
 
 }

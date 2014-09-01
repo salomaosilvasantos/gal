@@ -1,5 +1,7 @@
 package br.ufc.npi.gal.service.impl;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -19,7 +21,7 @@ public class CalculoMetaServiceImpl implements CalculoMetaService {
 	
 	ResultadoCalculo resultado;
 
-	public ResultadoCalculo chamar() {
+	public List<ResultadoCalculo> chamar() {
 
 		return calculo.calcular(tituloService.find(Titulo.class));
 

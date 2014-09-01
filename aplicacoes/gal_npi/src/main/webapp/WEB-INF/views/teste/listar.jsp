@@ -34,52 +34,34 @@
 		</div>
 		
 		<div style="text-align: center;">
-			<label class="control-label" style="font-size: 20px;">Títulos</label>
+			<label class="control-label" style="font-size: 20px;">Metas</label>
 		</div>
 		
-		<c:if test="${empty resultado}">
-			<div class="alert alert-warning" role="alert">Não há títulos cadastrados.</div>
+		<c:if test="${empty resultados}">
+			<div class="alert alert-warning" role="alert">Não há metas cadastrados.</div>
 		</c:if>
 		
-		<c:if test="${not empty resultado}">
-			<datatables:table id="resultados" data="${resultado}" cdn="true"
-				row="resultados" theme="bootstrap2" cssClass="table table-striped">
-				<datatables:column title="Nome">
+		<c:if test="${not empty resultados}">
+			<datatables:table id="resultado" data="${resultados}" cdn="true"
+				row="resultado" theme="bootstrap2" cssClass="table table-striped">
+				
+				<datatables:column title="Nome do Título">
+					<c:out value="${resultado.titulo.nome}"></c:out>
+				</datatables:column>
+				
+				<datatables:column title="Meta">
 					<c:out value="${resultado.metaCalculada.nome}"></c:out>
 				</datatables:column>
-	
-	
-				<datatables:column title="Editar">
-					<a class="btn btn-primary" href="<c:url value = "/teste/${resultado.id}/editar"></c:url>">
-						<span class="glyphicon glyphicon-edit"></span>
-					</a>
+				
+				<datatables:column title="Meta valor">
+					<c:out value="${resultado.metaCalculada.calculo}"></c:out>
 				</datatables:column>
 	
-				<datatables:column title="Excluir">
-					<a id="excluir" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" href="#" data-href="<c:url value="/teste/${resultado.id}/excluir" ></c:url>">
-						<span class="glyphicon glyphicon-trash"></span>
-					</a>
-				</datatables:column>
+	
 			</datatables:table>
 		</c:if>
 
 		<jsp:include page="../fragments/footer.jsp" />
-	</div>
-	<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	    <div class="modal-dialog">
-	        <div class="modal-content">
-	            <div class="modal-header">
-	                Excluir
-	            </div>
-	            <div class="modal-body">
-	                Tem certeza de que deseja excluir esse título?
-	            </div>
-	            <div class="modal-footer">
-	                <a href="#" class="btn btn-danger">Excluir</a>
-	                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-	            </div>
-	        </div>
-	    </div>
 	</div>
 </body>
 </html>

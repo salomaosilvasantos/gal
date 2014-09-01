@@ -1,5 +1,7 @@
 package br.ufc.npi.gal.web;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Controller;
@@ -17,10 +19,14 @@ public class TesteController {
 	@Inject
 	private CalculoMetaService calculo;
 	
+	private List<ResultadoCalculo> resultado;
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
-		modelMap.addAttribute("resultado", calculo.chamar());
+		resultado = calculo.chamar();
+		
+		
+		modelMap.addAttribute("resultados", resultado);
 		return "teste/listar";
 	}
 	

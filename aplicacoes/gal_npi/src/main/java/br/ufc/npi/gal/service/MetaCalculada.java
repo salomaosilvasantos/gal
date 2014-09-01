@@ -39,16 +39,22 @@ public class MetaCalculada {
 		return "MetaCalculada [nome=" + nomeMeta + ", detalhePar=" + detalhePar
 				+ ", detalheImpar=" + detalheImpar + "]";
 	}
+	
+	public double getCalculo(){
+		return calcular();
+	}
 
 	public double calcular() {
-		double somatorioPar = 0;
-		double somatorioImpar = 0;
+		double somatorioPar = new Double(0);
+		double somatorioImpar = new Double(0);
 
 		for (DetalheMetaCalculada dmcPar : detalhePar) {
 			somatorioPar += dmcPar.getCalculo();
+			System.out.println("PAR "+somatorioPar);
 		}
 		for (DetalheMetaCalculada dmcImpar : detalheImpar) {
-			somatorioPar += dmcImpar.getCalculo();
+			somatorioImpar += dmcImpar.getCalculo();
+			System.out.println("IMPAR "+somatorioImpar);
 		}
 		if (somatorioPar >= somatorioImpar) {
 			return somatorioPar;

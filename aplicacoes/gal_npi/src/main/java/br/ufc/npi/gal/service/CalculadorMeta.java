@@ -13,7 +13,8 @@ import br.ufc.npi.gal.model.Titulo;
 public class CalculadorMeta {
 
 	private int META = 6;
-	private ResultadoCalculo resultCalculo;
+	private List<ResultadoCalculo> resultCalculo;
+
 	private MetaCalculada metaCalculada;
 	private DetalheMetaCalculada detalheMeta;
 	private List<DetalheMetaCalculada> detalhePares;
@@ -21,14 +22,14 @@ public class CalculadorMeta {
 
 	public CalculadorMeta() {
 		super();
-		this.resultCalculo = new ResultadoCalculo();
+		this.resultCalculo = new ArrayList<ResultadoCalculo>();
 		this.metaCalculada = new MetaCalculada();
 		this.detalheMeta = new DetalheMetaCalculada();
 		this.detalhePares = new ArrayList<DetalheMetaCalculada>();
 		this.detalheImpares = new ArrayList<DetalheMetaCalculada>();
 	}
 
-	public ResultadoCalculo calcular(List<Titulo> titulos) {
+	public List<ResultadoCalculo> calcular(List<Titulo> titulos) {
 
 		for (Titulo t : titulos) {
 
@@ -41,7 +42,8 @@ public class CalculadorMeta {
 							.getAnoSemestre());
 					detalheMeta.setCurso(i.getEstruturaCurricular().getCurso()
 							.getNome());
-					double calculo = (double) (i.getQuantidadeAlunos()/META);
+					double calculo = (double) (i.getQuantidadeAlunos() / META);
+					
 					detalheMeta.setCalculo(calculo);
 
 					if (i.getSemestreOferta() % 2 == 0) {
@@ -56,8 +58,8 @@ public class CalculadorMeta {
 			metaCalculada.setDetalheMetaCalculadaPar(detalhePares);
 			metaCalculada.setDetalheMetaCalculadaImpar(detalheImpares);
 
-			resultCalculo.setMetaCalculada(metaCalculada);
-			resultCalculo.setTitulo(t);
+			resultCalculo.add(new ResultadoCalculo(t, metaCalculada));
+
 		}
 
 		return resultCalculo;
