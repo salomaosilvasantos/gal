@@ -33,11 +33,11 @@
 					</p>
 
 					<div class="column left first">
-						<ul class="sortable-list">	
+						<ul class="sortable-list" id="teste">	
 								<c:forEach
-									var="bibliografia" items="${disciplina}">
-									<li class="sortable-item" id="${bibliografia.tipoBibliografia}">
-									<c:out value="${bibliografia.tipoBibliografia}" />
+									var="t" items="${titulo}">
+									<li class="sortable-item" id="a">
+									<c:out value="${t.nome}" />
 									</li>
 								</c:forEach>
 						</ul>
@@ -47,9 +47,9 @@
 
 						<ul class="sortable-list">	
 								<c:forEach
-									var="bibliografia" items="${disciplina}">
-									<li class="sortable-item" id="${bibliografia.titulo.id}">
-									<c:out value="${bibliografia.titulo.id}" />
+									var="t" items="${basica}">
+									<li class="sortable-item" id="${t.id}">
+									<c:out value="${t.nome}" />
 									</li>
 								</c:forEach>
 						</ul>
@@ -60,9 +60,9 @@
 
 						<ul class="sortable-list">	
 								<c:forEach
-									var="bibliografia" items="${disciplina}">
-									<li class="sortable-item" id="${bibliografia.disciplina.id}">
-									<c:out value="${bibliografia.disciplina.id}" />
+									var="t" items="${complementar}">
+									<li class="sortable-item" id="${t.id}">
+									<c:out value="${t.nome}" />
 									</li>
 								</c:forEach>
 						</ul>
@@ -90,7 +90,9 @@
 				var columns = [];
 
 				$(exampleNr + ' ul.sortable-list').each(function() {
-					columns.push($(this).sortable('toArray').join(','));
+					if($(this).attr('id')!='teste'){ 
+						columns.push($(this).sortable('toArray').join(','));
+					}		
 				});
 
 				return columns.join('|');
@@ -102,7 +104,11 @@
 			});
 
 			$('#btn-get').click(function() {
-				alert(getItems('#example-2-1'));
+				$.ajax({
+				      url: 'disciplina/vincular',
+				      type: 'POST'
+				    });
+				//alert(getItems('#example-2-1'));
 			});
 
 		});

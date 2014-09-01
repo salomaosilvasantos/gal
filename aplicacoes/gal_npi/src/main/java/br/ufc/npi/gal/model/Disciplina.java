@@ -55,6 +55,23 @@ public class Disciplina {
 		this.id = id;
 	}
 	
+	
+	public List<IntegracaoCurricular> getCurriculos() {
+		return curriculos;
+	}
+
+	public void setCurriculos(List<IntegracaoCurricular> curriculos) {
+		this.curriculos = curriculos;
+	}
+
+	public List<Bibliografia> getBibliografias() {
+		return bibliografias;
+	}
+
+	public void setBibliografias(List<Bibliografia> bibliografias) {
+		this.bibliografias = bibliografias;
+	}
+
 	public String getCodigo() {
 		return codigo;
 	}

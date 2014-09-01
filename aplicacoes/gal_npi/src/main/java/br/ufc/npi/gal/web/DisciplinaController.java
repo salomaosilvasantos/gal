@@ -1,5 +1,8 @@
 package br.ufc.npi.gal.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.validation.Valid;
 
@@ -13,7 +16,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Bibliografia;
 import br.ufc.npi.gal.model.Disciplina;
+import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.DisciplinaService;
+import br.ufc.npi.gal.service.TituloService;
+import br.ufc.npi.gal.service.impl.TituloServiceImpl;
 
 @Controller
 @RequestMapping("/disciplina")
@@ -21,7 +27,11 @@ public class DisciplinaController {
 
 	@Inject
 	private DisciplinaService disciplinaService;
-
+	private List<Titulo> basica;
+	private List<Titulo> complementar;
+	@Inject
+	private TituloService tituloService;
+	
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("disciplinas", this.disciplinaService.find(Disciplina.class));
@@ -106,4 +116,59 @@ public class DisciplinaController {
 		modelMap.addAttribute("disciplina", this.disciplinaService.find(Disciplina.class));
 		return "disciplina/vincular_bibliografia";
 	}
+	
+	@RequestMapping(value = "/{id}/vincular", method = RequestMethod.GET)
+	public String vincular(@PathVariable("id") Integer id, ModelMap modelMap) {		
+		
+		Disciplina disciplina = this.disciplinaService.find(Disciplina.class, id);
+		List<Titulo> titulos = this.tituloService.find(Titulo.class);
+		if (disciplina == null) {
+			return "redirect:/disciplina/listar";
+
+		}
+		List<Bibliografia> bibliografias = disciplina.getBibliografias();
+		basica = new ArrayList<Titulo>();
+		complementar = new ArrayList<Titulo>();
+		for (Bibliografia b : bibliografias) {
+			if(b.getTipoBibliografia().equals("Básica")){
+				System.out.println("foi na basica");
+				basica.add(b.getTitulo());
+			}else if (b.getTipoBibliografia().equals("Complementar")){
+				System.out.println("foi na complementar");
+				complementar.add(b.getTitulo());
+			}
+		}
+		modelMap.addAttribute("titulo", titulos);
+		modelMap.addAttribute("basica", basica);
+		modelMap.addAttribute("complementar", complementar);
+		modelMap.addAttribute("disciplina", disciplina);
+		return "disciplina/vincular_bibliografia";
+	}
+
+	@RequestMapping(value = "/vincular", method = RequestMethod.POST)
+	public String atualizarVincular(@Valid Disciplina disciplina, List<String> retorno ,BindingResult result, RedirectAttributes redirectAttributes) {
+		if (result.hasErrors()) {
+			return "disciplina/editar";
+		}
+		
+		
+		System.out.println("funfou");
+		
+		disciplinaService.update(disciplina);
+		redirectAttributes.addFlashAttribute("info", "Disciplina atualizada com sucesso.");
+		return "redirect:/disciplina/listar";
+
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
