@@ -12,6 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Bibliografia;
@@ -131,10 +133,8 @@ public class DisciplinaController {
 		complementar = new ArrayList<Titulo>();
 		for (Bibliografia b : bibliografias) {
 			if(b.getTipoBibliografia().equals("Básica")){
-				System.out.println("foi na basica");
 				basica.add(b.getTitulo());
 			}else if (b.getTipoBibliografia().equals("Complementar")){
-				System.out.println("foi na complementar");
 				complementar.add(b.getTitulo());
 			}
 		}
@@ -146,21 +146,28 @@ public class DisciplinaController {
 	}
 
 	@RequestMapping(value = "/vincular", method = RequestMethod.POST)
-	public String atualizarVincular(@Valid Disciplina disciplina, List<String> retorno ,BindingResult result, RedirectAttributes redirectAttributes) {
-		if (result.hasErrors()) {
-			return "disciplina/editar";
-		}
+	public String atualizarVincular(@RequestParam("endereco[]") String teste) {
+//		@Valid Disciplina disciplina, List<String> retorno ,BindingResult result, RedirectAttributes redirectAttributes
+		//if (result.hasErrors()) {
+//			return "disciplina/editar";
+//		}
 		
+		System.out.println("Passou aki");
+		System.out.println(teste);
+		System.out.println("************************");
 		
-		System.out.println("funfou");
-		
-		disciplinaService.update(disciplina);
-		redirectAttributes.addFlashAttribute("info", "Disciplina atualizada com sucesso.");
+		//disciplinaService.update(disciplina);
+		//redirectAttributes.addFlashAttribute("info", "Disciplina atualizada com sucesso.");
 		return "redirect:/disciplina/listar";
 
 	}
 	
-	
+    @RequestMapping(value="/teste")  
+    @ResponseBody  
+    public String teste(@RequestParam("endereco[]") List<String> enderecos) {  
+       System.out.println(enderecos);  
+       return "ok";  
+    }  
 	
 	
 	

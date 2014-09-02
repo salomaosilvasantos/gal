@@ -36,7 +36,7 @@
 						<ul class="sortable-list" id="teste">	
 								<c:forEach
 									var="t" items="${titulo}">
-									<li class="sortable-item" id="a">
+									<li class="sortable-item" id="${t.id}">
 									<c:out value="${t.nome}" />
 									</li>
 								</c:forEach>
@@ -102,12 +102,19 @@
 			$('#example-2-1 .sortable-list').sortable({
 				connectWith : '#example-2-1 .sortable-list'
 			});
-
+	
 			$('#btn-get').click(function() {
-				$.ajax({
-				      url: 'disciplina/vincular',
-				      type: 'POST'
-				    });
+				
+				var data = {  
+						   endereco: [getItems('#example-2-1')]  
+						};  
+						                      
+						$.get('/gal_npi/disciplina/teste', data)  
+						   .success(function(data) {  
+						      //console.log(data);  
+						   }); 
+				
+				
 				//alert(getItems('#example-2-1'));
 			});
 
