@@ -104,6 +104,10 @@ public class Titulo {
 	public void setExemplares(List<Exemplar> exemplares) {
 		this.exemplares = exemplares;
 	}
+	
+	public int getAcervo(){
+		return this.exemplares.size();
+	}
 
 	@Override
 	public String toString() {
