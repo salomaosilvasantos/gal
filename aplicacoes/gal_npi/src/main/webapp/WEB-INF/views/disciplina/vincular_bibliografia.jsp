@@ -95,7 +95,7 @@
 					}		
 				});
 
-				return columns.join('|');
+				return columns.join("A");
 			}
 
 			// Example 2.1: Get items
@@ -106,7 +106,7 @@
 			$('#btn-get').click(function() {
 				
 				var data = {  
-						   endereco: [getItems('#example-2-1')]  
+						endereco: "${disciplina.id}"+"A"+getItems('#example-2-1')
 						};  
 						                      
 						$.get('/gal_npi/disciplina/teste', data)  
