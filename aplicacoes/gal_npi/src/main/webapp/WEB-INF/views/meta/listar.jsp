@@ -33,14 +33,6 @@
 			</div>
 		</c:if>
 
-		<div id="button-add">
-			<a href="<c:url value="/titulo/adicionar" ></c:url>">
-				<button class="btn btn-primary">
-					<span class="glyphicon glyphicon-plus"></span> Adicionar
-				</button>
-			</a>
-		</div>
-
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 20px;">Metas</label>
 		</div>
