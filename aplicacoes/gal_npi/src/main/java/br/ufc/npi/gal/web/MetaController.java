@@ -23,7 +23,7 @@ public class MetaController {
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
-		resultado = calculo.chamar();
+		resultado = calculo.gerarCalculo();
 		modelMap.addAttribute("resultados", resultado);
 		return "meta/listar";
 	}

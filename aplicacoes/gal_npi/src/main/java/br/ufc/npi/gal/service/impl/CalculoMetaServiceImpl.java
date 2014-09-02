@@ -21,7 +21,7 @@ public class CalculoMetaServiceImpl implements CalculoMetaService {
 	
 	ResultadoCalculo resultado;
 
-	public List<ResultadoCalculo> chamar() {
+	public List<ResultadoCalculo> gerarCalculo() {
 
 		return calculo.calcular(tituloService.find(Titulo.class));
 

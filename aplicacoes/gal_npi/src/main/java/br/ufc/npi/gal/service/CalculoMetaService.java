@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface CalculoMetaService  {
 	
-	public abstract List<ResultadoCalculo> chamar();
+	public abstract List<ResultadoCalculo> gerarCalculo();
 
 }

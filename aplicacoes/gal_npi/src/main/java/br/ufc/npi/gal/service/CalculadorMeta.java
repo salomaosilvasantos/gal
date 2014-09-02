@@ -31,6 +31,7 @@ public class CalculadorMeta {
 	}
 
 	public List<ResultadoCalculo> calcular(List<Titulo> titulos) {
+		resultCalculo = new ArrayList<ResultadoCalculo>();
 
 		for (Titulo t : titulos) {
 
