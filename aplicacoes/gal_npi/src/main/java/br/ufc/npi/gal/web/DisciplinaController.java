@@ -211,9 +211,12 @@ public class DisciplinaController {
 					}
 				} else {
 					Bibliografia biblio = new Bibliografia();
+					biblio.setDisciplina(disciplina);
+					biblio.setTitulo(tituloService.find(Titulo.class, id_titulo));
 					biblio.setId_disciplina(disciplina.getId());
 					biblio.setId_titulo(id_titulo);
 					biblio.setTipoBibliografia("Básica");
+				
 					bibliografiaService.save(biblio);
 					
 				}
