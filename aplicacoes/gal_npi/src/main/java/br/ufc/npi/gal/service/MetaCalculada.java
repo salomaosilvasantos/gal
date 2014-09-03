@@ -1,0 +1,78 @@
+package br.ufc.npi.gal.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MetaCalculada {
+
+	private String nomeMeta;
+	private List<DetalheMetaCalculada> detalhePar;
+	private List<DetalheMetaCalculada> detalheImpar;
+	
+	
+
+	public MetaCalculada() {
+		super();
+		this.nomeMeta = new String();
+		this.detalhePar = new ArrayList<DetalheMetaCalculada>();
+		this.detalheImpar = new ArrayList<DetalheMetaCalculada>();
+	}
+
+	public String getNome() {
+		return nomeMeta;
+	}
+
+	public void setNome(String nome) {
+		this.nomeMeta = nome;
+	}
+
+	public List<DetalheMetaCalculada> getDetalheMetaCalculadaPar() {
+		return detalhePar;
+	}
+
+	public void setDetalheMetaCalculadaPar(
+			List<DetalheMetaCalculada> detalheMetaCalculadaPar) {
+		this.detalhePar = detalheMetaCalculadaPar;
+	}
+
+	public List<DetalheMetaCalculada> getDetalheMetaCalculadaImpar() {
+		return detalheImpar;
+	}
+
+	public void setDetalheMetaCalculadaImpar(
+			List<DetalheMetaCalculada> detalheMetaCalculadaImpar) {
+		this.detalheImpar = detalheMetaCalculadaImpar;
+	}
+
+	@Override
+	public String toString() {
+		return "MetaCalculada [nome=" + nomeMeta + ", detalhePar=" + detalhePar
+				+ ", detalheImpar=" + detalheImpar + "]";
+	}
+	
+	public double getCalculo(){
+		return calcular();
+	}
+
+	public double calcular() {
+		
+		double somatorioPar = new Double(0);
+		double somatorioImpar = new Double(0);
+        
+		for (DetalheMetaCalculada dmcPar : detalhePar) {
+			somatorioPar = somatorioPar + dmcPar.getCalculo();
+		}
+		for (DetalheMetaCalculada dmcImpar : detalheImpar) {
+			somatorioImpar = somatorioImpar + dmcImpar.getCalculo();
+		}
+		if (somatorioPar > somatorioImpar) {
+			
+			return ((int)(somatorioPar*10))/10.0;
+			
+		} else {
+			
+			return ((int)(somatorioImpar*10))/10.0;
+		}
+	}
+
+}

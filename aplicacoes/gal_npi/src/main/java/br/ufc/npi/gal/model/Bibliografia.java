@@ -74,6 +74,8 @@ public class Bibliografia {
 	public void setTipoBibliografia(String tipoBibliografia) {
 		this.tipoBibliografia = tipoBibliografia;
 	}
+	
+	
 
 	@Override
 	public String toString() {
