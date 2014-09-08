@@ -12,14 +12,13 @@
 /*
 	Typography
 ------------------------------------------------------------------- */
-
-p {margin-bottom: 1em;}
-
+p {
+	margin-bottom: 1em;
+}
 
 /*
 	Forms
 ------------------------------------------------------------------- */
-
 .input-button {
 	background-color: #E2E2E2;
 	border: 1px outset #AAA;
@@ -27,19 +26,28 @@ p {margin-bottom: 1em;}
 	font-weight: bold;
 	padding: 4px 5px;
 }
-.input-button:active {border-style: inset;}
 
+.input-button:active {
+	border-style: inset;
+}
 
 /*
 	Alignment
 ------------------------------------------------------------------- */
 
 /* Floats */
+.left {
+	float: left;
+}
 
-.left {float: left;}
-.right {float: right;}
+.right {
+	float: right;
+}
 
-.clear,.clearer {clear: both;}
+.clear,.clearer {
+	clear: both;
+}
+
 .clearer {
 	display: block;
 	font-size: 0;
@@ -47,30 +55,27 @@ p {margin-bottom: 1em;}
 	line-height: 0;
 }
 
-
 /*
 	Example specifics
 ------------------------------------------------------------------- */
 
 /* Layout */
-
 #center-wrapper {
 	margin: 0 auto;
 	width: 920px;
 }
 
-
 /* Columns */
-
 .column {
 	margin-left: 2%;
 	width: 32%;
 }
-.column.first {margin-left: 0;}
 
+.column.first {
+	margin-left: 0;
+}
 
 /* Sortable items */
-
 .sortable-list {
 	background-color: #F93;
 	list-style: none;
@@ -78,6 +83,7 @@ p {margin-bottom: 1em;}
 	min-height: 60px;
 	padding: 10px;
 }
+
 .sortable-item {
 	background-color: #FFF;
 	border: 1px solid #000;
@@ -89,8 +95,12 @@ p {margin-bottom: 1em;}
 	text-align: center;
 }
 
-
 /* Disabled list */
+#example-2-4 .sortable-list {
+	background-color: #CCC;
+}
 
-#example-2-4 .sortable-list {background-color: #CCC;}
-#example-2-4 .sortable-item {cursor: default;}
+#example-2-4 .sortable-item {
+	cursor: default;
+}
+
