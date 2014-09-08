@@ -2,7 +2,6 @@ package br.ufc.npi.gal.model;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -40,7 +39,7 @@ public class Disciplina {
 	@OneToMany(mappedBy = "disciplina", targetEntity = IntegracaoCurricular.class, fetch = FetchType.LAZY)
 	private List<IntegracaoCurricular> curriculos;
 	
-	@OneToMany(cascade={CascadeType.PERSIST,  CascadeType.REMOVE},mappedBy = "disciplina", targetEntity = Bibliografia.class, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "disciplina")
 	private List<Bibliografia> bibliografias;
 	
 	public Disciplina() {

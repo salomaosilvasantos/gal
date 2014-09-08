@@ -9,117 +9,111 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Bibliografia</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Vincular Bibliografia</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
-<head>
-
-<title>jQuery: Customizable layout using drag and drop
-	(examples) - 2. Saving and loading items</title>
-
 </head>
-<body class="dhe-body">
-	<div id="center-wrapper">
-		<div class="dhe-example-section" id="ex-2-1">
-			<div class="dhe-example-section-header">
-			</div>
-			<div class="dhe-example-section-content">
+<body >
+	<div id="container" style="width: 1000px; margin: 0 auto;">
 
-				<div id="example-2-1">
+		<jsp:include page="../fragments/header.jsp" />
+		<div id="center-wrapper">
+			<div class="dhe-example-section" id="ex-2-1">
+				<div class="dhe-example-section-header"></div>
+				<div class="dhe-example-section-content">
 
-					<p>
-						<input type="submit" class="input-button" id="btn-get"
-							value="Get items" />
-					</p>
+					<div id="example-2-1">
 
-					<div class="column left first">
-						<ul class="sortable-list" id="teste">	
-								<c:forEach
-									var="t" items="${titulo}">
-									<li class="sortable-item" id="${t.id}">
-									<c:out value="${t.nome}" />
-									</li>
+						<p>
+							<input type="submit" class="input-button" id="btn-get"
+								value="Vincular" />
+						</p>
+
+						<div class="column left first">
+							<ul class="sortable-list" id="teste">
+								<c:forEach var="t" items="${titulo}">
+									<li class="sortable-item" id="${t.id}"><c:out
+											value="${t.nome}" /></li>
 								</c:forEach>
-						</ul>
+							</ul>
+						</div>
+
+						<div class="column left">
+
+							<ul class="sortable-list">
+								<c:forEach var="t" items="${basica}">
+									<li class="sortable-item" id="${t.id}"><c:out
+											value="${t.nome}" /></li>
+								</c:forEach>
+							</ul>
+
+						</div>
+
+						<div class="column left">
+
+							<ul class="sortable-list">
+								<c:forEach var="t" items="${complementar}">
+									<li class="sortable-item" id="${t.id}"><c:out
+											value="${t.nome}" /></li>
+								</c:forEach>
+							</ul>
+
+						</div>
+
 					</div>
 
-					<div class="column left">
-
-						<ul class="sortable-list">	
-								<c:forEach
-									var="t" items="${basica}">
-									<li class="sortable-item" id="${t.id}">
-									<c:out value="${t.nome}" />
-									</li>
-								</c:forEach>
-						</ul>
-
-					</div>
-
-					<div class="column left">
-
-						<ul class="sortable-list">	
-								<c:forEach
-									var="t" items="${complementar}">
-									<li class="sortable-item" id="${t.id}">
-									<c:out value="${t.nome}" />
-									</li>
-								</c:forEach>
-						</ul>
-
-					</div>
+					<div class="clearer">&nbsp;</div>
 
 				</div>
-
-				<div class="clearer">&nbsp;</div>
-
 			</div>
+
+
 		</div>
 
+		<jsp:include page="../fragments/footer.jsp" />
+ </div>
+		<!-- Example jQuery code (JavaScript)  -->
+		<script type="text/javascript">
+			$(document).ready(
+					function() {
 
-	</div>
+						// Get items
+						function getItems(exampleNr) {
+							var columns = [];
 
-	<jsp:include page="../fragments/footer.jsp" />
+							$(exampleNr + ' ul.sortable-list').each(
+									function() {
+										if ($(this).attr('id') != 'teste') {
+											columns.push($(this).sortable(
+													'toArray').join(','));
+										}
+									});
 
-	<!-- Example jQuery code (JavaScript)  -->
-	<script type="text/javascript">
-		$(document).ready(function() {
+							return columns.join("A");
+						}
 
-			// Get items
-			function getItems(exampleNr) {
-				var columns = [];
+						// Example 2.1: Get items
+						$('#example-2-1 .sortable-list').sortable({
+							connectWith : '#example-2-1 .sortable-list'
+						});
 
-				$(exampleNr + ' ul.sortable-list').each(function() {
-					if($(this).attr('id')!='teste'){ 
-						columns.push($(this).sortable('toArray').join(','));
-					}		
-				});
+						$('#btn-get').click(
+								function() {
 
-				return columns.join("A");
-			}
+									var data = {
+										endereco : getItems('#example-2-1'),
+										idDiciplina:"${disciplina.id}"
+									};
 
-			// Example 2.1: Get items
-			$('#example-2-1 .sortable-list').sortable({
-				connectWith : '#example-2-1 .sortable-list'
-			});
-	
-			$('#btn-get').click(function() {
-				
-				var data = {  
-						endereco: "${disciplina.id}"+"A"+getItems('#example-2-1')
-						};  
-						                      
-						$.get('/gal_npi/disciplina/teste', data)  
-						   .success(function(data) {  
-						      //console.log(data);  
-						   }); 
-				
-				
-				//alert(getItems('#example-2-1'));
-			});
+									$.get('/gal_npi/disciplina/teste', data)
+											.success(function(data) {
+												//console.log(data);  
+											});
 
-		});
-	</script>
+									//alert(getItems('#example-2-1'));
+								});
+
+					});
+		</script>
 </body>
 </html>
 
