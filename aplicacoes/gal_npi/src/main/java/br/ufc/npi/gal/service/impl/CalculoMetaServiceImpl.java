@@ -26,5 +26,6 @@ public class CalculoMetaServiceImpl implements CalculoMetaService {
 		return calculo.calcular(tituloService.find(Titulo.class));
 
 	}
+	
 
 }
