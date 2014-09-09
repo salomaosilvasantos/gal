@@ -165,27 +165,11 @@ public class DisciplinaController {
 		return "disciplina/vincular_bibliografia";
 	}
 
-	@RequestMapping(value = "/vincular", method = RequestMethod.POST)
-	public String atualizarVincular(@RequestParam("endereco[]") String teste) {
-		// @Valid Disciplina disciplina, List<String> retorno ,BindingResult
-		// result, RedirectAttributes redirectAttributes
-		// if (result.hasErrors()) {
-		// return "disciplina/editar";
-		// }
-
-		System.out.println("Passou aki");
-		System.out.println(teste);
-		System.out.println("************************");
-
-		// disciplinaService.update(disciplina);
-		// redirectAttributes.addFlashAttribute("info",
-		// "Disciplina atualizada com sucesso.");
-		return "redirect:/disciplina/listar";
-
-	}
 
 	public List<Bibliografia> atualizaOuCriaBibligrafia (String[] listaIdTitulo, List<Bibliografia> bibliografiasAseremModificadas, Disciplina disciplina, String TipoBibliografia){
 		int id_titulo;
+		
+		if(!listaIdTitulo[0].isEmpty()){
 		for (int i = 0; i < listaIdTitulo.length; i++) {
 			id_titulo = Integer.parseInt(listaIdTitulo[i]);
 			for (int j = 0; j < bibliografiasAseremModificadas.size(); j++) {
@@ -212,30 +196,31 @@ public class DisciplinaController {
 				bibliografiaService.save(biblio);
 			}
 		}
-		
+		}
 		return bibliografiasAseremModificadas;
 	}
 	
-	@RequestMapping(value = "/teste")
-	public String teste(@RequestParam("endereco") String enderecos, @RequestParam("idDiciplina") Integer idDiciplina) {
-		System.out.println(enderecos);
-		String[] parts = enderecos.split("A");
-		System.out.println(parts.length);
-		String basicaArray = parts[0];
-		String[] basica = basicaArray.split(",");
-		String complementarArray = parts[1];
-		String[] complementar = complementarArray.split(",");
+	@RequestMapping(value = "/vincular")
+	public String vincular(@RequestParam("basica") String basica, @RequestParam("complementar") String complementar, @RequestParam("idDiciplina") Integer idDiciplina) {
+		System.out.println(basica);
+		System.out.println(complementar);
+		
+		String[] basicaArray = basica.split(",");
+		
+		String[] complementarArray = complementar.split(",");
+
 
 		Disciplina disciplina = this.disciplinaService.find(Disciplina.class,idDiciplina);
 		List<Bibliografia> bibliografiaLista = disciplina.getBibliografias();
 		
-		bibliografiaLista = atualizaOuCriaBibligrafia(basica, bibliografiaLista, disciplina, "Básica");
-		bibliografiaLista = atualizaOuCriaBibligrafia(complementar, bibliografiaLista, disciplina, "Complementar");
+		bibliografiaLista = atualizaOuCriaBibligrafia(basicaArray, bibliografiaLista, disciplina, "Básica");
+		bibliografiaLista = atualizaOuCriaBibligrafia(complementarArray, bibliografiaLista, disciplina, "Complementar");
 		for (int i = 0; i < bibliografiaLista.size(); i++) {
 			bibliografiaService.delete(bibliografiaLista.get(i));
 		}
 
-		return "redirect:/disciplina/listar";
+		//return "redirect:/disciplina/listar";
+		return "/gal_npi/disciplina/listar";
 	}
 
 }

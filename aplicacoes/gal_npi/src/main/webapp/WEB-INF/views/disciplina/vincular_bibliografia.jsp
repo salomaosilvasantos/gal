@@ -24,10 +24,8 @@
 					<div id="example-2-1">
 
 						<p>
-							<input type="submit" class="input-button" id="btn-get"
-								value="Vincular" />
+							<a class="btn btn-success" id="btn-get" href="<c:url value="/disciplina/listar" ></c:url>">Vincular</a>
 						</p>
-
 						<div class="column left first">
 							<label style="font-size: 20px;">Básica</label>
 							<ul class="sortable-list">
@@ -95,7 +93,7 @@
 											}
 										});
 
-						return columns.join("A");
+						return columns;
 					}
 
 					// Example 2.1: Get items
@@ -107,13 +105,15 @@
 							function() {
 
 								var data = {
-									endereco : getItems('#example-2-1'),
+									basica : getItems('#example-2-1')[0],
+									complementar : getItems('#example-2-1')[1], 
 									idDiciplina : "${disciplina.id}"
 								};
 
-								$.get('/gal_npi/disciplina/teste', data)
+								$.get('/gal_npi/disciplina/vincular', data)
 										.success(function(data) {
-											//console.log(data);  
+								                alert('OK');
+								                window.location.replace('/gal_npi/disciplina/listar');                
 										});
 
 								//alert(getItems('#example-2-1'));

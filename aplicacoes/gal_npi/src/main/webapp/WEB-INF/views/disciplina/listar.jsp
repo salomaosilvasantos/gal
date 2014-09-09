@@ -54,7 +54,7 @@
 				</datatables:column>
 				
 				<datatables:column title="Vincular">
-					<a class="btn btn-primary" href="<c:url value="/disciplina/${disciplina.id }/vincular" ></c:url>"><span class="glyphicon glyphicon-link"></span></a>
+					<a class="btn btn-success" href="<c:url value="/disciplina/${disciplina.id }/vincular" ></c:url>"><span class="glyphicon glyphicon-link"></span></a>
 				</datatables:column>
 				
 				<datatables:column title="Editar">
