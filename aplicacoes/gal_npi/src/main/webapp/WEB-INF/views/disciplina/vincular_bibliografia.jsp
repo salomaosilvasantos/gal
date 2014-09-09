@@ -27,11 +27,11 @@
 							<a class="btn btn-success" id="btn-get" href="<c:url value="/disciplina/listar" ></c:url>">Vincular</a>
 						</p>
 						<div class="column left first">
-							<label style="font-size: 20px;">Básica</label>
+							<label style="font-size: 16px;">Básica</label>
 							<ul class="sortable-list">
 
 								<c:forEach var="t" items="${basica}">
-									<li class="sortable-item" id="${t.id}"><c:out
+									<li class="sortable-item" id="${t.id}" style="font-size: 12px;"><c:out
 											value="${t.nome}" /></li>
 								</c:forEach>
 							</ul>
@@ -40,10 +40,10 @@
 
 
 						<div class="column left">
-							<label style="font-size: 20px;">Complementar</label>
+							<label style="font-size: 16px;">Complementar</label>
 							<ul class="sortable-list">
 								<c:forEach var="t" items="${complementar}">
-									<li class="sortable-item" id="${t.id}"><c:out
+									<li class="sortable-item" id="${t.id}" style="font-size: 12px;"><c:out
 											value="${t.nome}" /></li>
 								</c:forEach>
 							</ul>
@@ -51,12 +51,12 @@
 						</div>
 
 						<div class="column left">
-							<label style="font-size: 20px;">Acervo</label> <input type="text"
+							<label style="font-size: 16px;">Acervo</label> <input type="text"
 								id="txtBusca" placeholder="Buscar acervo..." /> 
 							<ul class="sortable-list" id="teste">
 
 								<c:forEach var="t" items="${titulo}">
-									<li class="sortable-item" id="${t.id}"><c:out
+									<li class="sortable-item" id="${t.id}" style="font-size: 12px;"><c:out
 											value="${t.nome}" /></li>
 								</c:forEach>
 							</ul>
