@@ -72,9 +72,23 @@
 					</c:if>
 				</datatables:column>
 				<datatables:column title="Meta Detalhada">
-					<a class="btn btn-primary" href="<c:url value = "/meta/${resultado.titulo.id}/detalhe"></c:url>">
-						<span class="glyphicon glyphicon-zoom-in"></span>
-					</a>
+
+					<c:if
+						test="${(resultado.metaCalculada.calculo) > 0.1}">
+						<a class="btn btn-primary" 
+							href="<c:url value = "/meta/${resultado.titulo.id}/detalhe"></c:url>">
+							<span class="glyphicon glyphicon-zoom-in"></span>
+						</a>
+					</c:if>
+					<c:if
+						test="${(resultado.metaCalculada.calculo) <= 0.0}">
+						<a class="btn btn-primary btn-disabled" disabled 
+							href="<c:url value = "/meta/${resultado.titulo.id}/detalhe"></c:url>">
+							<span class="glyphicon glyphicon-zoom-in"></span>
+						</a>
+					</c:if>
+
+
 				</datatables:column>
 
 			</datatables:table>

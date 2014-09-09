@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculoMetaService;
 import br.ufc.npi.gal.service.ResultadoCalculo;
+import br.ufc.npi.gal.service.TituloService;
 
 @Controller
 @RequestMapping("meta")
@@ -20,6 +22,9 @@ public class MetaController {
 
 	@Inject
 	private CalculoMetaService calculo;
+
+	@Inject
+	private TituloService tituloService;
 
 	private List<ResultadoCalculo> resultados;
 
@@ -33,11 +38,13 @@ public class MetaController {
 	@RequestMapping(value = "/{id}/detalhe", method = RequestMethod.GET)
 	public String tituloByDetalhe(@PathVariable("id") Integer id,
 			ModelMap modelMap, RedirectAttributes redirectAttributes) {
-
+		Titulo titulo; 
 		for (ResultadoCalculo r : resultados) {
 
 			if (r.getTitulo().getId().equals(id)) {
 				if (r.getMetaCalculada().getCalculo() > 0.1) {
+					titulo = this.tituloService.find(Titulo.class, id);
+					modelMap.addAttribute("titulo", titulo);
 					modelMap.addAttribute("metaCalculada", r.getMetaCalculada());
 
 					return "meta/detalhe";

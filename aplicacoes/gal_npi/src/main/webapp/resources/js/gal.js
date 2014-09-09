@@ -29,6 +29,12 @@ $( document ).ready(function() {
 		}
 	);
 	
+	$('#resultadoPar').dataTable( {
+        "paging":   false,
+        "ordering": false,
+        "info":     false
+    } );
+	
 	$('#confirm-delete').on('show.bs.modal', function(e) {
 	    $(this).find('.btn-danger').attr('href', $(e.relatedTarget).data('href'));
 	});

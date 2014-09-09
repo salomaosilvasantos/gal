@@ -7,7 +7,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,67 +37,62 @@
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 18px;">${titulo.nome}</label>
 		</div>
-		<br />
-		<br />
-
-
-
-
-
-
-
-
-
-
 
 		<c:if test="${empty metaCalculada}">
 			<div class="alert alert-warning" role="alert">Não há metas
 				cadastrados.</div>
 		</c:if>
-
+	
 		<c:if test="${not empty metaCalculada}">
-			<table 	class="table table-striped">
-				<!-- here should go some titles... -->
-				<tr>
-					<th>Curso</th>
-					<th>Disciplina</th>
-					<th>Bibliografia</th>
-					<th>Curriculo</th>
-				</tr>
-				<c:forEach items="${metaCalculada.detalhePar}" var="par">
-					<tr>
-						<td><c:out value="${par.curso}" /></td>
-						<td><c:out value="${par.disciplina}" /></td>
-						<td><c:out value="${par.tipoBibliografia}" /></td>
-						<td><c:out value="${par.curriculo}" /></td>
-					</tr>
-				</c:forEach>
-			</table>
+			<datatables:table id="resultadoPar" 
+				data="${metaCalculada.detalhePar}" pageable="false"  row="par">
 
+				<datatables:column title="Nome do Curso">
+					<c:out value="${par.curso}"></c:out>
+				</datatables:column>
+				<datatables:column title="Nome da Disciplina">
+					<c:out value="${par.disciplina}"></c:out>
+				</datatables:column>
+				<datatables:column title="Tipo Bibliografia">
+					<c:out value="${par.tipoBibliografia}"></c:out>
+				</datatables:column>
+				<datatables:column title="Curriculo">
+					<c:out value="${par.curriculo}"></c:out>
+				</datatables:column>
+				<datatables:column title="Cálculo Individual">
+					<c:out value="${par.calculo}"></c:out>
+				</datatables:column>
 
+			</datatables:table>
 
 			<div style="text-align: center;">
 				<label class="control-label" style="font-size: 20px;">Metas
 					Detalhadas Impares</label>
 			</div>
-			<table 	class="table table-striped">
-				<!-- here should go some titles... -->
-				<tr>
-					<th>Curso</th>
-					<th>Disciplina</th>
-					<th>Bibliografia</th>
-					<th>Curriculo</th>
-				</tr>
-				<c:forEach items="${metaCalculada.detalheImpar}" var="impar">
-					<tr>
-						<td><c:out value="${impar.curso}" /></td>
-						<td><c:out value="${impar.disciplina}" /></td>
-						<td><c:out value="${impar.tipoBibliografia}" /></td>
-						<td><c:out value="${impar.curriculo}" /></td>
-					</tr>
-				</c:forEach>
-			</table>
-			
+			<datatables:table id="resultadoImpar"
+				data="${metaCalculada.detalheImpar}" cdn="true" row="par"
+				theme="bootstrap2" cssClass="table table-striped">
+
+				<datatables:column title="Nome do Curso">
+					<c:out value="${par.curso}"></c:out>
+				</datatables:column>
+				<datatables:column title="Nome da Disciplina">
+					<c:out value="${par.disciplina}"></c:out>
+				</datatables:column>
+				<datatables:column title="Tipo Bibliografia">
+					<c:out value="${par.tipoBibliografia}"></c:out>
+				</datatables:column>
+				<datatables:column title="Curriculo">
+					<c:out value="${par.curriculo}"></c:out>
+				</datatables:column>
+				<datatables:column title="Cálculo Individual">
+					<c:out value="${par.calculo}"></c:out>
+				</datatables:column>
+
+
+
+
+			</datatables:table>
 		</c:if>
 
 		<jsp:include page="../fragments/footer.jsp" />
