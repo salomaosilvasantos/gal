@@ -15,3 +15,4 @@
 <script src="<c:url value="/resources/js/jquery-1.4.2.min.js" />"></script>
 <script src="<c:url value="/resources/js/jquery-ui-1.8.custom.min.js" />"></script>
 <script src="<c:url value="/resources/js/jquery.cookie.js" />"></script>
+<script src="<c:url value="/resources/js/jquery.fastLiveFilter.js" />"></script>

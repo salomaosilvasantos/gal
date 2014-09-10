@@ -14,15 +14,14 @@
 </head>
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
-
 		<jsp:include page="../fragments/header.jsp" />
 		<div id="center-wrapper">
 			<div class="dhe-example-section" id="ex-2-1">
 				<div class="dhe-example-section-header"></div>
 				<div class="dhe-example-section-content">
-
 					<div id="example-2-1">
-
+					
+					<p id="nomeDisciplina">${disciplina.nome}</p>
 						<p>
 							<a class="btn btn-success" id="btn-get" href="<c:url value="/disciplina/listar" ></c:url>">Vincular</a>
 						</p>
@@ -54,10 +53,9 @@
 							<label style="font-size: 16px;">Acervo</label> <input type="text"
 								id="txtBusca" placeholder="Buscar acervo..." /> 
 							<ul class="sortable-list" id="teste">
-
 								<c:forEach var="t" items="${titulo}">
 									<li class="sortable-item" id="${t.id}" style="font-size: 12px;"><c:out
-											value="${t.nome}" /></li>
+											value="${t.nome}"/></li>
 								</c:forEach>
 							</ul>
 						</div>
@@ -127,6 +125,11 @@
 					});
 
 				});
+		
+		$(function() {
+	        $('#txtBusca').fastLiveFilter('#teste');
+	    });
+		
 	</script>
 </body>
 </html>
