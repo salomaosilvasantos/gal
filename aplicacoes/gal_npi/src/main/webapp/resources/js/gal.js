@@ -28,6 +28,7 @@ $( document ).ready(function() {
 			}
 		}
 	);
+
 	
 	$('#resultadoPar').dataTable( {
         "paging":   false,
@@ -43,3 +44,7 @@ $( document ).ready(function() {
 	$('div:has(span.error)').find('span.error').parent().parent().addClass('has-error has-feedback');
 	
 });
+
+function goBack() {
+	window.history.back()
+}

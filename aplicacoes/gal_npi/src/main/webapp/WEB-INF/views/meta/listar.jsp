@@ -13,7 +13,7 @@
 <title>Metas</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
 </head>
-<body>
+<body>     
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
 
@@ -63,7 +63,7 @@
 				<datatables:column title="Déficit">
 					<c:if
 						test="${(resultado.metaCalculada.calculo-resultado.titulo.acervo) >= 0}">
-						<fmt:formatNumber type="number" maxIntegerDigits="2"
+						<fmt:formatNumber type="number" maxFractionDigits="1"
 							value="${resultado.metaCalculada.calculo-resultado.titulo.acervo}"></fmt:formatNumber>
 					</c:if>
 					<c:if
@@ -80,13 +80,14 @@
 							<span class="glyphicon glyphicon-zoom-in"></span>
 						</a>
 					</c:if>
-					<c:if
-						test="${(resultado.metaCalculada.calculo) <= 0.0}">
-						<a class="btn btn-primary btn-disabled" disabled 
-							href="<c:url value = "/meta/${resultado.titulo.id}/detalhe"></c:url>">
-							<span class="glyphicon glyphicon-zoom-in"></span>
-						</a>
+					<c:if test="${(resultado.metaCalculada.calculo) <= 0.0}">
+					<div title="Não possui metas">
+						<button type="button" disabled class="btn btn-primary">
+							<span class="glyphicon glyphicon-zoom-in" ></span>
+						</button>
+					</div>
 					</c:if>
+					
 
 
 				</datatables:column>

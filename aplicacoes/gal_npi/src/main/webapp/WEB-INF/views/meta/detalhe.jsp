@@ -13,6 +13,8 @@
 <head>
 <title>Detalhe da Meta</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
+
+
 </head>
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
@@ -35,35 +37,35 @@
 			</div>
 		</c:if>
 
-		<div style="text-align: center;">
-			<label class="control-label" style="font-size: 18px;">${titulo.nome}</label>
+		<div style="text-align: left;">
+			<label class="control-label" style="font-size:17px;">Título: ${titulo.nome}</label>
+		</div><br>
+		
+		<div style="text-align: right;">
+			<input class="btn btn-default" onclick="goBack()" style="font-weight: bold;" value="Voltar" />
+
 		</div>
-		<br />
-		<br />
-
-
-
-
-
-
-
-
-
-
-
+		
 		<c:if test="${empty metaCalculada}">
 			<div class="alert alert-warning" role="alert">Não há metas
 				cadastrados.</div>
 		</c:if>
 
 		<c:if test="${not empty metaCalculada}">
-			<table 	class="table table-striped">
+		
+		<div style="text-align: left;">
+				<label class="control-label" style="font-size: 15px;">Metas
+					de semestres pares.</label>
+			</div>
+			
+			<table 	class="table table-striped sortable">
 				<!-- here should go some titles... -->
 				<tr>
 					<th>Curso</th>
 					<th>Disciplina</th>
 					<th>Bibliografia</th>
 					<th>Curriculo</th>
+					<th>Meta individual</th>
 				</tr>
 				<c:forEach items="${metaCalculada.detalhePar}" var="par">
 					<tr>
@@ -71,23 +73,24 @@
 						<td><c:out value="${par.disciplina}" /></td>
 						<td><c:out value="${par.tipoBibliografia}" /></td>
 						<td><c:out value="${par.curriculo}" /></td>
+						<td><fmt:formatNumber type="number" maxFractionDigits="1" value="${par.calculo}" /></td>
 					</tr>
 				</c:forEach>
-			</table>
+			</table><br><br>
 
-
-
-			<div style="text-align: center;">
-				<label class="control-label" style="font-size: 20px;">Metas
-					Detalhadas Impares</label>
+			<div style="text-align: left;">
+				<label class="control-label" style="font-size: 15px;">Metas
+					de semestres impares.</label>
 			</div>
-			<table 	class="table table-striped">
+			
+			<table 	class="table table-striped sortable">
 				<!-- here should go some titles... -->
 				<tr>
 					<th>Curso</th>
 					<th>Disciplina</th>
 					<th>Bibliografia</th>
 					<th>Curriculo</th>
+					<th>Meta individual</th>
 				</tr>
 				<c:forEach items="${metaCalculada.detalheImpar}" var="impar">
 					<tr>
@@ -95,6 +98,7 @@
 						<td><c:out value="${impar.disciplina}" /></td>
 						<td><c:out value="${impar.tipoBibliografia}" /></td>
 						<td><c:out value="${impar.curriculo}" /></td>
+						<td><fmt:formatNumber type="number" maxFractionDigits="1" value="${impar.calculo}" ></fmt:formatNumber></td>
 					</tr>
 				</c:forEach>
 			</table>
