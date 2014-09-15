@@ -40,7 +40,7 @@ public class BibliografiaId implements Serializable {
 	public boolean equals(Object obj) {
 		if(obj instanceof BibliografiaId){
 			BibliografiaId bibliografiaId = (BibliografiaId) obj;
-			return bibliografiaId.disciplina==disciplina && bibliografiaId.titulo==titulo;
+			return bibliografiaId.disciplina.equals(disciplina) && bibliografiaId.titulo.equals(titulo);
 		}
 		
 		return false;	

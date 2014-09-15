@@ -1,5 +1,11 @@
 $( document ).ready(function() {
 	
+	// Get items
+	
+	// Example 2.1: Get items
+	
+	
+	
 	$('table').dataTable(
 		{
 			sPaginationType : "full_numbers",
@@ -35,5 +41,66 @@ $( document ).ready(function() {
 	
 	$('div:has(span.error)').find('span.error').css('color', '#a94442');
 	$('div:has(span.error)').find('span.error').parent().parent().addClass('has-error has-feedback');
+	
+	$('#txtBusca').fastLiveFilter('#teste');
+	
+	function getItems(exampleNr) {
+		var columns = [];
+		$(exampleNr + ' ul.sortable-list').each(
+				function() {
+					if ($(this).attr('id') != 'teste') {
+						columns.push($(this).sortable(
+								'toArray').join(','));
+					}
+				});
+		alert(columns);
+		return columns;
+	}
+	
+	$('#btn-get')
+	.click(
+			function() {
+				var data = {
+					basica : getItems('#example-2-1')[0],
+					complementar : getItems('#example-2-1')[1],
+					idDiciplina : $('#disciplinaId').val()
+				};
+				$
+						.get(
+								'/gal_npi/disciplina/vincular',
+								data)
+						.success(
+								function(data) {
+									alert('OK');
+									window.location
+											.replace('/gal_npi/disciplina/listar');
+								});
+				//alert(getItems('#example-2-1'));
+			});
+	
+	
+	
+	
+	$('#example-2-1 .sortable-list').sortable({
+		connectWith : '#example-2-1 .sortable-list'
+	});
+	
+	/*$("#example-2-1 input").keyup(function() {
+		var index = $(this).parent().index();
+		$('#example-2-1 .sortable-list').sortable({
+			connectWith : '#example-2-1 .sortable-list'
+		});
+		$('#txtBusca').fastLiveFilter('#teste');
+	});*/
+	$("#example-2-1 input").focus(function() {
+		
+		$('#example-2-1 .sortable-list').sortable({
+			connectWith : '#example-2-1 .sortable-list'
+		});
+		$('#txtBusca').fastLiveFilter('#teste');
+	});
+	
+	
+
 	
 });

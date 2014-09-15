@@ -1,6 +1,12 @@
 package br.ufc.npi.gal.model;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 
 @Entity
@@ -47,10 +53,10 @@ public class Bibliografia {
 
 	@Override
 	public String toString() {
-		return "teste";
-		// return "Bibliografia [id_disciplina=" + id_disciplina +
-		// ", id_titulo="
-		// + id_titulo + ", disciplina=" + disciplina + ", titulo="
-		// + titulo + ", tipoBibliografia=" + tipoBibliografia + "]";
+		
+		 return "Bibliografia [id_disciplina=" + disciplina +
+		 ", id_titulo="
+		 + titulo + ", disciplina=" + getDisciplina() + ", titulo="
+		 + getTitulo() + ", tipoBibliografia=" + tipoBibliografia + "]";
 	}
 }

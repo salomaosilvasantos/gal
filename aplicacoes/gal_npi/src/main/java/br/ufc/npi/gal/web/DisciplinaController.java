@@ -28,13 +28,14 @@ public class DisciplinaController {
 
 	@Inject
 	private DisciplinaService disciplinaService;
-	private List<Titulo> listaIdTitulo;
-	private List<Titulo> complementar;
 	@Inject
 	private TituloService tituloService;
 	@Inject
 	private BibliografiaService bibliografiaService;
-
+	private static final String COMPLEMENTAR = "Complementar";
+	private static final String BASICA = "Básica";
+	
+	
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("disciplinas",
@@ -129,16 +130,17 @@ public class DisciplinaController {
 		return "redirect:/disciplina/listar";
 	}
 
-	@RequestMapping(value = "/vincular_bibliografia")
-	public String vincular_bibliografia(ModelMap modelMap) {
-		modelMap.addAttribute("disciplina",
-				this.disciplinaService.find(Disciplina.class));
-		return "disciplina/vincular_bibliografia";
-	}
+//	@RequestMapping(value = "/vincularBibliografia")
+//	public String vincularBibliografia(ModelMap modelMap) {
+//		modelMap.addAttribute("disciplina",
+//				this.disciplinaService.find(Disciplina.class));
+//		return "disciplina/vincularBibliografia";
+//	}
 
 	@RequestMapping(value = "/{id}/vincular", method = RequestMethod.GET)
 	public String vincular(@PathVariable("id") Integer id, ModelMap modelMap) {
-
+		List<Titulo> listaIdTitulo;
+		List<Titulo> complementar;
 		Disciplina disciplina = this.disciplinaService.find(Disciplina.class,
 				id);
 		List<Titulo> titulos = this.tituloService.find(Titulo.class);
@@ -150,10 +152,10 @@ public class DisciplinaController {
 		listaIdTitulo = new ArrayList<Titulo>();
 		complementar = new ArrayList<Titulo>();
 		for (Bibliografia b : bibliografias) {
-			if (b.getTipoBibliografia().equals("Básica")) {
+			if (b.getTipoBibliografia().equals(DisciplinaController.BASICA)) {
 				listaIdTitulo.add(b.getTitulo());
 				titulos.remove(b.getTitulo());
-			} else if (b.getTipoBibliografia().equals("Complementar")) {
+			} else if (b.getTipoBibliografia().equals(DisciplinaController.COMPLEMENTAR)) {
 				complementar.add(b.getTitulo());
 				titulos.remove(b.getTitulo());
 			}
@@ -162,7 +164,7 @@ public class DisciplinaController {
 		modelMap.addAttribute("basica", listaIdTitulo);
 		modelMap.addAttribute("complementar", complementar);
 		modelMap.addAttribute("disciplina", disciplina);
-		return "disciplina/vincular_bibliografia";
+		return "disciplina/vincularBibliografia";
 	}
 
 
@@ -203,7 +205,7 @@ public class DisciplinaController {
 	@RequestMapping(value = "/vincular")
 	public String vincular(@RequestParam("basica") String basica, @RequestParam("complementar") String complementar, @RequestParam("idDiciplina") Integer idDiciplina) {
 		System.out.println(basica);
-		System.out.println(complementar);
+		System.out.println("Complementar"+complementar);
 		
 		String[] basicaArray = basica.split(",");
 		
@@ -213,13 +215,11 @@ public class DisciplinaController {
 		Disciplina disciplina = this.disciplinaService.find(Disciplina.class,idDiciplina);
 		List<Bibliografia> bibliografiaLista = disciplina.getBibliografias();
 		
-		bibliografiaLista = atualizaOuCriaBibligrafia(basicaArray, bibliografiaLista, disciplina, "Básica");
-		bibliografiaLista = atualizaOuCriaBibligrafia(complementarArray, bibliografiaLista, disciplina, "Complementar");
+		bibliografiaLista = atualizaOuCriaBibligrafia(basicaArray, bibliografiaLista, disciplina, DisciplinaController.BASICA);
+		bibliografiaLista = atualizaOuCriaBibligrafia(complementarArray, bibliografiaLista, disciplina, DisciplinaController.COMPLEMENTAR);
 		for (int i = 0; i < bibliografiaLista.size(); i++) {
 			bibliografiaService.delete(bibliografiaLista.get(i));
 		}
-
-		//return "redirect:/disciplina/listar";
 		return "/gal_npi/disciplina/listar";
 	}
 
