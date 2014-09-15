@@ -39,13 +39,13 @@ public class MetaController {
 	public String tituloByDetalhe(@PathVariable("id") Integer id,
 			ModelMap modelMap, RedirectAttributes redirectAttributes) {
 		Titulo titulo; 
-		for (ResultadoCalculo r : resultados) {
+		for (ResultadoCalculo resultadoCalculo : resultados) {
 
-			if (r.getTitulo().getId().equals(id)) {
-				if (r.getMetaCalculada().getCalculo() > 0.1) {
+			if (resultadoCalculo.getTitulo().getId().equals(id)) {
+				if (resultadoCalculo.getMetaCalculada().getCalculo() > 0.1) {
 					titulo = this.tituloService.find(Titulo.class, id);
 					modelMap.addAttribute("titulo", titulo);
-					modelMap.addAttribute("metaCalculada", r.getMetaCalculada());
+					modelMap.addAttribute("metaCalculada", resultadoCalculo.getMetaCalculada());
 
 					return "meta/detalhe";
 				}

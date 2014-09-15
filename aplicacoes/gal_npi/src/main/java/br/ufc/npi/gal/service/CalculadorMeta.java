@@ -12,10 +12,12 @@ import br.ufc.npi.gal.model.Titulo;
 @Named
 public class CalculadorMeta {
 
-	private int META_BASICA = 6;
-	private int META_COMPLEMENTAR= 2;
-	private List<ResultadoCalculo> resultCalculo;
-
+	private static final int META_BASICA = 6;
+	private static final int META_COMPLEMENTAR= 2;
+	private static final String BIBLIOGRAFIA_TIPO_COMPLEMENTAR = "Complementar";
+	
+	
+	private List<ResultadoCalculo> resultadoCalculo;
 	private MetaCalculada metaCalculada;
 	private DetalheMetaCalculada detalheMeta;
 	private List<DetalheMetaCalculada> detalhePares;
@@ -23,7 +25,7 @@ public class CalculadorMeta {
 
 	public CalculadorMeta() {
 		super();
-		this.resultCalculo = new ArrayList<ResultadoCalculo>();
+		this.resultadoCalculo = new ArrayList<ResultadoCalculo>();
 		this.metaCalculada = new MetaCalculada();
 		this.detalheMeta = new DetalheMetaCalculada();
 		this.detalhePares = new ArrayList<DetalheMetaCalculada>();
@@ -31,37 +33,37 @@ public class CalculadorMeta {
 	}
 
 	public List<ResultadoCalculo> calcular(List<Titulo> titulos) {
-		resultCalculo = new ArrayList<ResultadoCalculo>();
+		resultadoCalculo = new ArrayList<ResultadoCalculo>();
 
-		for (Titulo t : titulos) {
+		for (Titulo titulo : titulos) {
 
-			for (Bibliografia b : t.getBibliografias()) {
+			for (Bibliografia bibliografia : titulo.getBibliografias()) {
 
-				for (IntegracaoCurricular i : b.getDisciplina().getCurriculos()) {
-					detalheMeta.setCurriculo(i.getEstruturaCurricular()
+				for (IntegracaoCurricular integracaoCurricular : bibliografia.getDisciplina().getCurriculos()) {
+					detalheMeta.setCurriculo(integracaoCurricular.getEstruturaCurricular()
 							.getAnoSemestre());
-					detalheMeta.setCurso(i.getEstruturaCurricular().getCurso().getNome());
+					detalheMeta.setCurso(integracaoCurricular.getEstruturaCurricular().getCurso().getNome());
 					
 					
 					double calculo;
-					if(b.getTipoBibliografia().equals("Complementar")){
+					if(BIBLIOGRAFIA_TIPO_COMPLEMENTAR.equals(bibliografia.getTipoBibliografia())){
 						calculo = META_COMPLEMENTAR;
 					}
 					else{
-						calculo = (double) ((double)i.getQuantidadeAlunos() / (double)META_BASICA);
+						calculo = ((double)integracaoCurricular.getQuantidadeAlunos() / (double)META_BASICA);
 					}
 					
 					detalheMeta.setCalculo(calculo);
 					
-					if (i.getSemestreOferta() % 2 == 0) {
+					if (integracaoCurricular.getSemestreOferta() % 2 == 0) {
 						
-						detalheMeta.setTipoBibliografia(b.getTipoBibliografia());
-						detalheMeta.setDisciplina(b.getDisciplina().getNome());
+						detalheMeta.setTipoBibliografia(bibliografia.getTipoBibliografia());
+						detalheMeta.setDisciplina(bibliografia.getDisciplina().getNome());
 						detalhePares.add(detalheMeta);
 					} else {
 
-						detalheMeta.setTipoBibliografia(b.getTipoBibliografia());
-						detalheMeta.setDisciplina(b.getDisciplina().getNome());
+						detalheMeta.setTipoBibliografia(bibliografia.getTipoBibliografia());
+						detalheMeta.setDisciplina(bibliografia.getDisciplina().getNome());
 						detalheImpares.add(detalheMeta);
 					}
 					
@@ -75,12 +77,12 @@ public class CalculadorMeta {
 
 			detalhePares = new ArrayList<DetalheMetaCalculada>();
 			detalheImpares = new ArrayList<DetalheMetaCalculada>();
-			resultCalculo.add(new ResultadoCalculo(t, metaCalculada));
+			resultadoCalculo.add(new ResultadoCalculo(titulo, metaCalculada));
 			
 			metaCalculada = new MetaCalculada();
 
 		}
 
-		return resultCalculo;
+		return resultadoCalculo;
 	}
 }

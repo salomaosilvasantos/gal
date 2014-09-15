@@ -84,11 +84,11 @@ public class MetaCalculada {
 		double somatorioPar = new Double(0);
 		double somatorioImpar = new Double(0);
         
-		for (DetalheMetaCalculada dmcPar : detalhePar) {
-			somatorioPar = somatorioPar + dmcPar.getCalculo();
+		for (DetalheMetaCalculada detalheMetaCalculadaPar : detalhePar) {
+			somatorioPar = somatorioPar + detalheMetaCalculadaPar.getCalculo();
 		}
-		for (DetalheMetaCalculada dmcImpar : detalheImpar) {
-			somatorioImpar = somatorioImpar + dmcImpar.getCalculo();
+		for (DetalheMetaCalculada detalheMetaCalculadaImpar : detalheImpar) {
+			somatorioImpar = somatorioImpar + detalheMetaCalculadaImpar.getCalculo();
 		}
 		if (somatorioPar > somatorioImpar) {
 			
