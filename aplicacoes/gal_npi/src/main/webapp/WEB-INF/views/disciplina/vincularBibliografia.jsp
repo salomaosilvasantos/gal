@@ -75,60 +75,7 @@
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 	<!-- Example jQuery code (JavaScript)  -->
-	<script type="text/javascript">
-		$(document)
-				.ready(
-						function() {
-							// Get items
-							/* function getItems(exampleNr) {
-								var columns = [];
-								$(exampleNr + ' ul.sortable-list').each(
-										function() {
-											if ($(this).attr('id') != 'teste') {
-												columns.push($(this).sortable(
-														'toArray').join(','));
-											}
-										});
-								alert(columns);
-								return columns;
-							}
-							// Example 2.1: Get items
-							/* $('#example-2-1 .sortable-list').sortable({
-								connectWith : '#example-2-1 .sortable-list'
-							}); */
-							$('#btn-get')
-									.click(
-											function() {
-												var idDiciplina = "${disciplina.id}";
-												alert(idDiciplina);
-												var data = {
-													basica : getItems('#example-2-1')[0],
-													complementar : getItems('#example-2-1')[1],
-													idDiciplina : "${disciplina.id}"
-												};
-												$
-														.get(
-																'/gal_npi/disciplina/vincular',
-																data)
-														.success(
-																function(data) {
-																	alert('OK');
-																	window.location
-																			.replace('/gal_npi/disciplina/listar');
-																});
-												//alert(getItems('#example-2-1'));
-											}); */
-							/* $(function() {
-								$("#example-2-1 input").keyup(function() {
-									var index = $(this).parent.index();
-									alert("" + index);
-								});
-							}); */
-						});
-		/* $(function() {
-			$('#txtBusca').fastLiveFilter('#teste');
-		}); */
-	</script>
+
 </body>
 </html>
 

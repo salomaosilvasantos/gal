@@ -53,7 +53,6 @@ $( document ).ready(function() {
 								'toArray').join(','));
 					}
 				});
-		alert(columns);
 		return columns;
 	}
 	
