@@ -12,7 +12,5 @@
 <script src="<c:url value="/webjars/datatables/1.9.4/media/js/jquery.dataTables.min.js" />"></script>
 <script src="<c:url value="/resources/js/dataTables.tableTools.js" />"></script>
 <script src="<c:url value="/resources/js/gal.js" />"></script>
-
-<script src="<c:url value="/resources/js/jquery-1.11.1.min.js" />"></script>
 <script src="<c:url value="/resources/js/jquery.dataTables.min.js" />"></script>
 <script src="<c:url value="/resources/js/sortable.js" />"></script>

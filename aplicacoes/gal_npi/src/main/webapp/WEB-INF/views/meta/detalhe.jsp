@@ -38,27 +38,31 @@
 		</c:if>
 
 		<div style="text-align: left;">
-			<label class="control-label" style="font-size:17px;">Título: ${titulo.nome}</label>
-		</div><br>
-		
+			<label class="control-label" style="font-size: 17px;">Título:
+				${titulo.nome}</label>
+		</div>
+		<br>
+
 		<div style="text-align: right;">
-			<input class="btn btn-default" onclick="goBack()" style="font-weight: bold;" value="Voltar" />
+			<input class="btn btn-default" onclick="goBack()"
+				style="font-weight: bold;" value="Voltar" />
 
 		</div>
-		
-		<c:if test="${empty metaCalculada}">
-			<div class="alert alert-warning" role="alert">Não há metas
-				cadastrados.</div>
+
+
+
+		<div style="text-align: left;">
+			<label class="control-label" style="font-size: 15px;">Metas
+				de semestres pares.</label>
+		</div>
+
+		<c:if test="${empty metaCalculada.detalhePar}">
+			<div class="alert alert-warning" role="alert">Título não vinculado à disciplina de semestre par.</div>
 		</c:if>
 
-		<c:if test="${not empty metaCalculada}">
-		
-		<div style="text-align: left;">
-				<label class="control-label" style="font-size: 15px;">Metas
-					de semestres pares.</label>
-			</div>
-			
-			<table 	class="table table-striped sortable">
+		<c:if test="${not empty metaCalculada.detalhePar}">
+
+			<table class="table table-striped sortable">
 				<!-- here should go some titles... -->
 				<tr>
 					<th>Curso</th>
@@ -73,17 +77,27 @@
 						<td><c:out value="${par.disciplina}" /></td>
 						<td><c:out value="${par.tipoBibliografia}" /></td>
 						<td><c:out value="${par.curriculo}" /></td>
-						<td><fmt:formatNumber type="number" maxFractionDigits="1" value="${par.calculo}" /></td>
+						<td><fmt:formatNumber type="number" maxFractionDigits="1"
+								value="${par.calculo}" /></td>
 					</tr>
 				</c:forEach>
-			</table><br><br>
+			</table>
+			<br>
+			<br>
+		</c:if>
 
-			<div style="text-align: left;">
-				<label class="control-label" style="font-size: 15px;">Metas
-					de semestres impares.</label>
-			</div>
-			
-			<table 	class="table table-striped sortable">
+		<div style="text-align: left;">
+			<label class="control-label" style="font-size: 15px;">Metas
+				de semestres impares.</label>
+		</div>
+
+		<c:if test="${empty metaCalculada.detalheImpar}">
+			<div class="alert alert-warning" role="alert">Título não vinculado à disciplina de semestre impar.</div>
+		</c:if>
+
+		<c:if test="${not empty metaCalculada.detalheImpar}">
+
+			<table class="table table-striped sortable">
 				<!-- here should go some titles... -->
 				<tr>
 					<th>Curso</th>
@@ -98,11 +112,12 @@
 						<td><c:out value="${impar.disciplina}" /></td>
 						<td><c:out value="${impar.tipoBibliografia}" /></td>
 						<td><c:out value="${impar.curriculo}" /></td>
-						<td><fmt:formatNumber type="number" maxFractionDigits="1" value="${impar.calculo}" ></fmt:formatNumber></td>
+						<td><fmt:formatNumber type="number" maxFractionDigits="1"
+								value="${impar.calculo}"></fmt:formatNumber></td>
 					</tr>
 				</c:forEach>
 			</table>
-			
+
 		</c:if>
 
 		<jsp:include page="../fragments/footer.jsp" />
