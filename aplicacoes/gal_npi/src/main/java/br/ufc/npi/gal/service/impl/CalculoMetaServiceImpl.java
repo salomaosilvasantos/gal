@@ -15,16 +15,15 @@ import br.ufc.npi.gal.service.TituloService;
 public class CalculoMetaServiceImpl implements CalculoMetaService {
 
 	@Inject
-	TituloService tituloService;
+	private TituloService tituloService;
 	@Inject
-	CalculadorMeta calculo;
-	
-	ResultadoCalculo resultado;
+	private CalculadorMeta calculadorMeta;
 
 	public List<ResultadoCalculo> gerarCalculo() {
 
-		return calculo.calcular(tituloService.find(Titulo.class));
+		return calculadorMeta.calcular(tituloService.find(Titulo.class));
 
 	}
+	
 
 }
