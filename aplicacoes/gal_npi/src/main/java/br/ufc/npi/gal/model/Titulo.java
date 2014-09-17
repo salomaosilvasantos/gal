@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -49,15 +50,15 @@ public class Titulo {
 	@NotEmpty(message="Campo obrigatório")
 	private String tipo;
 	
-	@OneToMany(targetEntity= br.ufc.npi.gal.model.Bibliografia.class,mappedBy = "titulo")
-	private List<Bibliografia> bibliogafias;
+	@OneToMany(mappedBy = "titulo", targetEntity = Bibliografia.class, fetch = FetchType.LAZY)
+	private List<Bibliografia> bibliografias;
 	
 	public List<Bibliografia> getBibliografias() {
-		return bibliogafias;
+		return bibliografias;
 	}
 
 	public void setBibliografias(List<Bibliografia> bibliografias) {
-		this.bibliogafias = bibliografias;
+		this.bibliografias = bibliografias;
 	}
 
 	public Integer getId() {

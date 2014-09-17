@@ -39,7 +39,7 @@ public class Disciplina {
 	@OneToMany(mappedBy = "disciplina", targetEntity = IntegracaoCurricular.class, fetch = FetchType.LAZY)
 	private List<IntegracaoCurricular> curriculos;
 	
-	@OneToMany(mappedBy = "disciplina")
+	@OneToMany(mappedBy = "disciplina", targetEntity = Bibliografia.class, fetch = FetchType.LAZY)
 	private List<Bibliografia> bibliografias;
 	
 	public Disciplina() {

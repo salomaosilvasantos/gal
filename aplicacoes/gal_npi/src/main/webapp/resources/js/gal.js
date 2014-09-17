@@ -1,11 +1,5 @@
 $( document ).ready(function() {
-	
-	// Get items
-	
-	// Example 2.1: Get items
-	
-	
-	
+
 	$('table').dataTable(
 		{
 			sPaginationType : "full_numbers",
@@ -34,6 +28,12 @@ $( document ).ready(function() {
 			}
 		}
 	);
+	
+	$('#resultadoPar').dataTable( {
+        "paging":   false,
+        "ordering": false,
+        "info":     false
+    } );
 	
 	$('#confirm-delete').on('show.bs.modal', function(e) {
 	    $(this).find('.btn-danger').attr('href', $(e.relatedTarget).data('href'));
@@ -72,7 +72,7 @@ $( document ).ready(function() {
 									window.location
 											.replace('/gal_npi/disciplina/listar');
 								});
-				//alert(getItems('#example-2-1'));
+
 			});
 	
 	
@@ -89,3 +89,7 @@ $( document ).ready(function() {
 	
 		 	
 });
+
+function goBack() {
+	window.history.back()
+}

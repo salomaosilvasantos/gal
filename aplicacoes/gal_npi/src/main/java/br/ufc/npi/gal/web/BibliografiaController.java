@@ -20,6 +20,7 @@ public class BibliografiaController {
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("bibliografia", this.bibliografiaService.find(Bibliografia.class));
 		return "bibliografia/listar";
+
 	}
 	
 	@RequestMapping(value = "/vincularBibliografia")
@@ -27,5 +28,5 @@ public class BibliografiaController {
 		modelMap.addAttribute("bibliografia", this.bibliografiaService.find(Bibliografia.class));
 		return "bibliografia/vincularBibliografia";
 	}
-	
+
 }
