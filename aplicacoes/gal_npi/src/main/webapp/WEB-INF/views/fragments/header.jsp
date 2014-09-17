@@ -41,6 +41,7 @@
 		            <li><a href="<c:url value='/titulo/listar'/>">Listar</a></li>
 		          </ul>
 		       </li>
+		       <li><a href="<c:url value='/meta/listar'/>">Metas</a>
 		    </ul>
 	    </div>
 	</div>

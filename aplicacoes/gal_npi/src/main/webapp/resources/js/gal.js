@@ -28,6 +28,13 @@ $( document ).ready(function() {
 			}
 		}
 	);
+
+	
+	$('#resultadoPar').dataTable( {
+        "paging":   false,
+        "ordering": false,
+        "info":     false
+    } );
 	
 	$('#confirm-delete').on('show.bs.modal', function(e) {
 	    $(this).find('.btn-danger').attr('href', $(e.relatedTarget).data('href'));
@@ -37,3 +44,7 @@ $( document ).ready(function() {
 	$('div:has(span.error)').find('span.error').parent().parent().addClass('has-error has-feedback');
 	
 });
+
+function goBack() {
+	window.history.back()
+}
