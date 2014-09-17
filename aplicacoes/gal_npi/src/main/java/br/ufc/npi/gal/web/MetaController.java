@@ -1,9 +1,19 @@
 package br.ufc.npi.gal.web;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculoMetaService;
+import br.ufc.npi.gal.service.DetalheMetaCalculada;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
 
@@ -27,6 +38,84 @@ public class MetaController {
 	private TituloService tituloService;
 
 	private List<ResultadoCalculo> resultados;
+	
+	
+	public File criaRelatorioMetaDetalhado() {
+		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
+		BufferedWriter str = cria.abreFile("metaDetalhada.csv");
+		DecimalFormat df = new DecimalFormat("#,###.0");
+		String linha = new String();
+		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;Meta";
+		cria.escreveFile(str, linha);
+		List<DetalheMetaCalculada> metacalculada;
+		for (ResultadoCalculo element : resultados) {
+			metacalculada= null;
+			metacalculada = element.getMetaCalculada().getDetalheImpar();
+			if (!metacalculada.isEmpty()){
+				linha = "\""+element.getTitulo().getNome()+"\";\""+element.getTitulo().getIsbn()+"\";Meta Impar";
+				cria.escreveFile(str, linha);
+				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
+					linha = "\"\";\"\";\"\";\""+detalheMetaCalculada.getCurso()+"\";\""+detalheMetaCalculada.getDisciplina()+"\";\""+detalheMetaCalculada.getTipoBibliografia()+"\";\""+df.format(detalheMetaCalculada.getCalculo())+"\"";
+//					System.out.println(linha);
+					cria.escreveFile(str, linha);
+				}
+			}
+			
+//			System.out.println(linha);
+			metacalculada=null;
+			metacalculada = element.getMetaCalculada().getDetalhePar();
+			if (!metacalculada.isEmpty()){
+				linha = "\""+element.getTitulo().getNome()+"\";\""+element.getTitulo().getIsbn()+"\";Meta Par";
+//				System.out.println(linha);
+				cria.escreveFile(str, linha);
+				
+				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
+					linha = "\"\";\"\";\"\";\""+detalheMetaCalculada.getCurso()+"\";\""+detalheMetaCalculada.getDisciplina()+"\";\""+detalheMetaCalculada.getTipoBibliografia()+"\";\""+df.format(detalheMetaCalculada.getCalculo())+"\"";
+//					System.out.println(linha);
+					cria.escreveFile(str, linha);
+				}
+			}
+			
+			
+		}
+		cria.fechaFile(str);
+		return cria.getFile();
+	}
+
+	@RequestMapping(value = "/downloadMetaDetalhada", method = RequestMethod.GET)
+	public void downloadMetaDetalhada(ModelMap modelMap,HttpServletResponse response, HttpSession session) {
+		String csvFileName = "metaDetalhada.csv";		 
+		InputStream is = null;
+		File file = criaRelatorioMetaDetalhado();
+		try {
+			
+			is = new FileInputStream(file);
+			response.setContentType("text/csv"); 
+	        // creates mock data
+	        String headerKey = "Content-Disposition";
+	        String headerValue = String.format("attachment; filename=\"%s\"", csvFileName);
+	        response.setHeader(headerKey, headerValue);
+			IOUtils.copy(is, response.getOutputStream());
+			response.flushBuffer();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try {
+				is.close();
+				file.delete();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+	}
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
@@ -34,18 +123,18 @@ public class MetaController {
 		modelMap.addAttribute("resultados", resultados);
 		return "meta/listar";
 	}
-
+	
 	@RequestMapping(value = "/{id}/detalhe", method = RequestMethod.GET)
 	public String tituloByDetalhe(@PathVariable("id") Integer id,
 			ModelMap modelMap, RedirectAttributes redirectAttributes) {
 		Titulo titulo; 
-		for (ResultadoCalculo resultadoCalculo : resultados) {
+		for (ResultadoCalculo r : resultados) {
 
-			if (resultadoCalculo.getTitulo().getId().equals(id)) {
-				if (resultadoCalculo.getMetaCalculada().getCalculo() > 0.1) {
+			if (r.getTitulo().getId().equals(id)) {
+				if (r.getMetaCalculada().getCalculo() > 0.1) {
 					titulo = this.tituloService.find(Titulo.class, id);
 					modelMap.addAttribute("titulo", titulo);
-					modelMap.addAttribute("metaCalculada", resultadoCalculo.getMetaCalculada());
+					modelMap.addAttribute("metaCalculada", r.getMetaCalculada());
 
 					return "meta/detalhe";
 				}

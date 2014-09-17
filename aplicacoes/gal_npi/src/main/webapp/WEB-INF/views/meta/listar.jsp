@@ -13,10 +13,11 @@
 <title>Metas</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
 </head>
-<body>     
+<body>  
 	<div id="container" style="width: 1000px; margin: 0 auto;">
+	
 		<jsp:include page="../fragments/header.jsp" />
-
+		<a	href="<c:url value="/meta/downloadMetaDetalhada"></c:url>">Download do relatorio contendo o detalhamento das metas</a>
 		<c:if test="${not empty error}">
 			<div class="alert alert-danger alert-dismissible" role="alert">
 				<button type="button" class="close" data-dismiss="alert">
@@ -44,6 +45,8 @@
 		</c:if>
 
 		<c:if test="${not empty resultados}">
+		
+		
 			<datatables:table id="resultado" data="${resultados}" cdn="true"
 				row="resultado" theme="bootstrap2" cssClass="table table-striped">
 
