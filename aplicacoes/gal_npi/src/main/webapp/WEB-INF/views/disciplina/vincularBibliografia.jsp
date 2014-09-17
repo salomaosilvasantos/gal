@@ -22,14 +22,14 @@
 				<div class="dhe-example-section-content">
 					<div id="example-2-1">
 
-						<p id="nomeDisciplina">${disciplina.nome}</p>
+						<p id="nomeDisciplina">${disciplina.codigo} - ${disciplina.nome}</p>
 						<p>
 							<a class="btn btn-success" id="btn-get"
 								href="<c:url value="/disciplina/listar" ></c:url>">Vincular</a>
 						</p>
 						<div class="column left first">
 							<label style="font-size: 16px;">Básica</label>
-							<ul class="sortable-list">
+							<ul class="sortable-list" id="basica">
 
 								<c:forEach var="t" items="${basica}">
 									<li class="sortable-item" id="${t.id}" style="font-size: 12px;"><c:out
@@ -42,7 +42,7 @@
 
 						<div class="column left">
 							<label style="font-size: 16px;">Complementar</label>
-							<ul class="sortable-list">
+							<ul class="sortable-list" id="complementar">
 								<c:forEach var="t" items="${complementar}">
 									<li class="sortable-item" id="${t.id}" style="font-size: 12px;"><c:out
 											value="${t.nome}" /></li>
@@ -54,9 +54,9 @@
 						<div class="column left">
 							<label style="font-size: 16px;">Acervo</label> <input type="text"
 								id="txtBusca" placeholder="Buscar acervo..." />
-							<ul class="sortable-list" id="teste">
+							<ul class="sortable-list" id="acervo">
 								<c:forEach var="t" items="${titulo}">
-									<li class="sortable-item" id="${t.id}" style="font-size: 12px;"><c:out
+									<li class="sortable-item" id="${t.id}" data-l="acervo" style="font-size: 12px;"><c:out
 											value="${t.nome}" /></li>
 								</c:forEach>
 							</ul>
@@ -74,8 +74,6 @@
 
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
-	<!-- Example jQuery code (JavaScript)  -->
-
 </body>
 </html>
 

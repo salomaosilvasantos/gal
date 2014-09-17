@@ -42,8 +42,6 @@ $( document ).ready(function() {
 	$('div:has(span.error)').find('span.error').css('color', '#a94442');
 	$('div:has(span.error)').find('span.error').parent().parent().addClass('has-error has-feedback');
 	
-	$('#txtBusca').fastLiveFilter('#teste');
-	
 	function getItems(exampleNr) {
 		var columns = [];
 		$(exampleNr + ' ul.sortable-list').each(
@@ -83,23 +81,11 @@ $( document ).ready(function() {
 	$('#example-2-1 .sortable-list').sortable({
 		connectWith : '#example-2-1 .sortable-list'
 	});
-	
-	/*$("#example-2-1 input").keyup(function() {
-		var index = $(this).parent().index();
-		$('#example-2-1 .sortable-list').sortable({
-			connectWith : '#example-2-1 .sortable-list'
-		});
-		$('#txtBusca').fastLiveFilter('#teste');
-	});*/
+
 	$("#example-2-1 input").focus(function() {
 		
-		$('#example-2-1 .sortable-list').sortable({
-			connectWith : '#example-2-1 .sortable-list'
-		});
-		$('#txtBusca').fastLiveFilter('#teste');
+		$('#txtBusca').fastLiveFilter("#acervo");
 	});
 	
-	
-
-	
+		 	
 });
