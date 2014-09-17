@@ -42,6 +42,8 @@
 		          </ul>
 		       </li>
 		       <li><a href="<c:url value='/meta/listar'/>">Metas</a>
+		       <li><a href="<c:url value='/contatos'/>">Contatos</a>
+		       <li><a href="<c:url value='/logout'/>">Logout</a>
 		    </ul>
 	    </div>
 	</div>

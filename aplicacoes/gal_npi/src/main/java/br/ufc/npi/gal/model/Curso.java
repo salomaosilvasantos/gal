@@ -34,14 +34,12 @@ public class Curso implements Serializable {
 
 	@NotNull(message = "Campo obrigatório")
 	@Column(name = "cod_c")
-	@NumberFormat(style = Style.NUMBER, pattern="aceitar apenas número")
+	@NumberFormat(style = Style.NUMBER, pattern = "aceitar apenas número")
 	private Integer codigo;
 
 	@NotEmpty(message = "Campo obrigatório")
 	@Column(name = "nome_c")
-	@Pattern.List({
-			@Pattern(regexp = "([^\\s]{0,})", message = "O campo Nome não pode conter espaços"),
-			@Pattern(regexp = "[a-zA-Z\\sà-ùÀ-Ù]{0,}", message = "O campo Nome não pode possuir caracteres especiais ou números.") })
+	@Pattern(regexp = "[a-zA-Z\\sà-ùÀ-Ù]{0,}", message = "O campo Nome não pode possuir caracteres especiais ou números.")
 	private String nome;
 
 	@NotEmpty(message = "Campo obrigatório")

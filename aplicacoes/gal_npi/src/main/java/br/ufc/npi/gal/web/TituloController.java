@@ -43,6 +43,11 @@ public class TituloController {
 			result.rejectValue("isbn", "Repeat.titulo.isbn", "Já existe um título com esse isbn");
 			return "titulo/adicionar";
 		}
+		if (titulo.getNome().trim().isEmpty()) {
+			result.rejectValue("nome", "Repeat.titulo.nome",
+					"Campo obrigatório.");
+			return "titulo/adicionar";
+		}
 		if(tituloService.getTituloByNome(titulo.getNome()) != null) {
 			result.rejectValue("nome", "Repeat.titulo.nome", "Já existe um título com esse nome");
 			return "titulo/adicionar";

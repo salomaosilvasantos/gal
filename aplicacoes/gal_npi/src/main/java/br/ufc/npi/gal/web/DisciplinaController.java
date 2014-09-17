@@ -116,6 +116,11 @@ public class DisciplinaController {
 					"Já existe uma disciplina com esse código");
 			return "disciplina/adicionar";
 		}
+		if (disciplina.getNome().trim().isEmpty()) {
+			result.rejectValue("nome", "Repeat.disciplina.nome",
+					"Campo obrigatório.");
+			return "disciplina/adicionar";
+		}
 		if (disciplinaService.getDisciplinaByNome(disciplina.getNome()
 				.toUpperCase()) != null) {
 			result.rejectValue("nome", "Repeat.disciplina.nome",
@@ -129,13 +134,6 @@ public class DisciplinaController {
 				"Disciplina adicionada com sucesso.");
 		return "redirect:/disciplina/listar";
 	}
-
-//	@RequestMapping(value = "/vincularBibliografia")
-//	public String vincularBibliografia(ModelMap modelMap) {
-//		modelMap.addAttribute("disciplina",
-//				this.disciplinaService.find(Disciplina.class));
-//		return "disciplina/vincularBibliografia";
-//	}
 
 	@RequestMapping(value = "/{id}/vincular", method = RequestMethod.GET)
 	public String vincular(@PathVariable("id") Integer id, ModelMap modelMap) {
