@@ -135,13 +135,6 @@ public class DisciplinaController {
 		return "redirect:/disciplina/listar";
 	}
 
-//	@RequestMapping(value = "/vincularBibliografia")
-//	public String vincularBibliografia(ModelMap modelMap) {
-//		modelMap.addAttribute("disciplina",
-//				this.disciplinaService.find(Disciplina.class));
-//		return "disciplina/vincularBibliografia";
-//	}
-
 	@RequestMapping(value = "/{id}/vincular", method = RequestMethod.GET)
 	public String vincular(@PathVariable("id") Integer id, ModelMap modelMap) {
 		List<Titulo> listaIdTitulo;

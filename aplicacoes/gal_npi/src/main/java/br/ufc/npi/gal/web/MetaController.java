@@ -38,8 +38,7 @@ public class MetaController {
 	private TituloService tituloService;
 
 	private List<ResultadoCalculo> resultados;
-	
-	
+
 	public File criaRelatorioMetaDetalhado() {
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
 		BufferedWriter str = cria.abreFile("metaDetalhada.csv");
@@ -49,72 +48,83 @@ public class MetaController {
 		cria.escreveFile(str, linha);
 		List<DetalheMetaCalculada> metacalculada;
 		for (ResultadoCalculo element : resultados) {
-			metacalculada= null;
+			metacalculada = null;
 			metacalculada = element.getMetaCalculada().getDetalheImpar();
-			if (!metacalculada.isEmpty()){
-				linha = "\""+element.getTitulo().getNome()+"\";\""+element.getTitulo().getIsbn()+"\";Meta Impar";
+			if (!metacalculada.isEmpty()) {
+				linha = "\"" + element.getTitulo().getNome() + "\";\""
+						+ element.getTitulo().getIsbn() + "\";Meta Impar";
 				cria.escreveFile(str, linha);
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"\";\"\";\"\";\""+detalheMetaCalculada.getCurso()+"\";\""+detalheMetaCalculada.getDisciplina()+"\";\""+detalheMetaCalculada.getTipoBibliografia()+"\";\""+df.format(detalheMetaCalculada.getCalculo())+"\"";
-//					System.out.println(linha);
+					linha = "\"\";\"\";\"\";\""
+							+ detalheMetaCalculada.getCurso() + "\";\""
+							+ detalheMetaCalculada.getDisciplina() + "\";\""
+							+ detalheMetaCalculada.getTipoBibliografia()
+							+ "\";\""
+							+ df.format(detalheMetaCalculada.getCalculo())
+							+ "\"";
 					cria.escreveFile(str, linha);
 				}
 			}
-			
-//			System.out.println(linha);
-			metacalculada=null;
+
+			metacalculada = null;
 			metacalculada = element.getMetaCalculada().getDetalhePar();
-			if (!metacalculada.isEmpty()){
-				linha = "\""+element.getTitulo().getNome()+"\";\""+element.getTitulo().getIsbn()+"\";Meta Par";
-//				System.out.println(linha);
+			if (!metacalculada.isEmpty()) {
+				linha = "\"" + element.getTitulo().getNome() + "\";\""
+						+ element.getTitulo().getIsbn() + "\";Meta Par";
+
 				cria.escreveFile(str, linha);
-				
+
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"\";\"\";\"\";\""+detalheMetaCalculada.getCurso()+"\";\""+detalheMetaCalculada.getDisciplina()+"\";\""+detalheMetaCalculada.getTipoBibliografia()+"\";\""+df.format(detalheMetaCalculada.getCalculo())+"\"";
-//					System.out.println(linha);
+					linha = "\"\";\"\";\"\";\""
+							+ detalheMetaCalculada.getCurso() + "\";\""
+							+ detalheMetaCalculada.getDisciplina() + "\";\""
+							+ detalheMetaCalculada.getTipoBibliografia()
+							+ "\";\""
+							+ df.format(detalheMetaCalculada.getCalculo())
+							+ "\"";
+
 					cria.escreveFile(str, linha);
 				}
 			}
-			
-			
+
 		}
 		cria.fechaFile(str);
 		return cria.getFile();
 	}
 
 	@RequestMapping(value = "/downloadMetaDetalhada", method = RequestMethod.GET)
-	public void downloadMetaDetalhada(ModelMap modelMap,HttpServletResponse response, HttpSession session) {
-		String csvFileName = "metaDetalhada.csv";		 
+	public void downloadMetaDetalhada(ModelMap modelMap,
+			HttpServletResponse response, HttpSession session) {
+		String csvFileName = "metaDetalhada.csv";
 		InputStream is = null;
 		File file = criaRelatorioMetaDetalhado();
 		try {
-			
+
 			is = new FileInputStream(file);
-			response.setContentType("text/csv"); 
-	        // creates mock data
-	        String headerKey = "Content-Disposition";
-	        String headerValue = String.format("attachment; filename=\"%s\"", csvFileName);
-	        response.setHeader(headerKey, headerValue);
+			response.setContentType("text/csv");
+			// creates mock data
+			String headerKey = "Content-Disposition";
+			String headerValue = String.format("attachment; filename=\"%s\"",
+					csvFileName);
+			response.setHeader(headerKey, headerValue);
 			IOUtils.copy(is, response.getOutputStream());
 			response.flushBuffer();
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
+
 			e1.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
-		}finally {
+		} finally {
 			try {
 				is.close();
 				file.delete();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
+
 	}
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
@@ -123,18 +133,18 @@ public class MetaController {
 		modelMap.addAttribute("resultados", resultados);
 		return "meta/listar";
 	}
-	
+
 	@RequestMapping(value = "/{id}/detalhe", method = RequestMethod.GET)
 	public String tituloByDetalhe(@PathVariable("id") Integer id,
 			ModelMap modelMap, RedirectAttributes redirectAttributes) {
-		Titulo titulo; 
-		for (ResultadoCalculo r : resultados) {
+		Titulo titulo;
+		for (ResultadoCalculo resultadoCalculo : resultados) {
 
-			if (r.getTitulo().getId().equals(id)) {
-				if (r.getMetaCalculada().getCalculo() > 0.1) {
+			if (resultadoCalculo.getTitulo().getId().equals(id)) {
+				if (resultadoCalculo.getMetaCalculada().getCalculo() > 0.1) {
 					titulo = this.tituloService.find(Titulo.class, id);
 					modelMap.addAttribute("titulo", titulo);
-					modelMap.addAttribute("metaCalculada", r.getMetaCalculada());
+					modelMap.addAttribute("metaCalculada", resultadoCalculo.getMetaCalculada());
 
 					return "meta/detalhe";
 				}
