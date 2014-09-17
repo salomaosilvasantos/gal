@@ -52,7 +52,11 @@
 				<datatables:column title="Codigo">
 					<c:out value="${disciplina.codigo}"></c:out>
 				</datatables:column>
-	
+				
+				<datatables:column title="Vincular">
+					<a class="btn btn-success" href="<c:url value="/disciplina/${disciplina.id }/vincular" ></c:url>"><span class="glyphicon glyphicon-link"></span></a>
+				</datatables:column>
+				
 				<datatables:column title="Editar">
 					<a class="btn btn-primary" href="<c:url value="/disciplina/${disciplina.id }/editar" ></c:url>"><span class="glyphicon glyphicon-edit"></span></a>
 				</datatables:column>
