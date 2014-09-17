@@ -97,6 +97,11 @@ public class CursoController {
 					"Já existe um curso com esse código");
 			return "curso/adicionar";
 		}
+		if (curso.getNome().trim().isEmpty()) {
+			result.rejectValue("codigo", "Repeat.curso.nome",
+					"Campo obrigatório.");
+			return "curso/adicionar";
+		}
 		if (cursoService.getCursoBySigla(curso.getSigla().toUpperCase()) != null) {
 			result.rejectValue("sigla", "Repeat.sigla.sigla",
 					"Já existe um curso com essa sigla");

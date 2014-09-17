@@ -116,6 +116,11 @@ public class DisciplinaController {
 					"Já existe uma disciplina com esse código");
 			return "disciplina/adicionar";
 		}
+		if (disciplina.getNome().trim().isEmpty()) {
+			result.rejectValue("nome", "Repeat.disciplina.nome",
+					"Campo obrigatório.");
+			return "disciplina/adicionar";
+		}
 		if (disciplinaService.getDisciplinaByNome(disciplina.getNome()
 				.toUpperCase()) != null) {
 			result.rejectValue("nome", "Repeat.disciplina.nome",
