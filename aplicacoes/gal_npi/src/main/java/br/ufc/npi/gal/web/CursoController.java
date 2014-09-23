@@ -45,6 +45,10 @@ public class CursoController {
 		if (result.hasErrors()) {
 			return "curso/editar";
 		}
+		
+		if (result.hasFieldErrors("codigo")) {
+			return "curso/editar";
+		}
 
 		if (cursoService
 				.getOutroCursoByCodigo(curso.getId(), curso.getCodigo()) != null) {
