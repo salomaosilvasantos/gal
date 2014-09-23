@@ -14,7 +14,6 @@ jQuery.fn.fastLiveFilter = function(list, options) {
 	var lastFilter = '';
 	var timeout = options.timeout || 0;
 	var callback = options.callback || function() {};
-	
 	var keyTimeout;
 	
 	// NOTE: because we cache lis & len here, users would need to re-init the plugin
@@ -53,11 +52,14 @@ jQuery.fn.fastLiveFilter = function(list, options) {
 		return false;
 	}).keydown(function() {
 		clearTimeout(keyTimeout);
+		lis = list.children();
+		len = lis.length;
 		keyTimeout = setTimeout(function() {
 			if( input.val() === lastFilter ) return;
 			lastFilter = input.val();
 			input.change();
 		}, timeout);
 	});
+	
 	return this; // maintain jQuery chainability
 }
