@@ -46,7 +46,7 @@ $( document ).ready(function() {
 		var columns = [];
 		$(exampleNr + ' ul.sortable-list').each(
 				function() {
-					if ($(this).attr('id') != 'teste') {
+					if ($(this).attr('id') != 'acervo') {
 						columns.push($(this).sortable(
 								'toArray').join(','));
 					}
@@ -58,8 +58,8 @@ $( document ).ready(function() {
 	.click(
 			function() {
 				var data = {
-					basica : getItems('#example-2-1')[0],
-					complementar : getItems('#example-2-1')[1],
+					basica : getItems('#drag-and-drop')[0],
+					complementar : getItems('#drag-and-drop')[1],
 					idDiciplina : $('#disciplinaId').val()
 				};
 				$
@@ -78,11 +78,11 @@ $( document ).ready(function() {
 	
 	
 	
-	$('#example-2-1 .sortable-list').sortable({
-		connectWith : '#example-2-1 .sortable-list'
+	$('#drag-and-drop .sortable-list').sortable({
+		connectWith : '#drag-and-drop .sortable-list'
 	});
 
-	$("#example-2-1 input").focus(function() {
+	$("#drag-and-drop input").focus(function() {
 		
 		$('#txtBusca').fastLiveFilter("#acervo");
 	});
