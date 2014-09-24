@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,9 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import br.ufc.npi.gal.model.Curso;
+import br.ufc.npi.gal.model.DetalheMetaCalculada;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculoMetaService;
-import br.ufc.npi.gal.service.DetalheMetaCalculada;
+import br.ufc.npi.gal.service.CursoService;
+import br.ufc.npi.gal.service.MetaCalculada;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
 
@@ -37,7 +41,19 @@ public class MetaController {
 	@Inject
 	private TituloService tituloService;
 
+	@Inject
+	private CursoService cursoService;
+
 	private List<ResultadoCalculo> resultados;
+
+	private List<ResultadoCalculo> resultadosCurso;
+
+	private List<Curso> cursos;
+
+	public MetaController() {
+		super();
+
+	}
 
 	public File criaRelatorioMetaDetalhado() {
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
@@ -129,9 +145,79 @@ public class MetaController {
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
-		resultados = calculo.gerarCalculo();
+		if (resultados == null) {
+			cursos = cursoService.find(Curso.class);
+			resultados = calculo.gerarCalculo();
+
+		}
+		modelMap.addAttribute("cursos", cursos);
 		modelMap.addAttribute("resultados", resultados);
 		return "meta/listar";
+	}
+
+	@RequestMapping(value = "/{id}/listar", method = RequestMethod.GET)
+	public String listarByCurso(@PathVariable("id") Integer id,
+			ModelMap modelMap, RedirectAttributes redirectAttributes) {
+		List<DetalheMetaCalculada> detalhePares;
+		List<DetalheMetaCalculada> detalheImpares;
+		MetaCalculada metaCalculada;
+		ResultadoCalculo r;
+		int count = 0;
+		if (resultadosCurso == null) {
+			this.resultadosCurso = new ArrayList<ResultadoCalculo>();
+
+			for (ResultadoCalculo resultadoCalculo : resultados) {
+				boolean flag = false;
+				detalhePares = new ArrayList<DetalheMetaCalculada>();
+				detalheImpares = new ArrayList<DetalheMetaCalculada>();
+				for (DetalheMetaCalculada detalhePar : resultadoCalculo
+						.getMetaCalculada().getDetalhePar()) {
+
+					if (detalhePar.getCurso().equals(cursos.get(id).getNome())) {
+						flag = true;
+						detalhePares.add(detalhePar);
+					}
+
+				}
+				for (DetalheMetaCalculada detalheImpar : resultadoCalculo
+						.getMetaCalculada().getDetalheImpar()) {
+
+					if (detalheImpar.getCurso()
+							.equals(cursos.get(id).getNome())) {
+						flag = true;
+						detalheImpares.add(detalheImpar);
+					}
+
+				}
+				if (flag == true) {
+//					metaCalculada = new MetaCalculada(resultadoCalculo
+//							.getMetaCalculada().getNome(), detalhePares,
+//							detalheImpares);
+//					r = new ResultadoCalculo(resultadoCalculo.getTitulo(),
+//							metaCalculada);
+//					System.out.println(r.getTitulo());
+//					resultadosCurso.add(r);
+//					flag = false;
+					
+					for(DetalheMetaCalculada par: detalheImpares){
+					 System.out.println(par.getCurso()+ "  "+par.getDisciplina());
+					}
+				}
+
+				// resultadosCurso.add(new
+				// ResultadoCalculo(resultadoCalculo.getTitulo(),
+				// metaCalculada));
+
+				// resultadosCurso.add((new ResultadoCalculo(resultadoCalculo
+				// .getTitulo(), new MetaCalculada(resultadoCalculo
+				// .getMetaCalculada().getNome(), detalhePares,
+				// detalheImpares))));
+
+			}
+		}
+		modelMap.addAttribute("resultados", resultadosCurso);
+		return "meta/listar";
+
 	}
 
 	@RequestMapping(value = "/{id}/detalhe", method = RequestMethod.GET)
@@ -144,7 +230,8 @@ public class MetaController {
 				if (resultadoCalculo.getMetaCalculada().getCalculo() > 0.1) {
 					titulo = this.tituloService.find(Titulo.class, id);
 					modelMap.addAttribute("titulo", titulo);
-					modelMap.addAttribute("metaCalculada", resultadoCalculo.getMetaCalculada());
+					modelMap.addAttribute("metaCalculada",
+							resultadoCalculo.getMetaCalculada());
 
 					return "meta/detalhe";
 				}
