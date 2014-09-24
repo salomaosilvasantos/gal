@@ -37,14 +37,15 @@ public class ExemplarController {
 	@RequestMapping(value = "/{id}/adicionar", method = RequestMethod.GET)
 	public String adicionar(@PathVariable("id") Integer id,ModelMap modelMap){
 		Titulo titulo = this.tituloService.find(Titulo.class, id);
-		Exemplar exemplar = new Exemplar();
-		exemplar.setTitulo(titulo);
-		modelMap.addAttribute("exemplar", exemplar);
+
+		modelMap.addAttribute("titulo", titulo);
+		modelMap.addAttribute("exemplar", new Exemplar());
 		return "exemplar/adicionar";
 	}
 	
-	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
-	public String adicionar(@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value="/{id}/adicionar",method = RequestMethod.POST)
+	public String adicionar(@Valid Exemplar exemplar, @PathVariable("id") Integer id,BindingResult result, RedirectAttributes redirectAttributes) {
+		
 		if (result.hasErrors()) {
 			return "exemplar/adicionar";
 		}
@@ -53,8 +54,8 @@ public class ExemplarController {
 			result.rejectValue("codigoExemplar", "Repeat.exemplar.codigoExemplar", "Já existe um exemplar com esse codigo");
 			return "exemplar/adicionar";
 		}
-		
-		
+		Titulo titulo = this.tituloService.find(Titulo.class, id);
+		exemplar.setTitulo(titulo);
 		exemplarService.save(exemplar);
 		redirectAttributes.addFlashAttribute("info", "Exemplar adicionado com sucesso.");
 		return "redirect:/exemplar/"+exemplar.getTitulo().getId()+"/listar";
@@ -63,14 +64,15 @@ public class ExemplarController {
 	
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
-		Titulo titulo = this.tituloService.find(Titulo.class, id);
+		//Titulo titulo = this.tituloService.find(Titulo.class, id);
+		Exemplar exemplar = this.exemplarService.find(Exemplar.class, id);
 
-		if (titulo == null) {
-			return "redirect:/titulo/listar";
+		if (exemplar == null) {
+			return "redirect:/exemplar//listar";
 		}
 
-		modelMap.addAttribute("titulo", titulo);
-		return "titulo/editar";
+		modelMap.addAttribute("exemplar", exemplar);
+		return "exemplar/editar";
 	}
 	
 	@RequestMapping(value = "/editar", method=RequestMethod.POST)
