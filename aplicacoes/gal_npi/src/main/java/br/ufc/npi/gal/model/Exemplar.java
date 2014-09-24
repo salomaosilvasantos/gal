@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "exemplares")
@@ -22,7 +23,9 @@ public class Exemplar {
 	@JoinColumn(name = "id_titulo")
 	private Titulo titulo;
 
+	
 	@Column(name = "cod_e")
+	@Pattern(regexp = "[0-9]*", message = "O codigo do exemplar so aceita numeros")
 	private String codigoExemplar;
 	
 	public Titulo getTitulo() {
