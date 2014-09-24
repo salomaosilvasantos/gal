@@ -36,7 +36,7 @@
 			</datatables:column>
 
 			<datatables:column title="Editar">
-				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/editar"></c:url>">Editar</a>
+				<a class="buttonAdd" href="<c:url value = "/integracao/adicionar"></c:url>">Editar</a>
 			</datatables:column>
 
 			<datatables:column title="Deletar">
@@ -44,7 +44,7 @@
 			</datatables:column>
 		</datatables:table>
 
-		<a class="buttonAdd" href="/gal_npi/disciplina/adicionar">Adicionar</a>
+		<a class="buttonAdd" href="/gal_npi/integracao/adicionar">Adicionar</a>
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 </body>
