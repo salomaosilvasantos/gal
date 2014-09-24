@@ -8,7 +8,6 @@ import javax.inject.Named;
 
 import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Exemplar;
-import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.repository.ExemplarRepository;
 
 @Named

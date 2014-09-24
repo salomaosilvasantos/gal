@@ -40,7 +40,7 @@
 			</datatables:column>
 
 			<datatables:column title="Deletar">
-				<a class="buttonAdd" href="<c:url value = "/disciplina/${disciplina.id}/excluir"></c:url>">Deletar</a>
+				<a class="buttonAdd" href="<c:url value = "/integracao/excluir"></c:url>">Deletar</a>
 			</datatables:column>
 		</datatables:table>
 
