@@ -67,7 +67,7 @@
 									<c:if test="${ct.index != 0}">
 										<c:set var="act" value=""></c:set>
 									</c:if>
-									<li class="${act }"><a href="#${curriculo.anoSemestre }" role="tab" data-toggle="tab">${curriculo.anoSemestre}</a></li>
+									<li class="${act }"><a href="#${curriculo.anoSemestre}" role="tab" data-toggle="tab">${curriculo.anoSemestre}</a></li>
 								</c:forEach>
 							</ul>
 							<div class="tab-content">
