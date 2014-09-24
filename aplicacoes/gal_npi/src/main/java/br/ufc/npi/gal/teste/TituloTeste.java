@@ -182,7 +182,7 @@ public class TituloTeste {
 		Set<ConstraintViolation<Titulo>> constraintViolations = validator
 				.validate(titulo);
 		
-		Assert.assertEquals(2, constraintViolations.size());
+		Assert.assertEquals(1, constraintViolations.size());
 		
 	}
 
@@ -256,7 +256,7 @@ public class TituloTeste {
 		Set<ConstraintViolation<Titulo>> constraintViolations = validator
 				.validate(titulo);
 
-		Assert.assertEquals(0, constraintViolations.size());
+		Assert.assertEquals(1, constraintViolations.size());
 
 	}
 }

@@ -19,7 +19,25 @@ public class DisciplinaTeste {
 		localValidatorFactoryBean.afterPropertiesSet();
 		return localValidatorFactoryBean;
 	}
+
+	@Test
+	public void testeNomeVazio() {
+		Disciplina disciplina = new Disciplina();
+		disciplina.setNome("");
+		disciplina.setCodigo("QXD002");
+		
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Disciplina>> constraintViolations = validator
+				.validate(disciplina);
+		
+		Assert.assertEquals(1, constraintViolations.size());
+		ConstraintViolation<Disciplina> violacao = constraintViolations.iterator()
+				.next();
+		Assert.assertEquals(violacao.getMessage(), "Campo obrigatório");
+		Assert.assertEquals(violacao.getPropertyPath().toString(), "nome");
 	
+	}
+		
 	@Test
 	public void testeNomeComSeisEspacosNaoDeveriaPassar() {
 		Disciplina disciplina = new Disciplina();
@@ -30,7 +48,7 @@ public class DisciplinaTeste {
 		Set<ConstraintViolation<Disciplina>> constraintViolations = validator
 				.validate(disciplina);
 		
-		Assert.assertEquals(0, constraintViolations.size());
+		Assert.assertEquals(1, constraintViolations.size());
 		
 	
 	}
@@ -87,6 +105,23 @@ public class DisciplinaTeste {
 
 	}
 		
+
+	@Test
+	public void testeCodigoVazio(){
+		Disciplina disciplina = new Disciplina();
+		disciplina.setNome("Gerencia de Projetos");
+		disciplina.setCodigo("");
+		
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Disciplina>> constraintViolations = validator
+				.validate(disciplina);
+		
+		Assert.assertEquals(1, constraintViolations.size());
+		ConstraintViolation<Disciplina> violation = constraintViolations.iterator()
+				.next();
+		Assert.assertEquals(violation.getMessage(), "Campo obrigatório");
+
+	}
 	
 
 	@Test
@@ -99,7 +134,7 @@ public class DisciplinaTeste {
 		Set<ConstraintViolation<Disciplina>> constraintViolations = validator
 				.validate(disciplina);
 		
-		Assert.assertEquals(0, constraintViolations.size());
+		Assert.assertEquals(1, constraintViolations.size());
 		
 	}
 	

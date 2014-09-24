@@ -68,7 +68,7 @@ public class CursoTeste {
 		Set<ConstraintViolation<Curso>> constraintViolations = validator
 				.validate(curso);
 
-		Assert.assertEquals(0, constraintViolations.size());
+		Assert.assertEquals(1, constraintViolations.size());
 
 	}
 	
