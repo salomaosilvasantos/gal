@@ -1,4 +1,4 @@
-package br.ufc.npi.gal.teste;
+package br.ufc.npi.gal.model;
 
 import java.util.Set;
 

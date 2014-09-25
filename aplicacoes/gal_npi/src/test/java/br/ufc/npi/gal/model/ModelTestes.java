@@ -1,4 +1,4 @@
-package br.ufc.npi.gal.teste;
+package br.ufc.npi.gal.model;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
