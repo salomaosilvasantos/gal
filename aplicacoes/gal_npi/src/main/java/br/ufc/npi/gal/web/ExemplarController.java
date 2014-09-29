@@ -43,8 +43,8 @@ public class ExemplarController {
 	}
 	
 	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
-	public String adicionar(@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes) {
-		
+	public String adicionar(@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes,ModelMap modelMap) {
+		modelMap.addAttribute("titulo",titulo);
 		if (result.hasErrors()) {
 			return "exemplar/adicionar";
 		}
