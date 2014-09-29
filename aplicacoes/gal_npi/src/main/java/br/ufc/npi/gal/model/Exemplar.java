@@ -28,6 +28,15 @@ public class Exemplar {
 	@Pattern(regexp = "[0-9]*", message = "O codigo do exemplar so aceita numeros")
 	private String codigoExemplar;
 	
+	
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 	public Titulo getTitulo() {
 		return titulo;
 	}
@@ -43,6 +52,8 @@ public class Exemplar {
 	public void setCodigoExemplar(String codigoExemplar) {
 		this.codigoExemplar = codigoExemplar;
 	}
+
+	
     
 	
 }

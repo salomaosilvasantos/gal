@@ -25,26 +25,25 @@ public class ExemplarController {
 	
 	@Inject
 	private TituloService tituloService;
+	private Titulo titulo;
 	
 	@RequestMapping(value = "/{id}/listar", method = RequestMethod.GET)
 	public String listar(@PathVariable("id") Integer id,ModelMap modelMap) {
-		Titulo titulo = this.tituloService.find(Titulo.class, id);
+		titulo = this.tituloService.find(Titulo.class, id);
 		modelMap.addAttribute("exemplares",titulo.getExemplares());
 		modelMap.addAttribute("titulo",titulo);
 		return "exemplar/listar";
 	}
 	
-	@RequestMapping(value = "/{id}/adicionar", method = RequestMethod.GET)
-	public String adicionar(@PathVariable("id") Integer id,ModelMap modelMap){
-		Titulo titulo = this.tituloService.find(Titulo.class, id);
-
-		modelMap.addAttribute("titulo", titulo);
+	@RequestMapping(value = "/adicionar", method = RequestMethod.GET)
+	public String adicionar(ModelMap modelMap){
+		modelMap.addAttribute("titulo",titulo);
 		modelMap.addAttribute("exemplar", new Exemplar());
 		return "exemplar/adicionar";
 	}
 	
-	@RequestMapping(value="/{id}/adicionar",method = RequestMethod.POST)
-	public String adicionar(@Valid Exemplar exemplar, @PathVariable("id") Integer id,BindingResult result, RedirectAttributes redirectAttributes) {
+	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
+	public String adicionar(@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes) {
 		
 		if (result.hasErrors()) {
 			return "exemplar/adicionar";
@@ -54,8 +53,8 @@ public class ExemplarController {
 			result.rejectValue("codigoExemplar", "Repeat.exemplar.codigoExemplar", "Já existe um exemplar com esse codigo");
 			return "exemplar/adicionar";
 		}
-		Titulo titulo = this.tituloService.find(Titulo.class, id);
 		exemplar.setTitulo(titulo);
+		System.out.println(exemplar.getId());
 		exemplarService.save(exemplar);
 		redirectAttributes.addFlashAttribute("info", "Exemplar adicionado com sucesso.");
 		return "redirect:/exemplar/"+exemplar.getTitulo().getId()+"/listar";
@@ -64,47 +63,43 @@ public class ExemplarController {
 	
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
-		//Titulo titulo = this.tituloService.find(Titulo.class, id);
 		Exemplar exemplar = this.exemplarService.find(Exemplar.class, id);
-
-		if (exemplar == null) {
-			return "redirect:/exemplar//listar";
-		}
-
+		System.out.println(exemplar.getTitulo().getIsbn());
+		modelMap.addAttribute("titulo",titulo);
 		modelMap.addAttribute("exemplar", exemplar);
 		return "exemplar/editar";
 	}
 	
 	@RequestMapping(value = "/editar", method=RequestMethod.POST)
-	public String atualizar(@Valid Titulo titulo, BindingResult result, RedirectAttributes redirectAttributes){
-		
+	public String atualizar(@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes){
+
 		if (result.hasErrors()) {
-			return "titulo/editar";
+			return "exemplar/editar";
 		}
-		
-		if(tituloService.getOutroTituloByIsbn(titulo.getId(), titulo.getIsbn()) != null) {
-			result.rejectValue("isbn", "Repeat.titulo.isbn", "Já existe um título com esse isbn");
-			return "titulo/editar";
+
+		if (exemplarService.getExemplarByCod(exemplar.getCodigoExemplar())!= null) {
+			result.rejectValue("codigoExemplar", "Repeat.exemplar.codigoExemplar",
+					"Já existe um exemplar com esse codigo");
+			return "exemplar/editar";
 		}
-		if(tituloService.getOutroTituloByNome(titulo.getId(), titulo.getNome()) != null) {
-			result.rejectValue("nome", "Repeat.titulo.nome", "Já existe um título com esse nome");
-			return "titulo/editar";
-		}
-		
-		tituloService.update(titulo);
-		redirectAttributes.addFlashAttribute("info", "Título atualizado com sucesso.");
-		return "redirect:/titulo/listar";
-		
+
+		exemplar.setTitulo(titulo);
+		exemplarService.update(exemplar);
+		redirectAttributes.addFlashAttribute("info",
+				"Exemplar atualizado com sucesso.");
+		return "redirect:/exemplar/"+exemplar.getTitulo().getId()+"/listar";	
 	}
 	
 	@RequestMapping(value = "/{id}/excluir", method = RequestMethod.GET)
 	public String excluir(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
-		Titulo titulo = tituloService.find(Titulo.class, id);
-		if (titulo != null) {
-			this.tituloService.delete(titulo);
-			redirectAttributes.addFlashAttribute("info", "Título removido com sucesso.");
+		Exemplar exemplar = this.exemplarService.find(Exemplar.class, id);
+		System.out.println(exemplar.getTitulo().getIsbn());
+		if (exemplar != null) {
+			this.exemplarService.delete(exemplar);
+			redirectAttributes.addFlashAttribute("info", "Exemplar removido com sucesso.");
 		}
-		return "redirect:/titulo/listar";
+		
+		return "redirect:/exemplar/"+exemplar.getTitulo().getId()+"/listar";
 	}
 
 }
