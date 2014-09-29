@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import br.ufc.npi.gal.model.Disciplina;
+import br.ufc.npi.gal.model.EstruturaCurricular;
 import br.ufc.npi.gal.model.IntegracaoCurricular;
+import br.ufc.npi.gal.service.DisciplinaService;
+import br.ufc.npi.gal.service.EstruturaCurricularService;
 import br.ufc.npi.gal.service.IntegracaoCurricularService;
 
 @Controller
@@ -19,6 +23,12 @@ public class IntegracaoCurricularController {
 	
 	@Inject
 	private IntegracaoCurricularService integracaoService;
+	
+	@Inject
+	private DisciplinaService disciplinaService;
+	
+	@Inject
+	private EstruturaCurricularService estruturaService;
 	
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
@@ -39,8 +49,22 @@ public class IntegracaoCurricularController {
 	
 	@RequestMapping(value = "/adicionar")
 	public String adicionar(ModelMap modelMap) {
-		modelMap.addAttribute("integracao", new IntegracaoCurricular());
-		return "integracao/adicionar";
+		//modelMap.addAttribute("integracao", new IntegracaoCurricular());
+		
+		IntegracaoCurricular integracao = new IntegracaoCurricular();
+		Disciplina disciplina = disciplinaService.find(Disciplina.class, 128);
+		EstruturaCurricular estruturaCurricular = estruturaService.find(EstruturaCurricular.class, 1);
+		
+		
+		integracao.setDisciplina(disciplina);
+		integracao.setEstruturaCurricular(estruturaCurricular);
+		integracao.setQuantidadeAlunos(60);
+		integracao.setSemestreOferta(8);
+		
+		
+		integracaoService.save(integracao);
+		
+		return "integracao/listar";
 	}
 
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
@@ -48,7 +72,7 @@ public class IntegracaoCurricularController {
 		if (result.hasErrors()) {
 			return "integracao/adicionar";
 		}
-		integracaoService.save(integracao);
+		//integracaoService.save(integracao);
 		redirectAttributes.addFlashAttribute("info",
 				"Integracao Curricular adicionada com sucesso.");
 		return "redirect:/integracao/listar";
