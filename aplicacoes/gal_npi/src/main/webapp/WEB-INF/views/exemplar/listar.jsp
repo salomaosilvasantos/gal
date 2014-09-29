@@ -27,7 +27,7 @@
 			</div>
 		</c:if>
 		<div id="button-add">
-			<a href="<c:url value="/exemplar/adicionar" ></c:url>">
+			<a href="<c:url value="/exemplar/${titulo.id}/adicionar" ></c:url>">
 				<button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Adicionar</button>
 			</a>
 			<a href="<c:url value="/titulo/listar" ></c:url>">

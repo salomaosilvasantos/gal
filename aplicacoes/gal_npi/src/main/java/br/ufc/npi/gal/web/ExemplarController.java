@@ -25,25 +25,27 @@ public class ExemplarController {
 	
 	@Inject
 	private TituloService tituloService;
-	private Titulo titulo;
+
 	
 	@RequestMapping(value = "/{id}/listar", method = RequestMethod.GET)
 	public String listar(@PathVariable("id") Integer id,ModelMap modelMap) {
-		titulo = this.tituloService.find(Titulo.class, id);
+		Titulo titulo = this.tituloService.find(Titulo.class, id);
 		modelMap.addAttribute("exemplares",titulo.getExemplares());
 		modelMap.addAttribute("titulo",titulo);
 		return "exemplar/listar";
 	}
 	
-	@RequestMapping(value = "/adicionar", method = RequestMethod.GET)
-	public String adicionar(ModelMap modelMap){
+	@RequestMapping(value = "/{id}/adicionar", method = RequestMethod.GET)
+	public String adicionar(@PathVariable("id") Integer id,ModelMap modelMap){
+		Titulo titulo = this.tituloService.find(Titulo.class, id);
 		modelMap.addAttribute("titulo",titulo);
 		modelMap.addAttribute("exemplar", new Exemplar());
 		return "exemplar/adicionar";
 	}
 	
-	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
-	public String adicionar(@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes,ModelMap modelMap) {
+	@RequestMapping(value="/{id}/adicionar",method = RequestMethod.POST)
+	public String adicionar(@PathVariable("id")Integer id,@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes,ModelMap modelMap) {
+		Titulo titulo = this.tituloService.find(Titulo.class, id);
 		modelMap.addAttribute("titulo",titulo);
 		if (result.hasErrors()) {
 			return "exemplar/adicionar";
@@ -53,6 +55,7 @@ public class ExemplarController {
 			result.rejectValue("codigoExemplar", "Repeat.exemplar.codigoExemplar", "Já existe um exemplar com esse codigo");
 			return "exemplar/adicionar";
 		}
+		exemplar.setId(null);
 		exemplar.setTitulo(titulo);	
 		exemplarService.save(exemplar);
 		redirectAttributes.addFlashAttribute("info", "Exemplar adicionado com sucesso.");
