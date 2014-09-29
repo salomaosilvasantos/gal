@@ -49,12 +49,11 @@ public class ExemplarController {
 			return "exemplar/adicionar";
 		}
 		
-		if(exemplarService.getExemplarByCod(exemplar.getCodigoExemplar()) != null) {
+		if(exemplarService.getExemplarByCodigo(exemplar.getCodigoExemplar()) != null) {
 			result.rejectValue("codigoExemplar", "Repeat.exemplar.codigoExemplar", "Já existe um exemplar com esse codigo");
 			return "exemplar/adicionar";
 		}
-		exemplar.setTitulo(titulo);
-		System.out.println(exemplar.getId());
+		exemplar.setTitulo(titulo);	
 		exemplarService.save(exemplar);
 		redirectAttributes.addFlashAttribute("info", "Exemplar adicionado com sucesso.");
 		return "redirect:/exemplar/"+exemplar.getTitulo().getId()+"/listar";
@@ -64,7 +63,6 @@ public class ExemplarController {
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
 		Exemplar exemplar = this.exemplarService.find(Exemplar.class, id);
-		System.out.println(exemplar.getTitulo().getIsbn());
 		modelMap.addAttribute("titulo",titulo);
 		modelMap.addAttribute("exemplar", exemplar);
 		return "exemplar/editar";
@@ -77,7 +75,7 @@ public class ExemplarController {
 			return "exemplar/editar";
 		}
 
-		if (exemplarService.getExemplarByCod(exemplar.getCodigoExemplar())!= null) {
+		if (exemplarService.getExemplarByCodigo(exemplar.getCodigoExemplar())!= null) {
 			result.rejectValue("codigoExemplar", "Repeat.exemplar.codigoExemplar",
 					"Já existe um exemplar com esse codigo");
 			return "exemplar/editar";
@@ -93,7 +91,6 @@ public class ExemplarController {
 	@RequestMapping(value = "/{id}/excluir", method = RequestMethod.GET)
 	public String excluir(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
 		Exemplar exemplar = this.exemplarService.find(Exemplar.class, id);
-		System.out.println(exemplar.getTitulo().getIsbn());
 		if (exemplar != null) {
 			this.exemplarService.delete(exemplar);
 			redirectAttributes.addFlashAttribute("info", "Exemplar removido com sucesso.");

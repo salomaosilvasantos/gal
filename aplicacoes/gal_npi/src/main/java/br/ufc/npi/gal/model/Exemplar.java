@@ -9,7 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "exemplares")
@@ -27,7 +26,7 @@ public class Exemplar {
 	
 	@Column(name = "cod_e")
 	@Pattern(regexp = "[0-9]+", message = "O codigo do exemplar so aceita numeros")
-	//@Size(min = 6, message = "O codigo de exemplar deve conter no minimo 6 digitos")
+	
 	private String codigoExemplar;
 	
 	
