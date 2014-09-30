@@ -44,7 +44,7 @@ public class ExemplarController {
 	}
 	
 	@RequestMapping(value="/{id}/adicionar",method = RequestMethod.POST)
-	public String adicionar(@PathVariable("id")Integer id,@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes,ModelMap modelMap) {
+	public String adicionar(@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes,ModelMap modelMap,@PathVariable("id")Integer id) {
 		Titulo titulo = this.tituloService.find(Titulo.class, id);
 		modelMap.addAttribute("titulo",titulo);
 		if (result.hasErrors()) {
@@ -66,14 +66,13 @@ public class ExemplarController {
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
 		Exemplar exemplar = this.exemplarService.find(Exemplar.class, id);
-		modelMap.addAttribute("titulo",titulo);
 		modelMap.addAttribute("exemplar", exemplar);
 		return "exemplar/editar";
 	}
 	
-	@RequestMapping(value = "/editar", method=RequestMethod.POST)
-	public String atualizar(@Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes){
-
+	@RequestMapping(value = "/{id}/editar", method=RequestMethod.POST)
+	public String atualizar( @Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
+		Titulo titulo = this.tituloService.find(Titulo.class, id);
 		if (result.hasErrors()) {
 			return "exemplar/editar";
 		}
@@ -83,7 +82,7 @@ public class ExemplarController {
 					"Já existe um exemplar com esse codigo");
 			return "exemplar/editar";
 		}
-
+		
 		exemplar.setTitulo(titulo);
 		exemplarService.update(exemplar);
 		redirectAttributes.addFlashAttribute("info",
