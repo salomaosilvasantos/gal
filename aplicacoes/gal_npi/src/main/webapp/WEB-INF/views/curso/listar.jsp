@@ -69,6 +69,11 @@
 									</c:if>
 									<li class="${act }"><a href="#${curriculo.anoSemestre}" role="tab" data-toggle="tab">${curriculo.anoSemestre}</a></li>
 								</c:forEach>
+								<div id="button-add">
+									<a href="<c:url value="/estrutura/${curso.id}/adicionar" ></c:url>">
+										<button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Adicionar Curriculo</button>
+									</a>
+								</div>
 							</ul>
 							<div class="tab-content">
 								<c:forEach items="${curso.curriculos}" var="curriculo" varStatus="count">

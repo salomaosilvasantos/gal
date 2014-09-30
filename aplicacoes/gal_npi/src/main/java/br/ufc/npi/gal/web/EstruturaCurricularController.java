@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import br.ufc.npi.gal.model.EstruturaCurricular;
+import br.ufc.npi.gal.service.CursoService;
 import br.ufc.npi.gal.service.EstruturaCurricularService;
 
 @Controller
@@ -20,6 +20,8 @@ public class EstruturaCurricularController {
 
 	@Inject
 	private EstruturaCurricularService estruturaCurricularService;
+	@Inject
+	private CursoService cursoService;
 	
 	
 	@RequestMapping(value = "/listar")
@@ -27,13 +29,7 @@ public class EstruturaCurricularController {
 		modelMap.addAttribute("estruturas", this.estruturaCurricularService.find(EstruturaCurricular.class));
 		return "estrutura/listar";
 	}
-	//##################################
-	@RequestMapping(value="/adicionar")
-	public String adicionar(ModelMap modelMap){
-		modelMap.addAttribute("estruturas", new EstruturaCurricular());
-		return "estrutura/adicionar"; //fazer
-	}
-	
+
 	@RequestMapping(value="/id/editar")
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap){
 		EstruturaCurricular estruturaCurricular = this.estruturaCurricularService.find(EstruturaCurricular.class, id);
@@ -68,5 +64,33 @@ public class EstruturaCurricularController {
 			redirectAttributes.addFlashAttribute("info","Estrutura Curricular removida com sucesso");
 		}
 		return "estrutura/listar";
+	}
+	
+	@RequestMapping(value="/{id}/adicionar")
+	public String adicionar(@PathVariable("id") Integer id,ModelMap modelMap){
+		
+		modelMap.addAttribute("estruturas", new EstruturaCurricular());
+		//modelMap.addAttribute("curso",this.cursoService.find(Curso.class,id));
+		return "estrutura/adicionar";
+	}
+	
+	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
+	public String adicionar(@Valid EstruturaCurricular estrutura, BindingResult result,
+			RedirectAttributes redirectAttributes) {
+
+		if (result.hasErrors()) {
+			return "estrutura/adicionar";
+		}
+		
+		if (estrutura.getAnoSemestre().trim().isEmpty()) {
+			result.rejectValue("anoSemestre", "Repeat.estrutura.anoSemestre",
+					"Campo obrigatório.");
+			return "estrutura/adicionar";
+		}
+		
+		estruturaCurricularService.save(estrutura);
+		redirectAttributes.addFlashAttribute("info",
+				"Estrutura adicionada com sucesso.");
+		return "redirect:/curso/listar";
 	}
 }
