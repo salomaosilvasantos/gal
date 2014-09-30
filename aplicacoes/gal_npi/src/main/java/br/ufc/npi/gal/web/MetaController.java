@@ -27,7 +27,6 @@ import br.ufc.npi.gal.model.DetalheMetaCalculada;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculoMetaService;
 import br.ufc.npi.gal.service.CursoService;
-import br.ufc.npi.gal.service.MetaCalculada;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
 
@@ -150,6 +149,7 @@ public class MetaController {
 			resultados = calculo.gerarCalculo();
 
 		}
+
 		modelMap.addAttribute("cursos", cursos);
 		modelMap.addAttribute("resultados", resultados);
 		return "meta/listar";
@@ -158,63 +158,44 @@ public class MetaController {
 	@RequestMapping(value = "/{id}/listar", method = RequestMethod.GET)
 	public String listarByCurso(@PathVariable("id") Integer id,
 			ModelMap modelMap, RedirectAttributes redirectAttributes) {
-		List<DetalheMetaCalculada> detalhePares;
-		List<DetalheMetaCalculada> detalheImpares;
-		MetaCalculada metaCalculada;
-		ResultadoCalculo r;
-		int count = 0;
-		if (resultadosCurso == null) {
-			this.resultadosCurso = new ArrayList<ResultadoCalculo>();
 
-			for (ResultadoCalculo resultadoCalculo : resultados) {
-				boolean flag = false;
-				detalhePares = new ArrayList<DetalheMetaCalculada>();
-				detalheImpares = new ArrayList<DetalheMetaCalculada>();
-				for (DetalheMetaCalculada detalhePar : resultadoCalculo
-						.getMetaCalculada().getDetalhePar()) {
+		System.out.println(id);
+		if (id == -1) {
+			modelMap.addAttribute("cursos", cursos);
+			modelMap.addAttribute("resultados", resultados);
+			return "meta/listar";
+		}
 
-					if (detalhePar.getCurso().equals(cursos.get(id).getNome())) {
-						flag = true;
-						detalhePares.add(detalhePar);
-					}
+		this.resultadosCurso = new ArrayList<ResultadoCalculo>();
 
+		for (ResultadoCalculo resultadoCalculo : resultados) {
+			boolean flag = false;
+
+			for (DetalheMetaCalculada detalhePar : resultadoCalculo
+					.getMetaCalculada().getDetalhePar()) {
+
+				if (detalhePar.getCurso().equals(cursos.get(id).getNome())) {
+					flag = true;
 				}
-				for (DetalheMetaCalculada detalheImpar : resultadoCalculo
-						.getMetaCalculada().getDetalheImpar()) {
-
-					if (detalheImpar.getCurso()
-							.equals(cursos.get(id).getNome())) {
-						flag = true;
-						detalheImpares.add(detalheImpar);
-					}
-
-				}
-				if (flag == true) {
-//					metaCalculada = new MetaCalculada(resultadoCalculo
-//							.getMetaCalculada().getNome(), detalhePares,
-//							detalheImpares);
-//					r = new ResultadoCalculo(resultadoCalculo.getTitulo(),
-//							metaCalculada);
-//					System.out.println(r.getTitulo());
-//					resultadosCurso.add(r);
-//					flag = false;
-					
-					for(DetalheMetaCalculada par: detalheImpares){
-					 System.out.println(par.getCurso()+ "  "+par.getDisciplina());
-					}
-				}
-
-				// resultadosCurso.add(new
-				// ResultadoCalculo(resultadoCalculo.getTitulo(),
-				// metaCalculada));
-
-				// resultadosCurso.add((new ResultadoCalculo(resultadoCalculo
-				// .getTitulo(), new MetaCalculada(resultadoCalculo
-				// .getMetaCalculada().getNome(), detalhePares,
-				// detalheImpares))));
 
 			}
+			for (DetalheMetaCalculada detalheImpar : resultadoCalculo
+					.getMetaCalculada().getDetalheImpar()) {
+
+				if (detalheImpar.getCurso().equals(cursos.get(id).getNome())) {
+					flag = true;
+
+				}
+
+			}
+			if (flag == true) {
+
+				resultadosCurso.add(new ResultadoCalculo(resultadoCalculo
+						.getTitulo(), resultadoCalculo.getMetaCalculada()));
+				flag = false;
+			}
 		}
+		modelMap.addAttribute("cursos", cursos);
 		modelMap.addAttribute("resultados", resultadosCurso);
 		return "meta/listar";
 
