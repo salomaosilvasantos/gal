@@ -91,7 +91,7 @@ $( document ).ready(function() {
 		url = url.split("/"); // quebra o endeço de acordo com a / (barra)
 		newUrl = "/"+url[1]+"/meta/"+(option-1)+"/listar";
 		$(location).attr("href", newUrl);
-		alert("message");
+		
 		
 	});
 
