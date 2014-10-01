@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Títulos</title>
+	<title>Exemplares</title>
 	<jsp:include page="../fragments/htmlHead.jsp" />
 </head>
 <body>
@@ -28,50 +28,38 @@
 		</c:if>
 		
 		<div id="button-add">
-			<a href="<c:url value="/titulo/adicionar" ></c:url>">
+			<a href="<c:url value="/exemplar/${titulo.id}/adicionar" ></c:url>">
 				<button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Adicionar</button>
 			</a>
 		</div>
 		
 		<div style="text-align: center;">
-			<label class="control-label" style="font-size: 20px;">Títulos</label>
+			<label class="control-label" style="font-size: 15px;"><c:out value="${titulo.nome}"></c:out></label>
 		</div>
 		
-		<c:if test="${empty titulos}">
+		<c:if test="${empty exemplares}">
 			<div class="alert alert-warning" role="alert">Não há títulos cadastrados.</div>
 		</c:if>
 		
-		<c:if test="${not empty titulos}">
-			<datatables:table id="titulo" data="${titulos}" cdn="true"
-				row="titulo" theme="bootstrap2" cssClass="table table-striped">
-				<datatables:column title="Nome">
-					<c:out value="${titulo.nome}"></c:out>
+		<c:if test="${not empty exemplares}">
+			<datatables:table id="exemplar" data="${titulo.exemplares}" cdn="true"
+				row="exemplar" theme="bootstrap2" cssClass="table table-striped">
+				<datatables:column title="Codido do Exemplar">
+					<c:out value="${exemplar.codigoExemplar}"></c:out>
 				</datatables:column>
 	
-				<datatables:column title="ISBN">
-					<c:out value="${titulo.isbn}"></c:out>
-				</datatables:column>
+<%-- 				<datatables:column title="Editar"> --%>
+<%-- 					<a class="btn btn-primary" href="<c:url value = "/exemplar/${exemplar.id}/editar"></c:url>"> --%>
+<!-- 						<span class="glyphicon glyphicon-edit"></span> -->
+<!-- 					</a> -->
+<%-- 				</datatables:column> --%>
 	
-				<datatables:column title="Tipo">
-					<c:out value="${titulo.tipo}"></c:out>
-				</datatables:column>
-	
-				<datatables:column title="Editar">
-					<a class="btn btn-primary" href="<c:url value = "/titulo/${titulo.id}/editar"></c:url>">
-						<span class="glyphicon glyphicon-edit"></span>
-					</a>
-				</datatables:column>
-	
-				<datatables:column title="Excluir">
-					<a id="excluir" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" href="#" data-href="<c:url value="/titulo/${titulo.id}/excluir" ></c:url>">
-						<span class="glyphicon glyphicon-trash"></span>
-					</a>
-				</datatables:column>
-				<datatables:column title="Exemplar">
-					<a  href="<c:url value="/exemplar/${titulo.id}/listar" ></c:url>">
-						Listar Exemplares
-					</a>
-				</datatables:column>
+<%-- 				<datatables:column title="Excluir"> --%>
+<%-- 					<a id="excluir" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" href="#" data-href="<c:url value="/exemplar/${exemplar.id}/excluir" ></c:url>"> --%>
+<!-- 						<span class="glyphicon glyphicon-trash"></span> -->
+<!-- 					</a> -->
+<%-- 				</datatables:column> --%>
+				
 			</datatables:table>
 		</c:if>
 
@@ -84,7 +72,7 @@
 	                Excluir
 	            </div>
 	            <div class="modal-body">
-	                Tem certeza de que deseja excluir esse título?
+	                Tem certeza de que deseja excluir esse Exemplar?
 	            </div>
 	            <div class="modal-footer">
 	                <a href="#" class="btn btn-danger">Excluir</a>

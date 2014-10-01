@@ -12,6 +12,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "curriculo")
@@ -21,17 +24,26 @@ public class EstruturaCurricular {
 	@Column(name = "id_c")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	
 
 	@Column(name = "ano_semestre")
+
+		
+	@NotEmpty(message="Campo obrigatório")
+	@Pattern.List({
+		@Pattern(regexp = "([^\\s]{0,})", message = "O campo não pode conter espaços"), 
+		@Pattern(regexp = "([0-9]{4}.[0-9]{1})", message = "O campo deve conter formato xxxx.x"),
+		@Pattern(regexp = "[a-zA-Z\\sà-ùÀ-Ù0-9]{0,}", message = "O campo não pode contar caracteres especiais")
+	})
 	private String anoSemestre;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_curso")
 	private Curso curso;
-
-	@OneToMany(mappedBy = "estruturaCurricular")
+	
+	@OneToMany(mappedBy = "estruturaCurricular", targetEntity = IntegracaoCurricular.class, fetch = FetchType.LAZY)
 	private List<IntegracaoCurricular> curriculos;
-
+	
 	public EstruturaCurricular() {
 
 	}

@@ -85,12 +85,19 @@ public class EstruturaCurricularController {
 		}
 		
 		if (estrutura.getAnoSemestre().trim().isEmpty()) {
-			result.rejectValue("anoSemestre", "Repeat.estrutura.anoSemestre",
+			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre",
 					"Campo obrigatório.");
 			return "estrutura/adicionar";
 		}
+		
+//		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(id, estrutura.getAnoSemestre().toUpperCase())!=null){
+//			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
+//			return "estrutura/adicionar";
+//		}
+		
 		Curso curso = this.cursoService.find(Curso.class,id);
 		estrutura.setCurso(curso);
+		estrutura.setId(null);
 		System.out.println(curso.getNome());
 		
 		estruturaCurricularService.save(estrutura);

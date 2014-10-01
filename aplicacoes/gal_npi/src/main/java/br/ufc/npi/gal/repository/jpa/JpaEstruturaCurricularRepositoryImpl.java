@@ -16,7 +16,7 @@ public class JpaEstruturaCurricularRepositoryImpl extends GenericRepositoryImpl<
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("anoSemestre", anoSemestre);
 		params.put("id", id);
-		List<EstruturaCurricular> result = find(QueryType.JPQL,"from curriculo where id != :id and anoSemestre = :anoSemestre", params);
+		List<EstruturaCurricular> result = find(QueryType.JPQL,"from curso where id != :id and anoSemestre = :anoSemestre", params);
 		if(result != null && !result.isEmpty()){
 			return result.get(0);
 		}

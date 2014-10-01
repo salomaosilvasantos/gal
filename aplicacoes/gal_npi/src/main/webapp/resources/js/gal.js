@@ -2,6 +2,7 @@ $( document ).ready(function() {
 
 	$('table').dataTable(
 		{
+			iDisplayLength: 25,
 			sPaginationType : "full_numbers",
 			oLanguage : {
 				"sEmptyTable" : "Nenhum registro encontrado",
@@ -42,11 +43,13 @@ $( document ).ready(function() {
 	$('div:has(span.error)').find('span.error').css('color', '#a94442');
 	$('div:has(span.error)').find('span.error').parent().parent().addClass('has-error has-feedback');
 	
+	$('#txtBusca').fastLiveFilter("#acervo");
+	
 	function getItems(exampleNr) {
 		var columns = [];
 		$(exampleNr + ' ul.sortable-list').each(
 				function() {
-					if ($(this).attr('id') != 'teste') {
+					if ($(this).attr('id') != 'acervo') {
 						columns.push($(this).sortable(
 								'toArray').join(','));
 					}
@@ -58,8 +61,8 @@ $( document ).ready(function() {
 	.click(
 			function() {
 				var data = {
-					basica : getItems('#example-2-1')[0],
-					complementar : getItems('#example-2-1')[1],
+					basica : getItems('#drag-and-drop')[0],
+					complementar : getItems('#drag-and-drop')[1],
 					idDiciplina : $('#disciplinaId').val()
 				};
 				$
@@ -78,15 +81,10 @@ $( document ).ready(function() {
 	
 	
 	
-	$('#example-2-1 .sortable-list').sortable({
-		connectWith : '#example-2-1 .sortable-list'
+	$('#drag-and-drop .sortable-list').sortable({
+		connectWith : '#drag-and-drop .sortable-list'
 	});
 
-	$("#example-2-1 input").focus(function() {
-		
-		$('#txtBusca').fastLiveFilter("#acervo");
-	});
-	
 		 	
 });
 
