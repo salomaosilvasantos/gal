@@ -1,41 +1,4 @@
-/*
-	Stylesheet for examples by DevHeart.
-	http://devheart.org/
 
-	Article title:	jQuery: Customizable layout using drag n drop
-	Article URI:	http://devheart.org/articles/jquery-customizable-layout-using-drag-and-drop/
-
-	Example title:	2. Saving and loading items
-	Example URI:	http://devheart.org/examples/jquery-customizable-layout-using-drag-and-drop/2-saving-and-loading-items/index.html
-*/
-
-/*
-	Typography
-------------------------------------------------------------------- */
-p {
-	margin-bottom: 1em;
-}
-
-/*
-	Forms
-------------------------------------------------------------------- */
-.input-button {
-	background-color: #E2E2E2;
-	border: 1px outset #AAA;
-	color: #123;
-	font-weight: bold;
-	padding: 4px 5px;
-}
-
-.input-button:active {
-	border-style: inset;
-}
-
-/*
-	Alignment
-------------------------------------------------------------------- */
-
-/* Floats */
 .left {
 	float: left;
 }
@@ -44,7 +7,7 @@ p {
 	float: right;
 }
 
-.clear,.clearer {
+.clearer {
 	clear: both;
 }
 
@@ -55,17 +18,11 @@ p {
 	line-height: 0;
 }
 
-/*
-	Example specifics
-------------------------------------------------------------------- */
-
-/* Layout */
 #center-wrapper {
 	margin: 0 auto;
 	width: 920px;
 }
 
-/* Columns */
 .column {
 	margin-left: 2%;
 	width: 32%;
@@ -77,7 +34,6 @@ p {
 	margin-left: 0;
 }
 
-/* Sortable items */
 .sortable-list {
 	background-color: #DCDCDC;
 	list-style: none;
@@ -87,7 +43,7 @@ p {
 	
 }
 
-#teste{
+#acervo{
 	overflow-y:scroll;
 	height: 400px;
 }
@@ -100,15 +56,6 @@ p {
 	margin-bottom: 5px;
 	padding: 10px 10px 10px 10px;
 	text-align: left;
-}
-
-/* Disabled list */
-#example-2-4 .sortable-list {
-	background-color: #CCC;
-}
-
-#example-2-4 .sortable-item {
-	cursor: default;
 }
 
 #nomeDisciplina{
