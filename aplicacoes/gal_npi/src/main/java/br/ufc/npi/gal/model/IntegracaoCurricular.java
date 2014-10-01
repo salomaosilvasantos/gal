@@ -25,6 +25,7 @@ public class IntegracaoCurricular {
 	@JoinColumn(name = "id_curriculo")
 	@PrimaryKeyJoinColumn(name = "id_curriculo", referencedColumnName = "id_curriculo")
 	private EstruturaCurricular estruturaCurricular;
+	
 	@ManyToOne
 	@JoinColumn(name = "id_disciplina")
 	@PrimaryKeyJoinColumn(name = "id_disciplina", referencedColumnName = "id_disciplina")

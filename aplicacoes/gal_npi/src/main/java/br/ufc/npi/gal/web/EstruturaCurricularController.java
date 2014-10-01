@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import br.ufc.npi.gal.model.Curso;
 import br.ufc.npi.gal.model.EstruturaCurricular;
 import br.ufc.npi.gal.service.CursoService;
 import br.ufc.npi.gal.service.EstruturaCurricularService;
@@ -70,12 +72,12 @@ public class EstruturaCurricularController {
 	public String adicionar(@PathVariable("id") Integer id,ModelMap modelMap){
 		
 		modelMap.addAttribute("estruturas", new EstruturaCurricular());
-		//modelMap.addAttribute("curso",this.cursoService.find(Curso.class,id));
+		modelMap.addAttribute("curso",this.cursoService.find(Curso.class,id));
 		return "estrutura/adicionar";
 	}
 	
-	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
-	public String adicionar(@Valid EstruturaCurricular estrutura, BindingResult result,
+	@RequestMapping(value="/{id}/adicionar", method = RequestMethod.POST)
+	public String adicionar(@Valid EstruturaCurricular estrutura, @PathVariable("id") Integer id,BindingResult result,
 			RedirectAttributes redirectAttributes) {
 
 		if (result.hasErrors()) {
@@ -87,8 +89,12 @@ public class EstruturaCurricularController {
 					"Campo obrigatório.");
 			return "estrutura/adicionar";
 		}
+		Curso curso = this.cursoService.find(Curso.class,id);
+		estrutura.setCurso(curso);
+		System.out.println(curso.getNome());
 		
 		estruturaCurricularService.save(estrutura);
+		
 		redirectAttributes.addFlashAttribute("info",
 				"Estrutura adicionada com sucesso.");
 		return "redirect:/curso/listar";
