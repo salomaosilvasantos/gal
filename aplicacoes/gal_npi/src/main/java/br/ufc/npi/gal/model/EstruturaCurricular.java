@@ -33,7 +33,6 @@ public class EstruturaCurricular {
 	@Pattern.List({
 		@Pattern(regexp = "([^\\s]{0,})", message = "O campo não pode conter espaços"), 
 		@Pattern(regexp = "([0-9]{4}.[0-9]{1})", message = "O campo deve conter formato xxxx.x"),
-		@Pattern(regexp = "[a-zA-Z\\sà-ùÀ-Ù0-9]{0,}", message = "O campo não pode contar caracteres especiais")
 	})
 	private String anoSemestre;
 

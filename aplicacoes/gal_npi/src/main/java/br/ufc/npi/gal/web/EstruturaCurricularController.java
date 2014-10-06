@@ -28,11 +28,11 @@ public class EstruturaCurricularController {
 	
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
-		modelMap.addAttribute("estruturas", this.estruturaCurricularService.find(EstruturaCurricular.class));
+		modelMap.addAttribute("estrutura", this.estruturaCurricularService.find(EstruturaCurricular.class));
 		return "estrutura/listar";
 	}
 
-	@RequestMapping(value="/id/editar")
+	@RequestMapping(value="/{id}/editar")
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap){
 		EstruturaCurricular estruturaCurricular = this.estruturaCurricularService.find(EstruturaCurricular.class, id);
 		
@@ -68,24 +68,29 @@ public class EstruturaCurricularController {
 		return "estrutura/listar";
 	}
 	
-	@RequestMapping(value="/{id}/adicionar")
+	@RequestMapping(value="/{id}/adicionar",method = RequestMethod.GET)
 	public String adicionar(@PathVariable("id") Integer id,ModelMap modelMap){
+//		Curso curso = this.cursoService.find(Curso.class, id);
+//		EstruturaCurricular estrutura = new EstruturaCurricular();
+//		estrutura.setCurso(curso);
 		
-		modelMap.addAttribute("estruturas", new EstruturaCurricular());
+		//System.out.println(estrutura.getCurso().getNome());
+		//modelMap.addAttribute("estruturaCurricular", estrutura);
+		modelMap.addAttribute("estruturaCurricular", new EstruturaCurricular());
 		modelMap.addAttribute("curso",this.cursoService.find(Curso.class,id));
 		return "estrutura/adicionar";
 	}
 	
 	@RequestMapping(value="/{id}/adicionar", method = RequestMethod.POST)
-	public String adicionar(@Valid EstruturaCurricular estrutura, @PathVariable("id") Integer id,BindingResult result,
+	public String adicionar(@Valid EstruturaCurricular estruturaCurricular,@PathVariable("id") Integer id,BindingResult result,
 			RedirectAttributes redirectAttributes) {
-
+		
 		if (result.hasErrors()) {
 			return "estrutura/adicionar";
 		}
 		
-		if (estrutura.getAnoSemestre().trim().isEmpty()) {
-			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre",
+		if (estruturaCurricular.getAnoSemestre().trim().isEmpty()) {
+			result.rejectValue("anoSemestre", "Repeat.estrutura.anoSemestre",
 					"Campo obrigatório.");
 			return "estrutura/adicionar";
 		}
@@ -96,11 +101,11 @@ public class EstruturaCurricularController {
 //		}
 		
 		Curso curso = this.cursoService.find(Curso.class,id);
-		estrutura.setCurso(curso);
-		estrutura.setId(null);
-		System.out.println(curso.getNome());
+		estruturaCurricular.setCurso(curso);
+		estruturaCurricular.setId(null);
+		//System.out.println(curso.getNome());
 		
-		estruturaCurricularService.save(estrutura);
+		estruturaCurricularService.save(estruturaCurricular);
 		
 		redirectAttributes.addFlashAttribute("info",
 				"Estrutura adicionada com sucesso.");

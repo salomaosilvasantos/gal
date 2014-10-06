@@ -4,6 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -57,7 +58,7 @@
 						</div>
 					</div>
 									
-					<div id="collapse${curso.id}" class="panel-collapse collapse">
+					<div id="collapse${curso.id}" class="panel-collapse collapse tagtable">
 						<div class="panel-body">
 							<ul class="nav nav-tabs" role="tablist">
 								<c:forEach items="${curso.curriculos}" var="curriculo" varStatus="ct">
