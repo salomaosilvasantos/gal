@@ -47,18 +47,6 @@
 				<datatables:column title="Codido do Exemplar">
 					<c:out value="${exemplar.codigoExemplar}"></c:out>
 				</datatables:column>
-	
-<%-- 				<datatables:column title="Editar"> --%>
-<%-- 					<a class="btn btn-primary" href="<c:url value = "/exemplar/${exemplar.id}/editar"></c:url>"> --%>
-<!-- 						<span class="glyphicon glyphicon-edit"></span> -->
-<!-- 					</a> -->
-<%-- 				</datatables:column> --%>
-	
-<%-- 				<datatables:column title="Excluir"> --%>
-<%-- 					<a id="excluir" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" href="#" data-href="<c:url value="/exemplar/${exemplar.id}/excluir" ></c:url>"> --%>
-<!-- 						<span class="glyphicon glyphicon-trash"></span> -->
-<!-- 					</a> -->
-<%-- 				</datatables:column> --%>
 				
 			</datatables:table>
 		</c:if>

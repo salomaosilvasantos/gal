@@ -14,7 +14,7 @@ import br.ufc.npi.gal.repository.IntegracaoCurricularRepository;
 public class JpaIntegracaoCurricularRepositoryImpl extends GenericRepositoryImpl<IntegracaoCurricular> implements IntegracaoCurricularRepository{
 
 	@Override
-	public IntegracaoCurricular getIntegracaoByDoisIds(Integer id_disciplina, Integer id_curriculo) {
+	public IntegracaoCurricular getIntegracao(Integer id_disciplina, Integer id_curriculo) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id_disciplina", id_disciplina);
 		params.put("id_curriculo", id_curriculo);

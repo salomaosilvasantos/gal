@@ -25,7 +25,7 @@ public class Exemplar {
 
 	
 	@Column(name = "cod_e")
-	@Pattern(regexp = "[0-9]*", message = "O codigo do exemplar so aceita numeros")
+	@Pattern(regexp = "[0-9]*", message = "O código do exemplar sś aceita números")
 	private String codigoExemplar;
 	
 	public Titulo getTitulo() {
