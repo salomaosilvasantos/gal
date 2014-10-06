@@ -28,10 +28,10 @@ public class EstruturaCurricular {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_curso")
 	private Curso curso;
-
-	@OneToMany(mappedBy = "estruturaCurricular")
+	
+	@OneToMany(mappedBy = "estruturaCurricular", targetEntity = IntegracaoCurricular.class, fetch = FetchType.LAZY)
 	private List<IntegracaoCurricular> curriculos;
-
+	
 	public EstruturaCurricular() {
 
 	}

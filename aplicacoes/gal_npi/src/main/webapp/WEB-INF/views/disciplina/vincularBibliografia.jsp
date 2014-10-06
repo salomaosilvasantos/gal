@@ -15,63 +15,49 @@
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<input id="disciplinaId" type="hidden" value="${disciplina.id}"/>
+		<input id="disciplinaId" type="hidden" value="${disciplina.id}" />
 		<div id="center-wrapper">
-			<div class="dhe-example-section" id="ex-2-1">
-				<div class="dhe-example-section-header"></div>
-				<div class="dhe-example-section-content">
-					<div id="example-2-1">
+			<div id="drag-and-drop">
+				<p id="nomeDisciplina">${disciplina.codigo}-${disciplina.nome}</p>
+				<p>
+					<a class="btn btn-success" id="btn-get"
+						href="<c:url value="/disciplina/listar" ></c:url>">Vincular</a>
+				</p>
+				<div class="column left first">
+					<label style="font-size: 16px;">Básica</label>
+					<ul class="sortable-list" id="basica">
 
-						<p id="nomeDisciplina">${disciplina.codigo} - ${disciplina.nome}</p>
-						<p>
-							<a class="btn btn-success" id="btn-get"
-								href="<c:url value="/disciplina/listar" ></c:url>">Vincular</a>
-						</p>
-						<div class="column left first">
-							<label style="font-size: 16px;">Básica</label>
-							<ul class="sortable-list" id="basica">
+						<c:forEach var="basica" items="${basica}">
+							<li class="sortable-item" id="${basica.id}" style="font-size: 12px;"><c:out
+									value="${basica.nome}" /></li>
+						</c:forEach>
+					</ul>
+				</div>
 
-								<c:forEach var="t" items="${basica}">
-									<li class="sortable-item" id="${t.id}" style="font-size: 12px;"><c:out
-											value="${t.nome}" /></li>
-								</c:forEach>
-							</ul>
-
-						</div>
-
-
-						<div class="column left">
-							<label style="font-size: 16px;">Complementar</label>
-							<ul class="sortable-list" id="complementar">
-								<c:forEach var="t" items="${complementar}">
-									<li class="sortable-item" id="${t.id}" style="font-size: 12px;"><c:out
-											value="${t.nome}" /></li>
-								</c:forEach>
-							</ul>
-
-						</div>
-
-						<div class="column left">
-							<label style="font-size: 16px;">Acervo</label> <input type="text"
-								id="txtBusca" placeholder="Buscar acervo..." />
-							<ul class="sortable-list" id="acervo">
-								<c:forEach var="t" items="${titulo}">
-									<li class="sortable-item" id="${t.id}" data-l="acervo" style="font-size: 12px;"><c:out
-											value="${t.nome}" /></li>
-								</c:forEach>
-							</ul>
-						</div>
-
-					</div>
-
-					<div class="clearer">&nbsp;</div>
+				<div class="column left">
+					<label style="font-size: 16px;">Complementar</label>
+					<ul class="sortable-list" id="complementar">
+						<c:forEach var="complementar" items="${complementar}">
+							<li class="sortable-item" id="${complementar.id}" style="font-size: 12px;"><c:out
+									value="${complementar.nome}" /></li>
+						</c:forEach>
+					</ul>
 
 				</div>
+
+				<div class="column left">
+					<label style="font-size: 16px;">Acervo</label> <input type="text"
+						id="txtBusca" placeholder="Buscar acervo..." />
+					<ul class="sortable-list" id="acervo">
+						<c:forEach var="titulo" items="${titulo}">
+							<li class="sortable-item" id="${titulo.id}" data-l="acervo"
+								style="font-size: 12px;"><c:out value="${titulo.nome}" /></li>
+						</c:forEach>
+					</ul>
+				</div>
 			</div>
-
-
+			<div class="clearer"></div>
 		</div>
-
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 </body>
