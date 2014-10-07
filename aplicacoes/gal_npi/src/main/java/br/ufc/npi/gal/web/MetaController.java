@@ -51,9 +51,6 @@ public class MetaController {
 			metacalculada = null;
 			metacalculada = element.getMetaCalculada().getDetalheImpar();
 			if (!metacalculada.isEmpty()) {
-//				linha = "\"" + element.getTitulo().getNome() + "\";\""
-//						+ element.getTitulo().getIsbn() + "\";Meta Impar";
-				//cria.escreveFile(str, linha);
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
 					linha = "\"" + element.getTitulo().getNome() + "\";\""
 							+ element.getTitulo().getIsbn() + "\";\"Meta Impar\";\""
@@ -70,11 +67,6 @@ public class MetaController {
 			metacalculada = null;
 			metacalculada = element.getMetaCalculada().getDetalhePar();
 			if (!metacalculada.isEmpty()) {
-//				linha = "\"" + element.getTitulo().getNome() + "\";\""
-//						+ element.getTitulo().getIsbn() + "\";Meta Par";
-
-				//cria.escreveFile(str, linha);
-
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
 					linha = "\"" + element.getTitulo().getNome() + "\";\""
 							+ element.getTitulo().getIsbn() + "\";\"Meta Par\";\""
@@ -104,7 +96,6 @@ public class MetaController {
 
 			is = new FileInputStream(file);
 			response.setContentType("text/csv");
-			// creates mock data
 			String headerKey = "Content-Disposition";
 			String headerValue = String.format("attachment; filename=\"%s\"",
 					csvFileName);
