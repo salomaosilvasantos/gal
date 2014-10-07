@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Curso;
+import br.ufc.npi.gal.model.IntegracaoCurricular;
 import br.ufc.npi.gal.service.CursoService;
 
 @Controller
@@ -24,6 +25,7 @@ public class CursoController {
 
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
+		modelMap.addAttribute("integracao", new IntegracaoCurricular());
 		modelMap.addAttribute("cursos", this.cursoService.find(Curso.class));
 		return "curso/listar";
 	}
