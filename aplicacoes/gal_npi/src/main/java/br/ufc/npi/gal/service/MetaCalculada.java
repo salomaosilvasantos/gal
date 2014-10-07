@@ -13,7 +13,6 @@ public class MetaCalculada {
 
 	public MetaCalculada() {
 		super();
-		this.nome = new String();
 		this.detalhePar = new ArrayList<DetalheMetaCalculada>();
 		this.detalheImpar = new ArrayList<DetalheMetaCalculada>();
 	}
@@ -62,8 +61,8 @@ public class MetaCalculada {
 
 	public double calcular() {
 
-		double somatorioPar = new Double(0);
-		double somatorioImpar = new Double(0);
+		double somatorioPar = 0;
+		double somatorioImpar = 0;
 
 		for (DetalheMetaCalculada detalheMetaCalculadaPar : detalhePar) {
 			somatorioPar = somatorioPar + detalheMetaCalculadaPar.getCalculo();
@@ -74,11 +73,11 @@ public class MetaCalculada {
 		}
 		if (somatorioPar > somatorioImpar) {
 
-			return ((int) (somatorioPar * 10)) / 10.0;
+			return somatorioPar;
 
 		} else {
 
-			return ((int) (somatorioImpar * 10)) / 10.0;
+			return  somatorioImpar;
 		}
 	}
 

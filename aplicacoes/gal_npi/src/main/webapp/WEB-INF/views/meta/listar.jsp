@@ -89,7 +89,9 @@
 					<c:out value="${resultado.metaCalculada.nome}"></c:out>
 				</datatables:column>
 				<datatables:column title="Valor da Meta">
-					<c:out value="${resultado.metaCalculada.calculo}"></c:out>
+
+					<fmt:formatNumber type="number" maxFractionDigits="1"
+						value="${resultado.metaCalculada.calculo}"></fmt:formatNumber>
 				</datatables:column>
 				<datatables:column title="Acervo">
 					<c:out value="${resultado.titulo.acervo}"></c:out>

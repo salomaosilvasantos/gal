@@ -168,6 +168,8 @@ public class MetaController {
 
 					if (detalhePar.getCurso().equals(cursos.get(id).getNome())) {
 						flag = true;
+						break;
+						
 					}
 
 				}
@@ -177,6 +179,7 @@ public class MetaController {
 					if (detalheImpar.getCurso()
 							.equals(cursos.get(id).getNome())) {
 						flag = true;
+						break;
 						
 
 					}
