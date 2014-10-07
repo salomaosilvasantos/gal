@@ -70,20 +70,19 @@ public class EstruturaCurricularController {
 	
 	@RequestMapping(value="/{id}/adicionar",method = RequestMethod.GET)
 	public String adicionar(@PathVariable("id") Integer id,ModelMap modelMap){
-//		Curso curso = this.cursoService.find(Curso.class, id);
-//		EstruturaCurricular estrutura = new EstruturaCurricular();
-//		estrutura.setCurso(curso);
 		
-		//System.out.println(estrutura.getCurso().getNome());
-		//modelMap.addAttribute("estruturaCurricular", estrutura);
+		Curso curso = this.cursoService.find(Curso.class, id);
+		modelMap.addAttribute("curso",curso);
 		modelMap.addAttribute("estruturaCurricular", new EstruturaCurricular());
-		modelMap.addAttribute("curso",this.cursoService.find(Curso.class,id));
 		return "estrutura/adicionar";
 	}
 	
 	@RequestMapping(value="/{id}/adicionar", method = RequestMethod.POST)
-	public String adicionar(@Valid EstruturaCurricular estruturaCurricular,@PathVariable("id") Integer id,BindingResult result,
-			RedirectAttributes redirectAttributes) {
+	public String adicionar(@Valid EstruturaCurricular estruturaCurricular, BindingResult result, @PathVariable("id") Integer id,
+			RedirectAttributes redirectAttributes, ModelMap modelMap) {
+		
+		Curso curso = this.cursoService.find(Curso.class, id);
+		modelMap.addAttribute("curso",curso);
 		
 		if (result.hasErrors()) {
 			return "estrutura/adicionar";
@@ -95,16 +94,14 @@ public class EstruturaCurricularController {
 			return "estrutura/adicionar";
 		}
 		
-//		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(id, estrutura.getAnoSemestre().toUpperCase())!=null){
-//			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
-//			return "estrutura/adicionar";
-//		}
+		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(id, estruturaCurricular.getAnoSemestre())!=null){
+			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
+			return "estrutura/adicionar";
+		}
 		
-		Curso curso = this.cursoService.find(Curso.class,id);
 		estruturaCurricular.setCurso(curso);
 		estruturaCurricular.setId(null);
-		//System.out.println(curso.getNome());
-		
+			
 		estruturaCurricularService.save(estruturaCurricular);
 		
 		redirectAttributes.addFlashAttribute("info",

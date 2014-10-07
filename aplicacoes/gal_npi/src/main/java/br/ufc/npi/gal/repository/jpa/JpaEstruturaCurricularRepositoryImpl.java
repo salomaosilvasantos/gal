@@ -14,9 +14,9 @@ public class JpaEstruturaCurricularRepositoryImpl extends GenericRepositoryImpl<
 	@Override
 	public EstruturaCurricular getOutraEstruturaCurricularByAnoSemestre(Integer id, String anoSemestre) {
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("anoSemestre", anoSemestre);
-		params.put("id", id);
-		List<EstruturaCurricular> result = find(QueryType.JPQL,"from curso where id != :id and anoSemestre = :anoSemestre", params);
+		params.put("ano_semestre", anoSemestre);
+		params.put("id_curso", id);
+		List<EstruturaCurricular> result = find(QueryType.JPQL,"from EstruturaCurricular where id_curso = :id_curso and ano_semestre = :ano_semestre", params);
 		if(result != null && !result.isEmpty()){
 			return result.get(0);
 		}
