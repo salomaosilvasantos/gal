@@ -26,28 +26,14 @@
 		<jsp:include page="../fragments/header.jsp" />
 		<a href="<c:url value="/meta/downloadMetaDetalhada"></c:url>">Download
 			do relatorio contendo o detalhamento das metas</a> <br /> <br /> <br />
+		<input id="idCurso" type="hidden" value="${idCurso}" /> 
+
 		<select id="seleciona">
-
-			<c:if test="${-1==idCurso}">
-				<option selected value="0">Todos os Cursos</option>
-			</c:if>
-			<c:if test="${-1!=idCurso}">
-				<option value="0">Todos os Cursos</option>
-			</c:if>
+			<option value="-1">Todos os Cursos</option>
 			<c:forEach items="${cursos}" var="curso">
-
-				<c:if test="${curso.id==idCurso+1}">
-					<option selected value="${curso.id}">${curso.nome}</option>
-				</c:if>
-				<c:if test="${curso.id!=idCurso+1}">
-					<option value="${curso.id}">${curso.nome}</option>
-				</c:if>
-
-
+				<option value="${curso.id}">${curso.nome}</option>
 			</c:forEach>
-
 		</select>
-
 
 		<c:if test="${not empty error}">
 			<div class="alert alert-danger alert-dismissible" role="alert">

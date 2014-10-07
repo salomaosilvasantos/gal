@@ -1,5 +1,6 @@
 $( document ).ready(function() {
 
+	
 	$('table').dataTable(
 		{
 			sPaginationType : "full_numbers",
@@ -87,13 +88,21 @@ $( document ).ready(function() {
 	$("select#seleciona").change(function() { 
 		var option = $("#seleciona").val();
 		var url = location.pathname; // pega endereço que esta no
-										// navegador
+		// navegador
 		url = url.split("/"); // quebra o endeço de acordo com a / (barra)
-		newUrl = "/"+url[1]+"/meta/"+(option-1)+"/listar";
+		if(option==-1){
+			newUrl = "/"+url[1]+"/meta/listar";
+		}else{
+			newUrl = "/"+url[1]+"/meta/"+(option)+"/listar";
+		}
+
+		
 		$(location).attr("href", newUrl);
 		
 		
 	});
+	
+	$("#seleciona").val($("#idCurso").val());
 
 		 	
 });

@@ -43,12 +43,9 @@ public class MetaController {
 	@Inject
 	private CursoService cursoService;
 
-	
 	private List<ResultadoCalculo> resultados;
 
 	private List<ResultadoCalculo> resultadosCurso;
-
-	private List<Curso> cursos;
 
 	public MetaController() {
 		super();
@@ -143,61 +140,59 @@ public class MetaController {
 
 	}
 
+	@RequestMapping(value = "/listar", method = RequestMethod.GET)
+	public String listar(ModelMap modelMap) {
+		resultados = calculo.gerarCalculo();
+		List<Curso> cursos = cursoService.find(Curso.class);
+		modelMap.addAttribute("resultados", resultados);
+		modelMap.addAttribute("cursos", cursos);
+		modelMap.addAttribute("idCurso", -1);
+		return "meta/listar";
+	}
+
 	@RequestMapping(value = "/{id}/listar", method = RequestMethod.GET)
 	public String listarByCurso(@PathVariable("id") Integer id,
 			ModelMap modelMap, RedirectAttributes redirectAttributes) {
-        System.out.println(id);
-		if (id == -1) {
-			cursos = cursoService.find(Curso.class);
+		
+		List<Curso> cursos = cursoService.find(Curso.class);
+		Curso curso = cursoService.find(Curso.class, id);
 
-				resultados = calculo.gerarCalculo();
+		this.resultadosCurso = new ArrayList<ResultadoCalculo>();
 
-			
-			modelMap.addAttribute("idCurso", id);
-			modelMap.addAttribute("cursos", cursos);
-			modelMap.addAttribute("resultados", resultados);
+		for (ResultadoCalculo resultadoCalculo : resultados) {
+			boolean flag = false;
 
-		} else {
-			this.resultadosCurso = new ArrayList<ResultadoCalculo>();
+			for (DetalheMetaCalculada detalhePar : resultadoCalculo
+					.getMetaCalculada().getDetalhePar()) {
 
-			for (ResultadoCalculo resultadoCalculo : resultados) {
-				boolean flag = false;
-
-				for (DetalheMetaCalculada detalhePar : resultadoCalculo
-						.getMetaCalculada().getDetalhePar()) {
-
-					if (detalhePar.getCurso().equals(cursos.get(id).getNome())) {
-						flag = true;
-						break;
-						
-					}
+				if (detalhePar.getCurso().equals(curso.getNome())) {
+					flag = true;
+					break;
 
 				}
-				for (DetalheMetaCalculada detalheImpar : resultadoCalculo
-						.getMetaCalculada().getDetalheImpar()) {
 
-					if (detalheImpar.getCurso()
-							.equals(cursos.get(id).getNome())) {
-						flag = true;
-						break;
-						
-
-					}
-
-				}
-				if (flag) {
-
-					resultadosCurso.add(new ResultadoCalculo(resultadoCalculo
-							.getTitulo(), resultadoCalculo.getMetaCalculada()));
-					flag = false;
-
-				}
 			}
-			modelMap.addAttribute("idCurso", id);
-			modelMap.addAttribute("cursos", cursos);
-			modelMap.addAttribute("resultados", resultadosCurso);
+			for (DetalheMetaCalculada detalheImpar : resultadoCalculo
+					.getMetaCalculada().getDetalheImpar()) {
 
+				if (detalheImpar.getCurso().equals(curso.getNome())) {
+					flag = true;
+					break;
+
+				}
+
+			}
+			if (flag) {
+
+				resultadosCurso.add(new ResultadoCalculo(resultadoCalculo
+						.getTitulo(), resultadoCalculo.getMetaCalculada()));
+				flag = false;
+
+			}
 		}
+		modelMap.addAttribute("idCurso", curso.getId());
+		modelMap.addAttribute("cursos", cursos);
+		modelMap.addAttribute("resultados", resultadosCurso);
 
 		return "meta/listar";
 
