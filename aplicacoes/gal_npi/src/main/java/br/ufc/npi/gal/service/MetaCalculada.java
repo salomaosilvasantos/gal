@@ -43,6 +43,31 @@ public class MetaCalculada {
 			List<DetalheMetaCalculada> detalheMetaCalculadaImpar) {
 		this.detalheImpar = detalheMetaCalculadaImpar;
 	}
+	
+
+	public String getNomeMeta() {
+		return nomeMeta;
+	}
+
+	public void setNomeMeta(String nomeMeta) {
+		this.nomeMeta = nomeMeta;
+	}
+
+	public List<DetalheMetaCalculada> getDetalhePar() {
+		return detalhePar;
+	}
+
+	public void setDetalhePar(List<DetalheMetaCalculada> detalhePar) {
+		this.detalhePar = detalhePar;
+	}
+
+	public List<DetalheMetaCalculada> getDetalheImpar() {
+		return detalheImpar;
+	}
+
+	public void setDetalheImpar(List<DetalheMetaCalculada> detalheImpar) {
+		this.detalheImpar = detalheImpar;
+	}
 
 	@Override
 	public String toString() {
@@ -59,11 +84,11 @@ public class MetaCalculada {
 		double somatorioPar = new Double(0);
 		double somatorioImpar = new Double(0);
         
-		for (DetalheMetaCalculada dmcPar : detalhePar) {
-			somatorioPar = somatorioPar + dmcPar.getCalculo();
+		for (DetalheMetaCalculada detalheMetaCalculadaPar : detalhePar) {
+			somatorioPar = somatorioPar + detalheMetaCalculadaPar.getCalculo();
 		}
-		for (DetalheMetaCalculada dmcImpar : detalheImpar) {
-			somatorioImpar = somatorioImpar + dmcImpar.getCalculo();
+		for (DetalheMetaCalculada detalheMetaCalculadaImpar : detalheImpar) {
+			somatorioImpar = somatorioImpar + detalheMetaCalculadaImpar.getCalculo();
 		}
 		if (somatorioPar > somatorioImpar) {
 			

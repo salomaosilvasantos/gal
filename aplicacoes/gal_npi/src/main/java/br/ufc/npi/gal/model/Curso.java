@@ -34,7 +34,7 @@ public class Curso implements Serializable {
 
 	@NotNull(message = "Campo obrigatório")
 	@Column(name = "cod_c")
-	@NumberFormat(style = Style.NUMBER)
+	@NumberFormat(style = Style.NUMBER, pattern = "aceitar apenas número")
 	private Integer codigo;
 
 	@NotEmpty(message = "Campo obrigatório")

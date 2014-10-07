@@ -60,4 +60,10 @@ public class LoginController {
 		}
 		return "403";
 	}
+	
+	@RequestMapping(value = "/contatos", method = RequestMethod.GET)
+	public String contatos(ModelMap model) {
+		return "contatos";
+
+	}
 }

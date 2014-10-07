@@ -67,6 +67,11 @@
 						<span class="glyphicon glyphicon-trash"></span>
 					</a>
 				</datatables:column>
+				<datatables:column title="Exemplar">
+					<a  href="<c:url value="/exemplar/${titulo.id}/listar" ></c:url>">
+						Listar Exemplares
+					</a>
+				</datatables:column>
 			</datatables:table>
 		</c:if>
 

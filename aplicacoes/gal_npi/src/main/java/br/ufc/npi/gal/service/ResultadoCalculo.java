@@ -6,24 +6,18 @@ public class ResultadoCalculo {
 
 	private Titulo titulo;
 	private MetaCalculada metaCalculada;
-	
-	
 
 	public ResultadoCalculo() {
 		super();
 		this.titulo = new Titulo();
 		this.metaCalculada = new MetaCalculada();
 	}
-	
-	
 
 	public ResultadoCalculo(Titulo titulo, MetaCalculada metaCalculada) {
 		super();
 		this.titulo = titulo;
 		this.metaCalculada = metaCalculada;
 	}
-
-
 
 	public Titulo getTitulo() {
 		return titulo;
@@ -40,6 +34,7 @@ public class ResultadoCalculo {
 	public void setMetaCalculada(MetaCalculada metaCalculada) {
 		this.metaCalculada = metaCalculada;
 	}
+
 
 	@Override
 	public String toString() {

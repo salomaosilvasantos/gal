@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <!DOCTYPE html>
 <html>
@@ -13,10 +13,11 @@
 <title>Metas</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
 </head>
-<body>
+<body>  
 	<div id="container" style="width: 1000px; margin: 0 auto;">
+	
 		<jsp:include page="../fragments/header.jsp" />
-
+		<a	href="<c:url value="/meta/downloadMetaDetalhada"></c:url>">Download do relatorio contendo o detalhamento das metas</a>
 		<c:if test="${not empty error}">
 			<div class="alert alert-danger alert-dismissible" role="alert">
 				<button type="button" class="close" data-dismiss="alert">
@@ -44,35 +45,55 @@
 		</c:if>
 
 		<c:if test="${not empty resultados}">
+		
+		
 			<datatables:table id="resultado" data="${resultados}" cdn="true"
 				row="resultado" theme="bootstrap2" cssClass="table table-striped">
+
 
 				<datatables:column title="Nome do Título">
 					<c:out value="${resultado.titulo.nome}"></c:out>
 				</datatables:column>
-
 				<datatables:column title="Meta">
 					<c:out value="${resultado.metaCalculada.nome}"></c:out>
 				</datatables:column>
-
 				<datatables:column title="Valor da Meta">
 					<c:out value="${resultado.metaCalculada.calculo}"></c:out>
 				</datatables:column>
-
 				<datatables:column title="Acervo">
 					<c:out value="${resultado.titulo.acervo}"></c:out>
 				</datatables:column>
-
 				<datatables:column title="Déficit">
-					<c:if test="${(resultado.metaCalculada.calculo-resultado.titulo.acervo) >= 0}">
-						<fmt:formatNumber type="number" maxIntegerDigits="2" value="${resultado.metaCalculada.calculo-resultado.titulo.acervo}"></fmt:formatNumber>
+					<c:if
+						test="${(resultado.metaCalculada.calculo-resultado.titulo.acervo) >= 0}">
+						<fmt:formatNumber type="number" maxFractionDigits="1"
+							value="${resultado.metaCalculada.calculo-resultado.titulo.acervo}"></fmt:formatNumber>
 					</c:if>
-					
-					<c:if test="${(resultado.metaCalculada.calculo-resultado.titulo.acervo) < 0}">
+					<c:if
+						test="${(resultado.metaCalculada.calculo-resultado.titulo.acervo) < 0}">
 						<c:out value="0"></c:out>
 					</c:if>
 				</datatables:column>
+				<datatables:column title="Meta Detalhada">
 
+					<c:if
+						test="${(resultado.metaCalculada.calculo) > 0.1}">
+						<a class="btn btn-primary" 
+							href="<c:url value = "/meta/${resultado.titulo.id}/detalhe"></c:url>">
+							<span class="glyphicon glyphicon-zoom-in"></span>
+						</a>
+					</c:if>
+					<c:if test="${(resultado.metaCalculada.calculo) <= 0.0}">
+					<div title="Não possui metas">
+						<button type="button" disabled class="btn btn-primary">
+							<span class="glyphicon glyphicon-zoom-in" ></span>
+						</button>
+					</div>
+					</c:if>
+					
+
+
+				</datatables:column>
 
 			</datatables:table>
 		</c:if>
