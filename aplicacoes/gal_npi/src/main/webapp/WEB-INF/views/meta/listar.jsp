@@ -18,6 +18,7 @@
 <head>
 <title>Metas</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
+<link href="<c:url value="../resources/css/gal.css" />" rel="stylesheet">
 </head>
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">

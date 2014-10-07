@@ -43,6 +43,7 @@ public class MetaController {
 	@Inject
 	private CursoService cursoService;
 
+	
 	private List<ResultadoCalculo> resultados;
 
 	private List<ResultadoCalculo> resultadosCurso;
@@ -145,15 +146,13 @@ public class MetaController {
 	@RequestMapping(value = "/{id}/listar", method = RequestMethod.GET)
 	public String listarByCurso(@PathVariable("id") Integer id,
 			ModelMap modelMap, RedirectAttributes redirectAttributes) {
-
+        System.out.println(id);
 		if (id == -1) {
 			cursos = cursoService.find(Curso.class);
 
-			if (resultados == null) {
-
 				resultados = calculo.gerarCalculo();
 
-			}
+			
 			modelMap.addAttribute("idCurso", id);
 			modelMap.addAttribute("cursos", cursos);
 			modelMap.addAttribute("resultados", resultados);
@@ -178,15 +177,17 @@ public class MetaController {
 					if (detalheImpar.getCurso()
 							.equals(cursos.get(id).getNome())) {
 						flag = true;
+						
 
 					}
 
 				}
-				if (flag == true) {
+				if (flag) {
 
 					resultadosCurso.add(new ResultadoCalculo(resultadoCalculo
 							.getTitulo(), resultadoCalculo.getMetaCalculada()));
 					flag = false;
+
 				}
 			}
 			modelMap.addAttribute("idCurso", id);

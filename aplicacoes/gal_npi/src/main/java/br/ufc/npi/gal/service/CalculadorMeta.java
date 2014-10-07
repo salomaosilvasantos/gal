@@ -17,30 +17,23 @@ public class CalculadorMeta {
 	private static final int META_COMPLEMENTAR = 2;
 	private static final String BIBLIOGRAFIA_TIPO_COMPLEMENTAR = "Complementar";
 
-	private List<ResultadoCalculo> resultadoCalculo;
-	private MetaCalculada metaCalculada;
-	private DetalheMetaCalculada detalheMeta;
-	private List<DetalheMetaCalculada> detalhePares;
-	private List<DetalheMetaCalculada> detalheImpares;
-
-	public CalculadorMeta() {
-		super();
-		this.resultadoCalculo = new ArrayList<ResultadoCalculo>();
-		this.metaCalculada = new MetaCalculada();
-		this.detalheMeta = new DetalheMetaCalculada();
-		this.detalhePares = new ArrayList<DetalheMetaCalculada>();
-		this.detalheImpares = new ArrayList<DetalheMetaCalculada>();
-	}
-
 	public List<ResultadoCalculo> calcular(List<Titulo> titulos) {
-		resultadoCalculo = new ArrayList<ResultadoCalculo>();
+		List<ResultadoCalculo> resultadoCalculo = new ArrayList<ResultadoCalculo>();
+		MetaCalculada metaCalculada;
+		DetalheMetaCalculada detalheMeta;
+		List<DetalheMetaCalculada> detalhePares;
+		List<DetalheMetaCalculada> detalheImpares;
 
 		for (Titulo titulo : titulos) {
+			metaCalculada = new MetaCalculada();
+			detalhePares = new ArrayList<DetalheMetaCalculada>();
+			detalheImpares = new ArrayList<DetalheMetaCalculada>();
 
 			for (Bibliografia bibliografia : titulo.getBibliografias()) {
 
 				for (IntegracaoCurricular integracaoCurricular : bibliografia
 						.getDisciplina().getCurriculos()) {
+					detalheMeta = new DetalheMetaCalculada();
 					detalheMeta.setCurriculo(integracaoCurricular
 							.getEstruturaCurricular().getAnoSemestre());
 					detalheMeta.setCurso(integracaoCurricular
@@ -73,19 +66,13 @@ public class CalculadorMeta {
 						detalheImpares.add(detalheMeta);
 					}
 
-					detalheMeta = new DetalheMetaCalculada();
-
 				}
 			}
 			metaCalculada.setNome("Inep 5");
 			metaCalculada.setDetalhePar(detalhePares);
 			metaCalculada.setDetalheImpar(detalheImpares);
 
-			detalhePares = new ArrayList<DetalheMetaCalculada>();
-			detalheImpares = new ArrayList<DetalheMetaCalculada>();
 			resultadoCalculo.add(new ResultadoCalculo(titulo, metaCalculada));
-
-			metaCalculada = new MetaCalculada();
 
 		}
 
