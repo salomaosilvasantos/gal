@@ -6578,7 +6578,9 @@ INSERT INTO integracao_curricular (id_disciplina, id_curriculo, qtd_alunos, seme
 -- Data for Name: papel; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO papel (id, nome) VALUES (1, 'ROLE_ADMIN');
+INSERT INTO papel (id, nome) VALUES (1, 'ROLE_BIBLIOTECARIO');
+INSERT INTO papel (id, nome) VALUES (2, 'ROLE_COORDENADOR');
+
 
 
 --

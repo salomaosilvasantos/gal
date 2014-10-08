@@ -3,6 +3,7 @@ $( document ).ready(function() {
 	
 	$('table').dataTable(
 		{
+			iDisplayLength: 25,
 			sPaginationType : "full_numbers",
 			oLanguage : {
 				"sEmptyTable" : "Nenhum registro encontrado",
