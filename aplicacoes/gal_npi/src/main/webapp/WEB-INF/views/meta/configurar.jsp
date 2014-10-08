@@ -12,27 +12,52 @@
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<form:form servletRelativeAction="/disciplina/adicionar" method="post"
-			modelAttribute="disciplina" role="form" class="form-horizontal">
-			<div class="form-group" style="text-align: center;">
-				<label class="control-label" style="font-size: 20px;">Configurar Meta</label>
-			</div>
-			
-			<div class="form-group">
-				<label for="nome" class="col-sm-1 control-label">Nome</label>
-				<div class="col-sm-10">
-					<form:input id="nome" class="form-control" placeholder="Nome"
-						path="nome" />
-					<form:errors path="nome" cssClass="error" />
-				</div>
-			</div>
+		<%-- 		<form:form servletRelativeAction="/meta/configurar" method="post" --%>
+		<%-- 			modelAttribute="metaForm" role="form" class="form-horizontal"> --%>
+		<!-- 			<div class="form-group" style="text-align: center;"> -->
+		<!-- 				<label class="control-label" style="font-size: 20px;">Configurar -->
+		<!-- 					Meta</label> -->
+		<!-- 			</div> -->
 
-			<div class="controls">
-				<input id="criar" class="btn btn-primary" type="submit"
-					value="Adicionar" /> <a
-					href="<c:url value="/disciplina/listar"></c:url>"
-					class="btn btn-default">Cancelar</a>
-			</div>
+		<!-- 			<div class="form-group"> -->
+		<!-- 				<label for="nome" class="col-sm-1 control-label">Nome</label> -->
+		<!-- 				<div class="col-sm-10"> -->
+
+
+		<!-- 				</div> -->
+		<!-- 			</div> -->
+		<form:form servletRelativeAction="/meta/configurar" method="post" modelAttribute="metaForm" role="form">
+
+			<table class="table table-striped sortable">
+				<!-- here should go some titles... -->
+				<tr>
+					<th>Nome</th>
+					<th>Indice Cálculo Básico</th>
+					<th>Indice Cálculo Complementar</th>
+				</tr>
+				<c:forEach items="${metas}" var="meta" varStatus="status">
+					<tr>
+						<input type="hidden" name="metas[${status.index}].id"
+							value="${meta.id}" />
+						<td><input name="metas[${status.index}].nome"
+							value="${meta.nome}" /></td>
+						<td><input name="metas[${status.index}].indiceCalculoBasica"
+							value="${meta.indiceCalculoBasica}" /></td>
+						<td><input name="metas[${status.index}].indiceCalculoComplementar"
+							value="${meta.indiceCalculoComplementar}" /></td>
+
+
+					</tr>
+				</c:forEach>
+			</table>
+			<br />
+			
+			
+				<input class="btn btn-primary" type="submit" value="Configurar"/>
+				<a href="<c:url value="/meta/listar"></c:url>" class="btn btn-default">Cancelar</a>
+			
+
+
 
 		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />

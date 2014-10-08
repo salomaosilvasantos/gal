@@ -13,10 +13,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,9 +26,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Curso;
 import br.ufc.npi.gal.model.DetalheMetaCalculada;
+import br.ufc.npi.gal.model.Meta;
+import br.ufc.npi.gal.model.MetaForm;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculoMetaService;
 import br.ufc.npi.gal.service.CursoService;
+import br.ufc.npi.gal.service.MetaService;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
 
@@ -42,6 +47,9 @@ public class MetaController {
 
 	@Inject
 	private CursoService cursoService;
+
+	@Inject
+	private MetaService metaService;
 
 	public MetaController() {
 		super();
@@ -63,7 +71,8 @@ public class MetaController {
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
 					linha = "\"" + element.getTitulo().getNome() + "\";\""
-							+ element.getTitulo().getIsbn() + "\";\"Meta Impar\";\""
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Impar\";\""
 							+ detalheMetaCalculada.getCurso() + "\";\""
 							+ detalheMetaCalculada.getDisciplina() + "\";\""
 							+ detalheMetaCalculada.getTipoBibliografia()
@@ -79,7 +88,8 @@ public class MetaController {
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
 					linha = "\"" + element.getTitulo().getNome() + "\";\""
-							+ element.getTitulo().getIsbn() + "\";\"Meta Par\";\""
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Par\";\""
 							+ detalheMetaCalculada.getCurso() + "\";\""
 							+ detalheMetaCalculada.getDisciplina() + "\";\""
 							+ detalheMetaCalculada.getTipoBibliografia()
@@ -213,6 +223,29 @@ public class MetaController {
 				"Esse titulo não possui meta.");
 		return "redirect:/meta/listar";
 
+	}
+
+	@RequestMapping(value = "/configurar")
+	public String configurar(ModelMap modelMap) {
+		MetaForm metaForm = new MetaForm();
+		metaForm.setMetas(metaService.find(Meta.class));
+		modelMap.addAttribute("metas", metaForm.getMetas());
+		return "meta/configurar";
+	}
+
+	@RequestMapping(value = "/configurar", method = RequestMethod.POST)
+	public String configurar(@Valid MetaForm metaForm, BindingResult result,
+			RedirectAttributes redirectAttributes) {
+
+		if (result.hasErrors()) {
+			return "meta/configurar";
+		}
+		for (Meta meta : metaForm.getMetas()) {
+			metaService.update(meta);
+		}
+		redirectAttributes.addFlashAttribute("info",
+				"Meta configurada com sucesso.");
+		return "redirect:/meta/listar";
 	}
 
 	public CalculoMetaService getCalculo() {

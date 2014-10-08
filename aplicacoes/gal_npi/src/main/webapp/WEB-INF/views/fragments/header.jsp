@@ -41,7 +41,14 @@
 		            <li><a href="<c:url value='/titulo/listar'/>">Listar</a></li>
 		          </ul>
 		       </li>
-		       <li><a href="<c:url value='/meta/listar'/>">Metas</a>
+		         <li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Meta<b class="caret"></b></a>
+		          <ul class="dropdown-menu">
+		            <li><a href="<c:url value='/meta/configurar'/>">Configurar</a></li>
+		            <li class="divider"></li>
+		            <li><a href="<c:url value='/meta/listar'/>">Listar</a></li>
+		          </ul>
+		       </li>
 		       <li><a href="<c:url value='/contatos'/>">Contatos</a>
 		       <li><a href="<c:url value='/logout'/>">Logout</a>
 		    </ul>
