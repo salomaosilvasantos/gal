@@ -85,8 +85,7 @@
 								</c:forEach>
 							</ul>
 
-							<input type="button" value="Adicionar Disciplina"
-								data-target="#add-disciplina" data-toggle="modal">
+							
 
 							<div class="tab-content">
 								<c:forEach items="${curso.curriculos}" var="curriculo"
@@ -98,6 +97,13 @@
 										<c:set var="active" value=""></c:set>
 									</c:if>
 									<div class="tab-pane ${active }" id="${curriculo.anoSemestre }">
+									
+									<a data-toggle="modal" data-id="${curriculo.id }" title="Add this item"
+							class="open-AddBookDialog btn btn-primary" href="#add-disciplina">test</a>
+									
+<%-- 									<input type="button" id="${curriculo.id }" value="Adicionar Disciplina" --%>
+<!-- 								data-target="#add-disciplina" data-toggle="modal" > -->
+								
 										<div class="panel panel-default">
 											<datatables:table id="estrutura${curso.id}"
 												data="${curriculo.curriculos}" cdn="true" row="integracao"
@@ -167,20 +173,20 @@
 				<div class="modal-header">Adicionar disciplina</div>
 				<div class="modal-body" style="text-align: center;">
 					<form:form servletRelativeAction="/integracao/adicionar"
-						method="post" modelAttribute="integracao" role="form"
+						method="get" modelAttribute="integracao" role="form"
 						class="form-horizontal">
-
+						<input type="hidden" name="id" id="id" value="" />
 						<div class="form-group">
 							<label class="control-label" style="font-size: 20px;">Adicionar
 								Disciplina</label>
 						</div>
 						
 						<div class="form-group">
-							<label for="quantidadeAlunos" class="col-sm-2 control-label">Código Disciplina</label>
+							<label for="disciplina" class="col-sm-2 control-label">Código Disciplina</label>
 							<div class="col-sm-10">
-								<form:input id="nome" class="form-control" style="width: 150px;"
-									placeholder="Código disciplina" path="quantidadeAlunos" />
-								<form:errors path="quantidadeAlunos" cssClass="error" />
+								<form:input id="disciplina" class="form-control" style="width: 150px;"
+									placeholder="Código disciplina" path="disciplina" />
+								<form:errors path="disciplina" cssClass="error" />
 							</div>
 						</div>
 
@@ -202,13 +208,23 @@
 								<form:errors path="semestreOferta" cssClass="error" />
 							</div>
 						</div>
-
+						
+						<script>
+							$(document).on("click", ".open-AddBookDialog",
+									function() {
+										var id = $(this).data('id');
+										$(".modal-body #id").val(id);
+									});
+						</script>
+						
 						<div class="controls">
 							<input id="criar" class="btn btn-primary" type="submit"
 								value="Adicionar" /> <a
 								href="<c:url value="/curso/listar"></c:url>"
 								class="btn btn-default">Cancelar</a>
 						</div>
+						
+						
 					</form:form>
 				</div>
 

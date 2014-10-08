@@ -1,7 +1,6 @@
 package br.ufc.npi.gal.web;
 
 import javax.inject.Inject;
-import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -47,19 +46,19 @@ public class IntegracaoCurricularController {
 		return "redirect:/integracao/listar";
 	}
 	
-	@RequestMapping(value = "/adicionar")
-	public String adicionar(ModelMap modelMap) {
-		
+	@RequestMapping(value = "/adicionar", method = RequestMethod.GET)
+	public String adicionar(String disciplina, Integer quantidadeAlunos, Integer semestreOferta, Integer id, ModelMap modelMap) {
 		
 		IntegracaoCurricular integracao = new IntegracaoCurricular();
-		Disciplina disciplina = disciplinaService.find(Disciplina.class, 128);
-		EstruturaCurricular estruturaCurricular = estruturaService.find(EstruturaCurricular.class, 1);
+		Disciplina otaDisciplina = disciplinaService.getDisciplinaByCodigo(disciplina);
+		System.out.println(id);
+		EstruturaCurricular estruturaCurricular = estruturaService.find(EstruturaCurricular.class, id);
 		
 		
-		integracao.setDisciplina(disciplina);
+		integracao.setDisciplina(otaDisciplina);
 		integracao.setEstruturaCurricular(estruturaCurricular);
-		integracao.setQuantidadeAlunos(60);
-		integracao.setSemestreOferta(8);
+		integracao.setQuantidadeAlunos(quantidadeAlunos);
+		integracao.setSemestreOferta(semestreOferta);
 		
 		
 		integracaoService.save(integracao);
@@ -68,7 +67,7 @@ public class IntegracaoCurricularController {
 	}
 
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
-	public String adicionar(@Valid IntegracaoCurricular integracao, BindingResult result, final RedirectAttributes redirectAttributes) {
+	public String adicionar(IntegracaoCurricular integracao, BindingResult result, final RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return "integracao/adicionar";
 		}
