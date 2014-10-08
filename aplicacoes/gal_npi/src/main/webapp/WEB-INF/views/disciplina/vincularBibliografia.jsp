@@ -24,7 +24,7 @@
 						href="<c:url value="/disciplina/listar" ></c:url>">Vincular</a>
 				</p>
 				<div class="column left first">
-					<label style="font-size: 16px;">Básica</label>
+					<label id="label">Básica</label>
 					<ul class="sortable-list" id="basica">
 
 						<c:forEach var="basica" items="${basica}">
@@ -35,7 +35,7 @@
 				</div>
 
 				<div class="column left">
-					<label style="font-size: 16px;">Complementar</label>
+					<label id="label">Complementar</label>
 					<ul class="sortable-list" id="complementar">
 						<c:forEach var="complementar" items="${complementar}">
 							<li class="sortable-item" id="${complementar.id}" style="font-size: 12px;"><c:out
@@ -46,7 +46,7 @@
 				</div>
 
 				<div class="column left">
-					<label style="font-size: 16px;">Acervo</label> <input type="text"
+					<label id="label">Acervo</label> <input type="text"
 						id="txtBusca" placeholder="Buscar acervo..." />
 					<ul class="sortable-list" id="acervo">
 						<c:forEach var="titulo" items="${titulo}">
