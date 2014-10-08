@@ -13,11 +13,9 @@ import br.ufc.npi.gal.model.Titulo;
 @Named
 public class CalculadorMeta {
 
-	private static final int META_BASICA = 6;
-	private static final int META_COMPLEMENTAR = 2;
 	private static final String BIBLIOGRAFIA_TIPO_COMPLEMENTAR = "Complementar";
 
-	public List<ResultadoCalculo> calcular(List<Titulo> titulos) {
+	public List<ResultadoCalculo> calcular(List<Titulo> titulos, String nomeMeta,double indiceCalculoBasica, double indiceCalculoComplementar) {
 		List<ResultadoCalculo> resultadoCalculo = new ArrayList<ResultadoCalculo>();
 		MetaCalculada metaCalculada;
 		DetalheMetaCalculada detalheMeta;
@@ -42,10 +40,10 @@ public class CalculadorMeta {
 					double calculo;
 					if (BIBLIOGRAFIA_TIPO_COMPLEMENTAR.equals(bibliografia
 							.getTipoBibliografia())) {
-						calculo = META_COMPLEMENTAR;
+						calculo = indiceCalculoComplementar;
 					} else {
 						calculo = ((double) integracaoCurricular
-								.getQuantidadeAlunos() / (double) META_BASICA);
+								.getQuantidadeAlunos() / (double) indiceCalculoBasica);
 					}
 
 					detalheMeta.setCalculo(calculo);
@@ -68,7 +66,7 @@ public class CalculadorMeta {
 
 				}
 			}
-			metaCalculada.setNome("Inep 5");
+			metaCalculada.setNome(nomeMeta);
 			metaCalculada.setDetalhePar(detalhePares);
 			metaCalculada.setDetalheImpar(detalheImpares);
 

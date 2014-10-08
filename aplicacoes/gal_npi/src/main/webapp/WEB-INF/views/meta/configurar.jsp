@@ -12,26 +12,13 @@
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<%-- 		<form:form servletRelativeAction="/meta/configurar" method="post" --%>
-		<%-- 			modelAttribute="metaForm" role="form" class="form-horizontal"> --%>
-		<!-- 			<div class="form-group" style="text-align: center;"> -->
-		<!-- 				<label class="control-label" style="font-size: 20px;">Configurar -->
-		<!-- 					Meta</label> -->
-		<!-- 			</div> -->
-
-		<!-- 			<div class="form-group"> -->
-		<!-- 				<label for="nome" class="col-sm-1 control-label">Nome</label> -->
-		<!-- 				<div class="col-sm-10"> -->
-
-
-		<!-- 				</div> -->
-		<!-- 			</div> -->
+		
 		<form:form servletRelativeAction="/meta/configurar" method="post" modelAttribute="metaForm" role="form">
 
 			<table class="table table-striped sortable">
 				<!-- here should go some titles... -->
 				<tr>
-					<th>Nome</th>
+					<th>Nome da Meta</th>
 					<th>Indice Cálculo Básico</th>
 					<th>Indice Cálculo Complementar</th>
 				</tr>

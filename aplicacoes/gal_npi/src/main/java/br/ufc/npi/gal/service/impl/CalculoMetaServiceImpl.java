@@ -1,13 +1,17 @@
 package br.ufc.npi.gal.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import br.ufc.npi.gal.model.Meta;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculadorMeta;
 import br.ufc.npi.gal.service.CalculoMetaService;
+import br.ufc.npi.gal.service.MetaService;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
 
@@ -19,11 +23,32 @@ public class CalculoMetaServiceImpl implements CalculoMetaService {
 	@Inject
 	private CalculadorMeta calculadorMeta;
 
-	public List<ResultadoCalculo> gerarCalculo() {
+	@Inject
+	private MetaService metaService;
 
-		return calculadorMeta.calcular(tituloService.find(Titulo.class));
+	public List<ResultadoCalculo> gerarCalculo() {
+		Map<String, List> resultados = new HashMap();
+		for (Meta meta : metaService.find(Meta.class)) {
+			resultados.put(meta.getNome(), calculadorMeta.calcular(
+					tituloService.find(Titulo.class), meta.getNome(),
+					meta.getIndiceCalculoBasica(),
+					meta.getIndiceCalculoComplementar()));
+		}
+		return calculadorMeta.calcular(tituloService.find(Titulo.class),
+				"inep 5", 6, 2);
 
 	}
-	
+
+	public Map<String, List<ResultadoCalculo>> geraCalculo() {
+		Map<String, List<ResultadoCalculo>> resultados = new HashMap<String, List<ResultadoCalculo>>();
+		for (Meta meta : metaService.find(Meta.class)) {
+			resultados.put(meta.getNome(), calculadorMeta.calcular(
+					tituloService.find(Titulo.class), meta.getNome(),
+					meta.getIndiceCalculoBasica(),
+					meta.getIndiceCalculoComplementar()));
+		}
+		return resultados;
+
+	}
 
 }
