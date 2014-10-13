@@ -1,5 +1,7 @@
 package br.ufc.npi.gal.web;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Controller;
@@ -7,6 +9,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Disciplina;
@@ -47,23 +50,44 @@ public class IntegracaoCurricularController {
 	}
 	
 	@RequestMapping(value = "/adicionar", method = RequestMethod.GET)
-	public String adicionar(String disciplina, Integer quantidadeAlunos, Integer semestreOferta, Integer id, ModelMap modelMap) {
-		
+	public String adicionar(String disciplina, Integer quantidadeAlunos, Integer semestreOferta, Integer id, ModelMap modelMap, final RedirectAttributes redirectAttributes) {
 		IntegracaoCurricular integracao = new IntegracaoCurricular();
 		Disciplina otaDisciplina = disciplinaService.getDisciplinaByCodigo(disciplina);
 		System.out.println(id);
 		EstruturaCurricular estruturaCurricular = estruturaService.find(EstruturaCurricular.class, id);
-		
+		List<IntegracaoCurricular> integracaoList = estruturaCurricular.getCurriculos();
 		
 		integracao.setDisciplina(otaDisciplina);
 		integracao.setEstruturaCurricular(estruturaCurricular);
 		integracao.setQuantidadeAlunos(quantidadeAlunos);
 		integracao.setSemestreOferta(semestreOferta);
 		
+		if(semestreOferta <= 0 || semestreOferta > 10){
+			redirectAttributes.addFlashAttribute("error",
+					"Semestre de oferta inválido");
+			return "redirect:/curso/listar";
+		}
+		
+		if(otaDisciplina == null){
+			redirectAttributes.addFlashAttribute("error",
+					"Código da disciplina não existe");
+			return "redirect:/curso/listar";
+		}
+		
+		for (IntegracaoCurricular integracaoCurricular : integracaoList) {
+			if(integracaoCurricular.getDisciplina().equals(otaDisciplina)){
+				redirectAttributes.addFlashAttribute("error",
+						"Essa disciplina já está vinculada");
+				return "redirect:/curso/listar";
+			}
+		}
+		
 		
 		integracaoService.save(integracao);
 		
-		return "integracao/listar";
+		redirectAttributes.addFlashAttribute("info",
+				"Integracao Curricular adicionada com sucesso.");
+		return "redirect:/curso/listar";
 	}
 
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)

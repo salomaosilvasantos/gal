@@ -32,6 +32,8 @@
 				<c:out value="${info}"></c:out>
 			</div>
 		</c:if>
+		
+		
 
 		<div id="button-add">
 			<a href="<c:url value="/curso/adicionar" ></c:url>">
@@ -98,8 +100,8 @@
 									</c:if>
 									<div class="tab-pane ${active }" id="${curriculo.anoSemestre }">
 									
-									<a data-toggle="modal" data-id="${curriculo.id }" title="Add this item"
-							class="open-AddBookDialog btn btn-primary" href="#add-disciplina">test</a>
+									<a data-toggle="modal" data-id="${curriculo.id }"
+							class="open-AddBookDialog btn btn-success" href="#add-disciplina">Vincular Disciplina</a>
 									
 <%-- 									<input type="button" id="${curriculo.id }" value="Adicionar Disciplina" --%>
 <!-- 								data-target="#add-disciplina" data-toggle="modal" > -->
