@@ -60,7 +60,7 @@
 									
 					<div id="collapse${curso.id}" class="panel-collapse collapse tagtable">
 						<div class="panel-body">
-							<ul class="nav nav-tabs" role="tablist">
+							<ul class="nav nav-tabs" role="tablist" id="myTab">
 								<c:forEach items="${curso.curriculos}" var="curriculo" varStatus="ct">
 									<c:if test="${ct.index == 0}">
 										<c:set var="act" value="active"></c:set>
@@ -68,7 +68,7 @@
 									<c:if test="${ct.index != 0}">
 										<c:set var="act" value=""></c:set>
 									</c:if>
-									<li class="${act }"><a href="#${curriculo.anoSemestre}" role="tab" data-toggle="tab">${curriculo.anoSemestre}</a></li>
+									<li class="${act }"><a href="#${curriculo.id}" role="tab" data-toggle="tab">${curriculo.anoSemestre}</a></li>
 								</c:forEach>
 								<div id="button-add">
 									<a href="<c:url value="/estrutura/${curso.id}/adicionar" ></c:url>">
@@ -84,8 +84,10 @@
 									<c:if test="${count.index != 0}">
 										<c:set var="active" value=""></c:set>
 									</c:if>
-									<div class="tab-pane ${active }" id="${curriculo.anoSemestre }">
+									<div id="${curriculo.id }" class="tab-pane ${active }"  >	
+									
 										<div class="panel panel-default">
+										
 											<datatables:table id="estrutura${curso.id}"
 												data="${curriculo.curriculos}" cdn="true" row="integracao"
 												theme="bootstrap2" cssClass="table table-striped">
@@ -101,7 +103,9 @@
 													<c:out value="${integracao.semestreOferta}"></c:out>
 												</datatables:column>
 											</datatables:table>
+										
 										</div>
+									
 									</div>
 								</c:forEach>
 							</div>
@@ -109,9 +113,10 @@
 					</div>
 				</div>
 			</c:forEach>
-		</div>
-
+		</div> 
+		
 		<jsp:include page="../fragments/footer.jsp" />
+
 	</div>
 	<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	    <div class="modal-dialog">

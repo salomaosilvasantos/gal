@@ -65,7 +65,7 @@ public class EstruturaCurricularController {
 			this.estruturaCurricularService.delete(estruturaCurricular);
 			redirectAttributes.addFlashAttribute("info","Estrutura Curricular removida com sucesso");
 		}
-		return "estrutura/listar";
+		return "curso/listar";
 	}
 	
 	@RequestMapping(value="/{id}/adicionar",method = RequestMethod.GET)
