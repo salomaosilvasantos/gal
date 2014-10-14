@@ -59,7 +59,7 @@ public class LerXls {
 	 * ISBN retira o nome isbn que vem na celula
 	 * \\(.+ retira tudo que vem depois que um parentese é aberto.
 	 * (v1) retura todos os v1 que encontra
-	 * 
+	 * \\s retira espaços
 	 */
 	public String formataIsbn(String isbn) {
 		
