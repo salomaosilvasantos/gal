@@ -9,7 +9,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.Disciplina;
@@ -62,7 +61,7 @@ public class IntegracaoCurricularController {
 		integracao.setQuantidadeAlunos(quantidadeAlunos);
 		integracao.setSemestreOferta(semestreOferta);
 		
-		if(semestreOferta <= 0 || semestreOferta > 10){
+		if(semestreOferta == null || semestreOferta <= 0 || semestreOferta > 10){
 			redirectAttributes.addFlashAttribute("error",
 					"Semestre de oferta inválido");
 			return "redirect:/curso/listar";

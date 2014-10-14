@@ -84,9 +84,17 @@ $( document ).ready(function() {
 	$('#drag-and-drop .sortable-list').sortable({
 		connectWith : '#drag-and-drop .sortable-list'
 	});
+	
+	
 
-		 	
+	 	
 });
+
+$(document).on("click", ".open-AddBookDialog",
+		function() {
+			var id = $(this).data('id');
+			$(".modal-body #id").val(id);
+		});
 
 function goBack() {
 	window.history.back()

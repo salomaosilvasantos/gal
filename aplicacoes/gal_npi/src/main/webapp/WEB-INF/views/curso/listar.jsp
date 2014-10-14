@@ -187,7 +187,7 @@
 							<label for="disciplina" class="col-sm-2 control-label">Código Disciplina</label>
 							<div class="col-sm-10">
 								<form:input id="disciplina" class="form-control" style="width: 150px;"
-									placeholder="Código disciplina" path="disciplina" />
+									placeholder="Código disciplina" path="disciplina" required="true"/>
 								<form:errors path="disciplina" cssClass="error" />
 							</div>
 						</div>
@@ -196,7 +196,7 @@
 							<label for="quantidadeAlunos" class="col-sm-2 control-label">Quantidade alunos</label>
 							<div class="col-sm-10">
 								<form:input id="nome" class="form-control" style="width: 150px;"
-									placeholder="Quantidade alunos" path="quantidadeAlunos" />
+									placeholder="Quantidade alunos" path="quantidadeAlunos" onkeypress="mascara(this,soNumeros)" required="true"/>
 								<form:errors path="quantidadeAlunos" cssClass="error" />
 							</div>
 						</div>
@@ -206,17 +206,26 @@
 							<div class="col-sm-10">
 								<form:input id="semestreOferta" class="form-control"
 									style="width: 150px;" placeholder="Semestre oferta"
-									path="semestreOferta" />
+									path="semestreOferta" onkeypress="mascara(this,soNumeros)" required="true"/>
 								<form:errors path="semestreOferta" cssClass="error" />
 							</div>
 						</div>
 						
 						<script>
-							$(document).on("click", ".open-AddBookDialog",
-									function() {
-										var id = $(this).data('id');
-										$(".modal-body #id").val(id);
-									});
+						function mascara(o,f){
+						    v_obj=o
+						    v_fun=f
+						    setTimeout("execmascara()",1)
+						}
+							
+						function execmascara(){
+						    v_obj.value=v_fun(v_obj.value)
+						}
+
+						function soNumeros(v){
+						    return v.replace(/\D/g,"")
+						}
+							
 						</script>
 						
 						<div class="controls">
