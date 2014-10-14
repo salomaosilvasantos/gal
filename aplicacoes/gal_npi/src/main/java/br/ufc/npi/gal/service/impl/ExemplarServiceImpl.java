@@ -14,8 +14,8 @@ public class ExemplarServiceImpl extends GenericServiceImpl<Exemplar> implements
 	private ExemplarRepository exemplarRepository;
 	
 	@Override
-	public Exemplar getExemplarByCod(String codExemplar) {
-		return exemplarRepository.getExemplarByCod(codExemplar);
+	public Exemplar getExemplarByCodigo(String codigoExemplar) {
+		return exemplarRepository.getExemplarByCodigo(codigoExemplar);
 	}
 	
 	
