@@ -1,6 +1,9 @@
 package br.ce.qxa.ufc;
 
+import java.awt.HeadlessException;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +11,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import br.ce.ufc.gal.conexao.ConexaoBanco;
 /*
@@ -162,7 +168,7 @@ public class CadastroExemplarTituloNoBanco {
 			if(id_t>0){
 				arquivo.escreveCsvFile(Str, "Cadastro dos exemplares do isbn: "+tituloExemplaParaCadastro.get(i).isbn);
 				for (int j = 0; j < tituloExemplaParaCadastro.get(i).codExemplares.size(); j++) {
-					//System.out.println(tituloExemplaParaCadastro.get(i).codExemplares.get(j));
+	
 					String linha = cadastraExemplaresBanco(id_t,tituloExemplaParaCadastro.get(i).codExemplares.get(j));
 					arquivo.escreveCsvFile(Str, (j+1)+": "+tituloExemplaParaCadastro.get(i).codExemplares.get(j)+": "+linha);
 				}
@@ -176,7 +182,27 @@ public class CadastroExemplarTituloNoBanco {
 	public static void main(String[] args) {
 		LerXls x=new LerXls();
 		CadastroExemplarTituloNoBanco cadastro =new CadastroExemplarTituloNoBanco();
-		cadastro.castrataExemplaresTitulos(x.leMatrizRetornaEstruturaTitulo("Relatório exemplares jul 2014.xls"));
+		
+		JFileChooser janela = new JFileChooser();
+        janela.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        JOptionPane.showMessageDialog(null, "Selecione o arquivo para atualiza o banco."); 
+        int res = janela.showOpenDialog(null);
+        
+        if(res == JFileChooser.APPROVE_OPTION){
+            File diretorio = janela.getSelectedFile();
+            try {
+            	cadastro.castrataExemplaresTitulos(x.leMatrizRetornaEstruturaTitulo(diretorio.getCanonicalPath()));
+				
+			} catch (HeadlessException e) {
+
+				e.printStackTrace();
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Voce nao selecionou nenhum diretorio.");
 		
 	}
 
