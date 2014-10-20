@@ -27,13 +27,7 @@ public class CalculoMetaServiceImpl implements CalculoMetaService {
 	private MetaService metaService;
 
 	public List<ResultadoCalculo> gerarCalculo() {
-		Map<String, List> resultados = new HashMap();
-		for (Meta meta : metaService.find(Meta.class)) {
-			resultados.put(meta.getNome(), calculadorMeta.calcular(
-					tituloService.find(Titulo.class), meta.getNome(),
-					meta.getIndiceCalculoBasica(),
-					meta.getIndiceCalculoComplementar()));
-		}
+		
 		return calculadorMeta.calcular(tituloService.find(Titulo.class),
 				"inep 5", 6, 2);
 
@@ -41,14 +35,17 @@ public class CalculoMetaServiceImpl implements CalculoMetaService {
 
 	public Map<String, List<ResultadoCalculo>> geraCalculo() {
 		Map<String, List<ResultadoCalculo>> resultados = new HashMap<String, List<ResultadoCalculo>>();
+		
 		for (Meta meta : metaService.find(Meta.class)) {
-			resultados.put(meta.getNome(), calculadorMeta.calcular(
-					tituloService.find(Titulo.class), meta.getNome(),
-					meta.getIndiceCalculoBasica(),
-					meta.getIndiceCalculoComplementar()));
+			resultados.put(meta.getNome(), calculadorMeta.calcular(tituloService.find(Titulo.class), meta.getNome(), meta.getIndiceCalculoBasica(),meta.getIndiceCalculoComplementar()));
+			//resultados.put(meta.getNome(), calculadorMeta.calcular(tituloService.find(Titulo.class), "Meta Repetida", meta.getIndiceCalculoBasica(),meta.getIndiceCalculoComplementar()));
 		}
 		return resultados;
 
+	}
+	
+	public List<ResultadoCalculo> gerarCalculo2(){
+		return calculadorMeta.calcular2(tituloService.find(Titulo.class),metaService.find(Meta.class));
 	}
 
 }

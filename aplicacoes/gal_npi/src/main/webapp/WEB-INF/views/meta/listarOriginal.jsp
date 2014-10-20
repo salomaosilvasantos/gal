@@ -63,58 +63,38 @@
 		<c:if test="${not empty resultados}">
 
 
-			<%-- 			<datatables:table id="resultado" data="${resultados}" cdn="true" --%>
-			<%-- 				row="resultado" theme="bootstrap2" cssClass="table table-striped"> --%>
-
-
-			<%-- 				<datatables:column title="Nome do Título"> --%>
-			<%-- 					<c:out value="${resultado.titulo.nome}"></c:out> --%>
-			<%-- 				</datatables:column> --%>
-			<%-- 				<datatables:column title="Nome "> --%>
-			<%-- 					<c:out value="${resultado.calculo}"></c:out> --%>
-			<%-- 				</datatables:column> --%>
-			<%-- 				<datatables:table id="result" data="${resultado.getMetasCalculadas}" --%>
-			<%-- 					cdn="true" row="result" theme="bootstrap2" --%>
-			<%-- 					cssClass="table table-striped"> --%>
-			<%-- 					<datatables:column title="calculo"> --%>
-			<%-- 						<c:out value="${result.calculo}"></c:out> --%>
-			<%-- 					</datatables:column> --%>
-			<%-- 				</datatables:table> --%>
-			<%-- 			</datatables:table> --%>
-
-			
-
 			<datatables:table id="resultado" data="${resultados}" cdn="true"
 				row="resultado" theme="bootstrap2" cssClass="table table-striped">
 
 
-				<datatables:column title="Titulo">
+				<datatables:column title="Nome do Título">
 					<c:out value="${resultado.titulo.nome}"></c:out>
+				</datatables:column>
+				<datatables:column title="Meta">
+					<c:out value="${resultado.metaCalculada.nome}"></c:out>
+				</datatables:column>
+				<datatables:column title="Valor da Meta">
+
+					<fmt:formatNumber type="number" maxFractionDigits="1"
+						value="${resultado.metaCalculada.calculo}"></fmt:formatNumber>
 				</datatables:column>
 				<datatables:column title="Acervo">
 					<c:out value="${resultado.titulo.acervo}"></c:out>
 				</datatables:column>
-				<c:forEach items="${resultado.metasCalculadas}" var="result">
-				<datatables:column title=" ${result.nome} ">
-						<fmt:formatNumber type="number" maxFractionDigits="1"
-						value="${result.calculo}"></fmt:formatNumber>
-
-				</datatables:column>
 				<datatables:column title="Déficit">
 					<c:if
-						test="${(result.calculo-resultado.titulo.acervo) >= 0}">
+						test="${(resultado.metaCalculada.calculo-resultado.titulo.acervo) >= 0}">
 						<fmt:formatNumber type="number" maxFractionDigits="1"
-							value="${result.calculo-resultado.titulo.acervo}"></fmt:formatNumber>
+							value="${resultado.metaCalculada.calculo-resultado.titulo.acervo}"></fmt:formatNumber>
 					</c:if>
 					<c:if
-						test="${(result.calculo-resultado.titulo.acervo) < 0}">
+						test="${(resultado.metaCalculada.calculo-resultado.titulo.acervo) < 0}">
 						<c:out value="0"></c:out>
 					</c:if>
 				</datatables:column>
-				
 				<datatables:column title="Meta Detalhada">
 
-					<c:if test="${(result.calculo) > 0.1}">
+					<c:if test="${(resultado.metaCalculada.calculo) > 0.1}">
 						<a class="btn btn-primary"
 							href="<c:url value = "/meta/${resultado.titulo.id}/detalhe"></c:url>">
 							<span class="glyphicon glyphicon-zoom-in"></span>
@@ -131,15 +111,8 @@
 
 
 				</datatables:column>
-				
-				</c:forEach>
 
-
-				
-
-			</table>
 			</datatables:table>
-			
 		</c:if>
 
 

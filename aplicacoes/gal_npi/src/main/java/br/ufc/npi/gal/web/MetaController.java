@@ -142,11 +142,30 @@ public class MetaController {
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
-		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
-		List<Curso> cursos = cursoService.find(Curso.class);
-		modelMap.addAttribute("resultados", resultados);
-		modelMap.addAttribute("cursos", cursos);
+		
+//		for(int i=0; i<calculo.geraCalculo().size();i++){
+//		   System.out.println("chamouuuuuuuuuuuuuuuuuuuuuuu "+calculo.geraCalculo().keySet());
+//		   for(List<ResultadoCalculo> r: calculo.geraCalculo().values()){
+//			 //  System.out.println(r.get(0).getMetaCalculada().getDetalheImpar().g);
+//			   
+//		   }
+//		   for(String s: calculo.geraCalculo().keySet()){
+//			   System.out.println(s);
+//		   }
+//			
+//		}
+//		//modelMap.addAttribute("resultados", calculo.gerarCalculo());
+		modelMap.addAttribute("resultados",calculo.gerarCalculo2());
+    	modelMap.addAttribute("cursos", cursoService.find(Curso.class));
 		modelMap.addAttribute("idCurso", -1);
+		
+
+
+
+
+
+
+
 		return "meta/listar";
 	}
 
