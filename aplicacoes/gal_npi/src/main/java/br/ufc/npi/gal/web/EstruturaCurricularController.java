@@ -32,29 +32,33 @@ public class EstruturaCurricularController {
 		return "estrutura/listar";
 	}
 
-	@RequestMapping(value="/{id}/editar")
+	@RequestMapping(value="/{id}/editar",method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap){
 		EstruturaCurricular estruturaCurricular = this.estruturaCurricularService.find(EstruturaCurricular.class, id);
-		
 		if(estruturaCurricular == null){
-			return "estrutura/listar";
+			return "curso/listar";
 		}
-		modelMap.addAttribute("estruturas", estruturaCurricular);
+		modelMap.addAttribute("curso", estruturaCurricular.getCurso());
+		modelMap.addAttribute("estruturaCurricular", estruturaCurricular);
 		return "estrutura/editar";
 	}
 	
-	@RequestMapping(value="/editar", method=RequestMethod.POST)
-	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes){
+	@RequestMapping(value="/{id}/editar", method=RequestMethod.POST)
+	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
 		if(result.hasErrors()){
 			return "estrutura/editar";
 		}
+		Curso curso = cursoService.find(Curso.class, id);
+//		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(estrutura.getId(), estrutura.getAnoSemestre()) != null){
+//			result.rejectValue("anoSemestre", "Repeat.estrutura.anoSemestre","Ano e Semestre já cadastrado no Curso");
+//		}
+
+//		estrutura.setId(null);
+		estrutura.setCurso(curso);
 		
-		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(estrutura.getId(), estrutura.getAnoSemestre()) != null){
-			result.rejectValue("anoSemestre", "Repeat.estrutura.anoSemestre","Ano e Semestre já cadastrado no Curso");
-		}
 		estruturaCurricularService.update(estrutura);
 		redirectAttributes.addFlashAttribute("info","Estrutura Curricular atualizada com sucesso");
-		return "redirect:/estrutura/listar";
+		return "redirect:/curso/listar";
 	}
 	
 	@RequestMapping(value="/{id}/excluir")
