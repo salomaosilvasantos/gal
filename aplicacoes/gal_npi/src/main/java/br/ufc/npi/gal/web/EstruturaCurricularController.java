@@ -53,11 +53,6 @@ public class EstruturaCurricularController {
 			return "estrutura/editar";
 		}
 		
-//		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(estrutura.getId(), estrutura.getAnoSemestre()) != null){
-//			result.rejectValue("anoSemestre", "Repeat.estrutura.anoSemestre","Ano e Semestre já cadastrado no Curso");
-//		}
-
-//		estrutura.setId(null);
 		estrutura.setCurso(curso);
 		
 		estruturaCurricularService.update(estrutura);
@@ -71,9 +66,10 @@ public class EstruturaCurricularController {
 		
 		if(estruturaCurricular != null){
 			this.estruturaCurricularService.delete(estruturaCurricular);
-			redirectAttributes.addFlashAttribute("info","Estrutura Curricular removida com sucesso");
+			
 		}
-		return "curso/listar";
+		redirectAttributes.addFlashAttribute("info","Curriculo removido com sucesso");
+		return "redirect:/curso/listar";
 	}
 	
 	@RequestMapping(value="/{id}/adicionar",method = RequestMethod.GET)
@@ -102,10 +98,11 @@ public class EstruturaCurricularController {
 			return "estrutura/adicionar";
 		}
 		
-//		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(id, estruturaCurricular.getAnoSemestre())!=null){
-//			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
-//			return "estrutura/adicionar";
-//		}
+		//curso pode ter dois semestres iguais?
+		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(id, estruturaCurricular.getAnoSemestre())!=null){
+			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
+			return "estrutura/adicionar";
+		}
 		
 		estruturaCurricular.setCurso(curso);
 		estruturaCurricular.setId(null);

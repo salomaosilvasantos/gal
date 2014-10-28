@@ -105,6 +105,12 @@
 									</c:if>
 									<div id="${curriculo.id }" class="tab-pane ${active }">
 										<div id="button-add">
+
+											<a id="excluir" style="float: right;" class="btn btn-danger"
+												data-toggle="modal" data-target="#confirm-delete" href="#"
+												data-href="<c:url value="/estrutura/${curriculo.id }/excluir" ></c:url>">
+												<span class="glyphicon glyphicon-trash"></span> Excluir Curriculo
+											</a> 
 											<a
 												href="<c:url value="/estrutura/${curriculo.id }/editar" ></c:url>">
 												<button class="btn btn-primary">
@@ -150,8 +156,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">Excluir</div>
-				<div class="modal-body">Tem certeza de que deseja excluir esse
-					curso?</div>
+				<div class="modal-body">Tem certeza de que deseja excluir?</div>
 				<div class="modal-footer">
 					<a href="#" class="btn btn-danger">Excluir</a>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
