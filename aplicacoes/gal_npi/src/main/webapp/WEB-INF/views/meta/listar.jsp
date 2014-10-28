@@ -2,22 +2,39 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="datatables"
 	uri="http://github.com/dandelion/datatables"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+
+
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+
 
 <!DOCTYPE html>
 <html>
 <head>
 <title>Metas</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
+<link href="<c:url value="../resources/css/gal.css" />" rel="stylesheet">
 </head>
-<body>  
+<body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
-	
+
 		<jsp:include page="../fragments/header.jsp" />
-		<a	href="<c:url value="/meta/downloadMetaDetalhada"></c:url>">Download do relatorio contendo o detalhamento das metas</a>
+		<a href="<c:url value="/meta/downloadMetaDetalhada"></c:url>">Download
+			do relatorio contendo o detalhamento das metas</a> <br /> <br /> <br />
+		<input id="idCurso" type="hidden" value="${idCurso}" /> 
+
+		<select id="seleciona">
+			<option value="-1">Todos os Cursos</option>
+			<c:forEach items="${cursos}" var="curso">
+				<option value="${curso.id}">${curso.nome}</option>
+			</c:forEach>
+		</select>
+
 		<c:if test="${not empty error}">
 			<div class="alert alert-danger alert-dismissible" role="alert">
 				<button type="button" class="close" data-dismiss="alert">
@@ -45,8 +62,8 @@
 		</c:if>
 
 		<c:if test="${not empty resultados}">
-		
-		
+
+
 			<datatables:table id="resultado" data="${resultados}" cdn="true"
 				row="resultado" theme="bootstrap2" cssClass="table table-striped">
 
@@ -58,7 +75,9 @@
 					<c:out value="${resultado.metaCalculada.nome}"></c:out>
 				</datatables:column>
 				<datatables:column title="Valor da Meta">
-					<c:out value="${resultado.metaCalculada.calculo}"></c:out>
+
+					<fmt:formatNumber type="number" maxFractionDigits="1"
+						value="${resultado.metaCalculada.calculo}"></fmt:formatNumber>
 				</datatables:column>
 				<datatables:column title="Acervo">
 					<c:out value="${resultado.titulo.acervo}"></c:out>
@@ -76,21 +95,20 @@
 				</datatables:column>
 				<datatables:column title="Meta Detalhada">
 
-					<c:if
-						test="${(resultado.metaCalculada.calculo) > 0.1}">
-						<a class="btn btn-primary" 
+					<c:if test="${(resultado.metaCalculada.calculo) > 0.1}">
+						<a class="btn btn-primary"
 							href="<c:url value = "/meta/${resultado.titulo.id}/detalhe"></c:url>">
 							<span class="glyphicon glyphicon-zoom-in"></span>
 						</a>
 					</c:if>
 					<c:if test="${(resultado.metaCalculada.calculo) <= 0.0}">
-					<div title="Não possui metas">
-						<button type="button" disabled class="btn btn-primary">
-							<span class="glyphicon glyphicon-zoom-in" ></span>
-						</button>
-					</div>
+						<div title="Não possui metas">
+							<button type="button" disabled class="btn btn-primary">
+								<span class="glyphicon glyphicon-zoom-in"></span>
+							</button>
+						</div>
 					</c:if>
-					
+
 
 
 				</datatables:column>
@@ -98,7 +116,11 @@
 			</datatables:table>
 		</c:if>
 
+
 		<jsp:include page="../fragments/footer.jsp" />
+
+
+
 	</div>
 </body>
 </html>

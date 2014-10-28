@@ -40,15 +40,19 @@ public class EstruturaCurricularController {
 		}
 		modelMap.addAttribute("curso", estruturaCurricular.getCurso());
 		modelMap.addAttribute("estruturaCurricular", estruturaCurricular);
+		System.out.println(estruturaCurricular);
 		return "estrutura/editar";
 	}
 	
 	@RequestMapping(value="/{id}/editar", method=RequestMethod.POST)
 	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
+		System.out.println(estrutura);
+		Curso curso = cursoService.find(Curso.class, id);
+		
 		if(result.hasErrors()){
 			return "estrutura/editar";
 		}
-		Curso curso = cursoService.find(Curso.class, id);
+		
 //		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(estrutura.getId(), estrutura.getAnoSemestre()) != null){
 //			result.rejectValue("anoSemestre", "Repeat.estrutura.anoSemestre","Ano e Semestre já cadastrado no Curso");
 //		}
@@ -98,10 +102,10 @@ public class EstruturaCurricularController {
 			return "estrutura/adicionar";
 		}
 		
-		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(id, estruturaCurricular.getAnoSemestre())!=null){
-			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
-			return "estrutura/adicionar";
-		}
+//		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(id, estruturaCurricular.getAnoSemestre())!=null){
+//			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
+//			return "estrutura/adicionar";
+//		}
 		
 		estruturaCurricular.setCurso(curso);
 		estruturaCurricular.setId(null);

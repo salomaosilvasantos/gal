@@ -43,6 +43,10 @@
 	
 }
 
+#label {
+	font-size: 16px;
+}
+
 #acervo{
 	overflow-y:scroll;
 	height: 400px;

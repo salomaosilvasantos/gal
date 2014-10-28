@@ -49,7 +49,7 @@ public class IntegracaoCurricularController {
 	
 	@RequestMapping(value = "/adicionar")
 	public String adicionar(ModelMap modelMap) {
-		//modelMap.addAttribute("integracao", new IntegracaoCurricular());
+		
 		
 		IntegracaoCurricular integracao = new IntegracaoCurricular();
 		Disciplina disciplina = disciplinaService.find(Disciplina.class, 128);
@@ -72,7 +72,7 @@ public class IntegracaoCurricularController {
 		if (result.hasErrors()) {
 			return "integracao/adicionar";
 		}
-		//integracaoService.save(integracao);
+
 		redirectAttributes.addFlashAttribute("info",
 				"Integracao Curricular adicionada com sucesso.");
 		return "redirect:/integracao/listar";

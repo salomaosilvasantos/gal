@@ -61,10 +61,9 @@
 								data-toggle="modal" data-target="#confirm-delete" href="#"
 								data-href="<c:url value="/curso/${curso.id}/excluir" ></c:url>">
 								<span class="glyphicon glyphicon-trash"></span> Excluir
-							</a> <a id="editar"
-								href="<c:url value="/curso/${curso.id }/editar" ></c:url>">
-								<button class="btn btn-primary">
-									<span class="glyphicon glyphicon-edit"></span> Editar
+							</a> 
+							<a id="editar"	href="<c:url value="/curso/${curso.id }/editar" ></c:url>">
+								<button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Editar
 								</button>
 							</a>
 						</div>
@@ -109,7 +108,8 @@
 											<a
 												href="<c:url value="/estrutura/${curriculo.id }/editar" ></c:url>">
 												<button class="btn btn-primary">
-													<span class="glyphicon glyphicon-plus"></span> Editar Curriculo												
+													<span class="glyphicon glyphicon-plus"></span> Editar
+													Curriculo
 												</button>
 											</a>
 										</div>

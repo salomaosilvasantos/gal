@@ -26,12 +26,15 @@
 				<c:out value="${info}"></c:out>
 			</div>
 		</c:if>
-		
 		<div id="button-add">
 			<a href="<c:url value="/exemplar/${titulo.id}/adicionar" ></c:url>">
 				<button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Adicionar</button>
 			</a>
+			<a href="<c:url value="/titulo/listar" ></c:url>">
+				<button class="btn btn-primary"><span class="glyphicon glyphicon-backward"></span> Voltar</button>
+			</a>
 		</div>
+
 		
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 15px;"><c:out value="${titulo.nome}"></c:out></label>
@@ -42,23 +45,23 @@
 		</c:if>
 		
 		<c:if test="${not empty exemplares}">
-			<datatables:table id="exemplar" data="${titulo.exemplares}" cdn="true"
+			<datatables:table id="exemplar" data="${exemplares}" cdn="true"
 				row="exemplar" theme="bootstrap2" cssClass="table table-striped">
 				<datatables:column title="Codido do Exemplar">
 					<c:out value="${exemplar.codigoExemplar}"></c:out>
 				</datatables:column>
 	
-<%-- 				<datatables:column title="Editar"> --%>
-<%-- 					<a class="btn btn-primary" href="<c:url value = "/exemplar/${exemplar.id}/editar"></c:url>"> --%>
-<!-- 						<span class="glyphicon glyphicon-edit"></span> -->
-<!-- 					</a> -->
-<%-- 				</datatables:column> --%>
+				<datatables:column title="Editar">
+					<a class="btn btn-primary" href="<c:url value = "/exemplar/${exemplar.id}/editar"></c:url>">
+						<span class="glyphicon glyphicon-edit"></span>
+					</a>
+				</datatables:column>
 	
-<%-- 				<datatables:column title="Excluir"> --%>
-<%-- 					<a id="excluir" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" href="#" data-href="<c:url value="/exemplar/${exemplar.id}/excluir" ></c:url>"> --%>
-<!-- 						<span class="glyphicon glyphicon-trash"></span> -->
-<!-- 					</a> -->
-<%-- 				</datatables:column> --%>
+				<datatables:column title="Excluir">
+					<a id="excluir" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" href="#" data-href="<c:url value="/exemplar/${exemplar.id}/excluir" ></c:url>">
+						<span class="glyphicon glyphicon-trash"></span>
+					</a>
+				</datatables:column>
 				
 			</datatables:table>
 		</c:if>
