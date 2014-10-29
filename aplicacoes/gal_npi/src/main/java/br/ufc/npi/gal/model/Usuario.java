@@ -98,7 +98,6 @@ public class Usuario {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((login == null) ? 0 : login.hashCode());
 		return result;
 	}
 
@@ -115,11 +114,6 @@ public class Usuario {
 			if (other.id != null)
 				return false;
 		} else if (!id.equals(other.id))
-			return false;
-		if (login == null) {
-			if (other.login != null)
-				return false;
-		} else if (!login.equals(other.login))
 			return false;
 		return true;
 	}
