@@ -46,7 +46,7 @@ public class EstruturaCurricularController {
 	
 	@RequestMapping(value="/{id}/editar", method=RequestMethod.POST)
 	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
-		System.out.println(estrutura);
+	
 		Curso curso = cursoService.find(Curso.class, id);
 		
 		if(result.hasErrors()){
