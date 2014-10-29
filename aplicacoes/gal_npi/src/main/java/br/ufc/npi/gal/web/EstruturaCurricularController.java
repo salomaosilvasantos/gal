@@ -40,7 +40,7 @@ public class EstruturaCurricularController {
 		}
 		modelMap.addAttribute("curso", estruturaCurricular.getCurso());
 		modelMap.addAttribute("estruturaCurricular", estruturaCurricular);
-		System.out.println(estruturaCurricular);
+		
 		return "estrutura/editar";
 	}
 	
