@@ -30,10 +30,14 @@ import br.ufc.npi.gal.service.CursoService;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Controller
 @RequestMapping("meta")
 public class MetaController {
-
+	private final static Logger LOGGER = Logger.getLogger(MetaController.class.getName());
+	
 	@Inject
 	private CalculoMetaService calculo;
 
@@ -118,17 +122,20 @@ public class MetaController {
 			response.flushBuffer();
 		} catch (FileNotFoundException e1) {
 
-			e1.printStackTrace();
+			LOGGER.setLevel(Level.INFO);
+			LOGGER.severe(e1.getMessage());
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			LOGGER.setLevel(Level.INFO);
+			LOGGER.severe(e.getMessage());
 		} finally {
 			try {
 				is.close();
 				file.delete();
 			} catch (IOException e) {
 
-				e.printStackTrace();
+				LOGGER.setLevel(Level.INFO);
+				LOGGER.severe(e.getMessage());
 			}
 		}
 
