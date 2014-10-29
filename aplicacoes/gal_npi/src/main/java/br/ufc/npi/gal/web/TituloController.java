@@ -20,6 +20,7 @@ public class TituloController {
 	
 	@Inject
 	private TituloService tituloService;
+	private static final String TITULO_ADICIONAR = "titulo/adicionar";
 	
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
@@ -30,27 +31,27 @@ public class TituloController {
 	@RequestMapping(value = "/adicionar", method = RequestMethod.GET)
 	public String adicionar(ModelMap modelMap){
 		modelMap.addAttribute("titulo", new Titulo());
-		return "titulo/adicionar";
+		return TITULO_ADICIONAR;
 	}
 	
 	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
 	public String adicionar(@Valid Titulo titulo, BindingResult result, RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
-			return "titulo/adicionar";
+			return TITULO_ADICIONAR;
 		}
 		
 		if(tituloService.getTituloByIsbn(titulo.getIsbn()) != null) {
 			result.rejectValue("isbn", "Repeat.titulo.isbn", "Já existe um título com esse isbn");
-			return "titulo/adicionar";
+			return TITULO_ADICIONAR;
 		}
 		if (titulo.getNome().trim().isEmpty()) {
 			result.rejectValue("nome", "Repeat.titulo.nome",
 					"Campo obrigatório.");
-			return "titulo/adicionar";
+			return TITULO_ADICIONAR;
 		}
 		if(tituloService.getTituloByNome(titulo.getNome()) != null) {
 			result.rejectValue("nome", "Repeat.titulo.nome", "Já existe um título com esse nome");
-			return "titulo/adicionar";
+			return TITULO_ADICIONAR;
 		}
 		
 		tituloService.save(titulo);

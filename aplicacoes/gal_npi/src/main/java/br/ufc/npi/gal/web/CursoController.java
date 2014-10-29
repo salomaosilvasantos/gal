@@ -21,6 +21,8 @@ public class CursoController {
 
 	@Inject
 	private CursoService cursoService;
+	private static final String CURSO_REDIRECT_LISTAR = "redirect:/curso/listar";
+	private static final String CURSO_ADICIONAR = "curso/adicionar";
 
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
@@ -33,7 +35,7 @@ public class CursoController {
 		Curso curso = this.cursoService.find(Curso.class, id);
 
 		if (curso == null) {
-			return "redirect:/curso/listar";
+			return CURSO_REDIRECT_LISTAR;
 		}
 		model.addAttribute("curso", curso);
 		return "curso/editar";
@@ -69,7 +71,7 @@ public class CursoController {
 		cursoService.update(curso);
 		redirectAttributes.addFlashAttribute("info",
 				"Curso atualizado com sucesso.");
-		return "redirect:/curso/listar";
+		return CURSO_REDIRECT_LISTAR;
 
 	}
 
@@ -82,43 +84,43 @@ public class CursoController {
 			redirectAttributes.addFlashAttribute("info",
 					"Curso removido com sucesso.");
 		}
-		return "redirect:/curso/listar";
+		return CURSO_REDIRECT_LISTAR;
 	}
 
 	@RequestMapping(value = "/adicionar")
 	public String adicionar(ModelMap modelMap) {
 		modelMap.addAttribute("curso", new Curso());
-		return "curso/adicionar";
+		return CURSO_ADICIONAR;
 	}
 
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
 	public String adicionar(@Valid Curso curso, BindingResult result,
 			final RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
-			return "curso/adicionar";
+			return CURSO_ADICIONAR;
 		}
 
 		if (cursoService.getCursoByCodigo(curso.getCodigo()) != null) {
 			result.rejectValue("codigo", "Repeat.curso.codigo",
 					"Já existe um curso com esse código");
-			return "curso/adicionar";
+			return CURSO_ADICIONAR;
 		}
 		if (curso.getNome().trim().isEmpty()) {
 			result.rejectValue("codigo", "Repeat.curso.nome",
 					"Campo obrigatório.");
-			return "curso/adicionar";
+			return CURSO_ADICIONAR;
 		}
 		if (cursoService.getCursoBySigla(curso.getSigla().toUpperCase()) != null) {
 			result.rejectValue("sigla", "Repeat.sigla.sigla",
 					"Já existe um curso com essa sigla");
-			return "curso/adicionar";
+			return CURSO_ADICIONAR;
 		}
 
 		curso.setSigla(curso.getSigla().toUpperCase());
 		cursoService.save(curso);
 		redirectAttributes.addFlashAttribute("info",
 				"Curso adicionado com sucesso.");
-		return "redirect:/curso/listar";
+		return CURSO_REDIRECT_LISTAR;
 	}
 
 }
