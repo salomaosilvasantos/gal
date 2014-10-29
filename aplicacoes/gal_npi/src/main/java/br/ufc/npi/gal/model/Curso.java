@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -34,7 +36,8 @@ public class Curso implements Serializable {
 
 	@NotNull(message = "Campo obrigatório")
 	@Column(name = "cod_c")
-	@NumberFormat(style = Style.NUMBER, pattern = "aceitar apenas número")
+	@NumberFormat(style = Style.NUMBER)
+	//@Pattern(regexp = "[0-9]+", message = "O campo Codigo não pode possuir caracteres.")
 	private Integer codigo;
 
 	@NotEmpty(message = "Campo obrigatório")

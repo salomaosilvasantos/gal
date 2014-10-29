@@ -43,10 +43,10 @@ public class CriaArquivoCsvETxt {
 
 	}
 
-	public void fechaFile(BufferedWriter StrW) {
+	public void fechaFile(BufferedWriter strW) {
 		// Fechamos o buffer
 		try {
-			StrW.close();
+			strW.close();
 		} catch (IOException e) {
 		
 			LOGGER.setLevel(Level.INFO);
@@ -55,10 +55,10 @@ public class CriaArquivoCsvETxt {
 
 	}
 
-	public void escreveFile(BufferedWriter StrW, String linha) {
+	public void escreveFile(BufferedWriter strW, String linha) {
 		// Escrita dos dados da tabela
 		try {
-			StrW.write(linha + "\n");
+			strW.write(linha + "\n");
 		} catch (IOException e) {
 
 			LOGGER.setLevel(Level.INFO);
