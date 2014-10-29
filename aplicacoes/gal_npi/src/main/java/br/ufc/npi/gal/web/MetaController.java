@@ -49,6 +49,8 @@ public class MetaController {
 	}
 
 	public File criaRelatorioMetaDetalhado() {
+		String under = "\";\"";
+
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
 		BufferedWriter str = cria.abreFile("metaDetalhada.csv");
 		DecimalFormat df = new DecimalFormat("#,###.0");
@@ -62,12 +64,13 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalheImpar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() + "\";\""
-							+ element.getTitulo().getIsbn() + "\";\"Meta Impar\";\""
-							+ detalheMetaCalculada.getCurso() + "\";\""
-							+ detalheMetaCalculada.getDisciplina() + "\";\""
+					linha = "\"" + element.getTitulo().getNome() +under
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Impar\";\""
+							+ detalheMetaCalculada.getCurso() +under
+							+ detalheMetaCalculada.getDisciplina() +under
 							+ detalheMetaCalculada.getTipoBibliografia()
-							+ "\";\""
+							+under
 							+ df.format(detalheMetaCalculada.getCalculo())
 							+ "\"";
 					cria.escreveFile(str, linha);
@@ -78,12 +81,13 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalhePar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() + "\";\""
-							+ element.getTitulo().getIsbn() + "\";\"Meta Par\";\""
-							+ detalheMetaCalculada.getCurso() + "\";\""
-							+ detalheMetaCalculada.getDisciplina() + "\";\""
+					linha = "\"" + element.getTitulo().getNome() +under
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Par\";\""
+							+ detalheMetaCalculada.getCurso() +under
+							+ detalheMetaCalculada.getDisciplina() +under
 							+ detalheMetaCalculada.getTipoBibliografia()
-							+ "\";\""
+							+under
 							+ df.format(detalheMetaCalculada.getCalculo())
 							+ "\"";
 
