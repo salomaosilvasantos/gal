@@ -42,14 +42,10 @@ public class CursoController {
 	@RequestMapping(value = "/editar", method = RequestMethod.POST)
 	public String atualizar(@Valid Curso curso, BindingResult result,
 			RedirectAttributes redirectAttributes) {
-		if (result.hasErrors()) {
+		if (result.hasErrors() || result.hasFieldErrors("codigo")) {
 			return "curso/editar";
 		}
 		
-		if (result.hasFieldErrors("codigo")) {
-			return "curso/editar";
-		}
-
 		if (cursoService
 				.getOutroCursoByCodigo(curso.getId(), curso.getCodigo()) != null) {
 			result.rejectValue("codigo", "Repeat.curso.codigo",
