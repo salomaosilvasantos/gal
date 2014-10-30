@@ -104,8 +104,10 @@ $( document ).ready(function() {
 	});
 	
 	$("#seleciona").val($("#idCurso").val());
-
-		 	
+	
+	$( ".color" ).on( "ready", function() {
+		  console.log( "Load was performed." );
+	});
 });
 
 function goBack() {

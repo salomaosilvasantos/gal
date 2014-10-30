@@ -21,7 +21,7 @@
 <link href="<c:url value="../resources/css/gal.css" />" rel="stylesheet">
 </head>
 <body>
-	<div id="container" style="width: 1000px; margin: 0 auto;">
+	<div id="container">
 
 		<jsp:include page="../fragments/header.jsp" />
 		<a href="<c:url value="/meta/downloadMetaDetalhada"></c:url>">Download
@@ -60,91 +60,86 @@
 				cadastrados.</div>
 		</c:if>
 
+
+
 		<c:if test="${not empty resultados}">
-
-
-			<%-- 			<datatables:table id="resultado" data="${resultados}" cdn="true" --%>
-			<%-- 				row="resultado" theme="bootstrap2" cssClass="table table-striped"> --%>
-
-
-			<%-- 				<datatables:column title="Nome do Título"> --%>
-			<%-- 					<c:out value="${resultado.titulo.nome}"></c:out> --%>
-			<%-- 				</datatables:column> --%>
-			<%-- 				<datatables:column title="Nome "> --%>
-			<%-- 					<c:out value="${resultado.calculo}"></c:out> --%>
-			<%-- 				</datatables:column> --%>
-			<%-- 				<datatables:table id="result" data="${resultado.getMetasCalculadas}" --%>
-			<%-- 					cdn="true" row="result" theme="bootstrap2" --%>
-			<%-- 					cssClass="table table-striped"> --%>
-			<%-- 					<datatables:column title="calculo"> --%>
-			<%-- 						<c:out value="${result.calculo}"></c:out> --%>
-			<%-- 					</datatables:column> --%>
-			<%-- 				</datatables:table> --%>
-			<%-- 			</datatables:table> --%>
-
-			
 
 			<datatables:table id="resultado" data="${resultados}" cdn="true"
 				row="resultado" theme="bootstrap2" cssClass="table table-striped">
 
 
 				<datatables:column title="Titulo">
+
 					<c:out value="${resultado.titulo.nome}"></c:out>
+
+
 				</datatables:column>
+
 				<datatables:column title="Acervo">
 					<c:out value="${resultado.titulo.acervo}"></c:out>
 				</datatables:column>
-				<c:forEach items="${resultado.metasCalculadas}" var="result">
-				<datatables:column title=" ${result.nome} ">
-						<fmt:formatNumber type="number" maxFractionDigits="1"
-						value="${result.calculo}"></fmt:formatNumber>
+				<c:forEach items="${resultado.metasCalculadas}" var="meta"
+					varStatus="indice">
 
-				</datatables:column>
-				<datatables:column title="Déficit">
-					<c:if
-						test="${(result.calculo-resultado.titulo.acervo) >= 0}">
-						<fmt:formatNumber type="number" maxFractionDigits="1"
-							value="${result.calculo-resultado.titulo.acervo}"></fmt:formatNumber>
-					</c:if>
-					<c:if
-						test="${(result.calculo-resultado.titulo.acervo) < 0}">
-						<c:out value="0"></c:out>
-					</c:if>
-				</datatables:column>
-				
-				<datatables:column title="Meta Detalhada">
+					<datatables:column class="color" title=" ${meta.nome} "
+						cssCellStyle="background-color:${indice.count%2==0 ? '#EAEBFF' : '#D3D6FF'};">
 
-					<c:if test="${(result.calculo) > 0.1}">
-						<a class="btn btn-primary"
-							href="<c:url value = "/meta/${resultado.titulo.id}/detalhe"></c:url>">
-							<span class="glyphicon glyphicon-zoom-in"></span>
-						</a>
-					</c:if>
-					<c:if test="${(resultado.metaCalculada.calculo) <= 0.0}">
-						<div title="Não possui metas">
-							<button type="button" disabled class="btn btn-primary">
+						<fmt:formatNumber type="number" maxFractionDigits="1"
+							value="${meta.calculo}"></fmt:formatNumber>
+
+					</datatables:column>
+					<datatables:column title="Déficit"
+						cssCellStyle="background-color:${indice.count%2==0 ? '#EAEBFF' : '#D3D6FF'};">
+						<c:if test="${(meta.calculo-resultado.titulo.acervo) >= 0}">
+							<fmt:formatNumber type="number" maxFractionDigits="1"
+								value="${meta.calculo-resultado.titulo.acervo}"></fmt:formatNumber>
+						</c:if>
+						<c:if test="${(meta.calculo-resultado.titulo.acervo) < 0}">
+							<c:out value="0"></c:out>
+						</c:if>
+					</datatables:column>
+
+					<datatables:column title="Meta Detalhada"
+						cssCellStyle="background-color:${indice.count%2==0 ? '#EAEBFF' : '#D3D6FF'};">
+
+						<c:if test="${(meta.calculo) > 0.1}">
+						<div title="Detalhe da ${meta.nome}">
+							<a class="btn btn-primary"
+								href="<c:url value = "/meta/${resultado.titulo.id}/detalhe/${meta.nome}"></c:url>">
 								<span class="glyphicon glyphicon-zoom-in"></span>
-							</button>
-						</div>
-					</c:if>
+							</a>
+							</div>
+						</c:if>
+						<c:if test="${(meta.calculo) <= 0.0}">
+							<div title="Não possui metas">
+								<button type="button" disabled class="btn btn-primary">
+									<span class="glyphicon glyphicon-zoom-in"></span>
+								</button>
+							</div>
+						</c:if>
 
 
 
-				</datatables:column>
-				
+					</datatables:column>
+
+
 				</c:forEach>
 
 
-				
 
-			</table>
+
+
 			</datatables:table>
-			
+
 		</c:if>
 
 
 		<jsp:include page="../fragments/footer.jsp" />
-
+		<script type="text/javascript">
+			function x() {
+				alert("dfgsdfs");
+			}
+		</script>
 
 
 	</div>

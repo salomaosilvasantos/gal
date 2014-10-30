@@ -31,6 +31,7 @@ import br.ufc.npi.gal.model.MetaForm;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculoMetaService;
 import br.ufc.npi.gal.service.CursoService;
+import br.ufc.npi.gal.service.MetaCalculada;
 import br.ufc.npi.gal.service.MetaService;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
@@ -142,29 +143,10 @@ public class MetaController {
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
-		
-//		for(int i=0; i<calculo.geraCalculo().size();i++){
-//		   System.out.println("chamouuuuuuuuuuuuuuuuuuuuuuu "+calculo.geraCalculo().keySet());
-//		   for(List<ResultadoCalculo> r: calculo.geraCalculo().values()){
-//			 //  System.out.println(r.get(0).getMetaCalculada().getDetalheImpar().g);
-//			   
-//		   }
-//		   for(String s: calculo.geraCalculo().keySet()){
-//			   System.out.println(s);
-//		   }
-//			
-//		}
-//		//modelMap.addAttribute("resultados", calculo.gerarCalculo());
-		modelMap.addAttribute("resultados",calculo.gerarCalculo2());
-    	modelMap.addAttribute("cursos", cursoService.find(Curso.class));
+
+		modelMap.addAttribute("resultados", calculo.gerarCalculo2());
+		modelMap.addAttribute("cursos", cursoService.find(Curso.class));
 		modelMap.addAttribute("idCurso", -1);
-		
-
-
-
-
-
-
 
 		return "meta/listar";
 	}
@@ -174,42 +156,50 @@ public class MetaController {
 			ModelMap modelMap, RedirectAttributes redirectAttributes) {
 
 		List<Curso> cursos = cursoService.find(Curso.class);
-		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
+		List<ResultadoCalculo> resultados = calculo.gerarCalculo2();
 		Curso curso = cursoService.find(Curso.class, id);
-
+		
 		List<ResultadoCalculo> resultadosCurso = new ArrayList<ResultadoCalculo>();
+		List<MetaCalculada> metasCalculadas;
 
 		for (ResultadoCalculo resultadoCalculo : resultados) {
-			boolean flag = false;
+            metasCalculadas = new ArrayList<MetaCalculada>();
+			for (MetaCalculada metaCalculada : resultadoCalculo
+					.getMetasCalculadas()) {
+				boolean flag = false;
+				for (DetalheMetaCalculada detalhePar : metaCalculada
+						.getDetalhePar()) {
 
-			for (DetalheMetaCalculada detalhePar : resultadoCalculo
-					.getMetaCalculada().getDetalhePar()) {
+					if (detalhePar.getCurso().equals(curso.getNome())) {
+						flag = true;
+						break;
 
-				if (detalhePar.getCurso().equals(curso.getNome())) {
-					flag = true;
-					break;
-
-				}
-
-			}
-			for (DetalheMetaCalculada detalheImpar : resultadoCalculo
-					.getMetaCalculada().getDetalheImpar()) {
-
-				if (detalheImpar.getCurso().equals(curso.getNome())) {
-					flag = true;
-					break;
+					}
 
 				}
+				for (DetalheMetaCalculada detalheImpar : metaCalculada
+						.getDetalheImpar()) {
 
+					if (detalheImpar.getCurso().equals(curso.getNome())) {
+						flag = true;
+						break;
+
+					}
+
+				}
+				if (flag) {
+                    metasCalculadas.add(metaCalculada);
+					
+					flag = false;
+
+				}
 			}
-			if (flag) {
+			resultadosCurso.add(new ResultadoCalculo(resultadoCalculo
+					.getTitulo(), metasCalculadas));
+			
 
-				resultadosCurso.add(new ResultadoCalculo(resultadoCalculo
-						.getTitulo(), resultadoCalculo.getMetaCalculada()));
-				flag = false;
-
-			}
 		}
+
 		modelMap.addAttribute("idCurso", curso.getId());
 		modelMap.addAttribute("cursos", cursos);
 		modelMap.addAttribute("resultados", resultadosCurso);
@@ -218,21 +208,29 @@ public class MetaController {
 
 	}
 
-	@RequestMapping(value = "/{id}/detalhe", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}/detalhe/{meta}", method = RequestMethod.GET)
 	public String tituloByDetalhe(@PathVariable("id") Integer id,
-			ModelMap modelMap, RedirectAttributes redirectAttributes) {
+			@PathVariable("meta") String meta, ModelMap modelMap,
+			RedirectAttributes redirectAttributes) {
 		Titulo titulo;
-		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
+		List<ResultadoCalculo> resultados = calculo.gerarCalculo2();
 		for (ResultadoCalculo resultadoCalculo : resultados) {
 
 			if (resultadoCalculo.getTitulo().getId().equals(id)) {
-				if (resultadoCalculo.getMetaCalculada().getCalculo() > 0.1) {
-					titulo = this.tituloService.find(Titulo.class, id);
-					modelMap.addAttribute("titulo", titulo);
-					modelMap.addAttribute("metaCalculada",
-							resultadoCalculo.getMetaCalculada());
 
-					return "meta/detalhe";
+				for (MetaCalculada metaCalculada : resultadoCalculo
+						.getMetasCalculadas()) {
+
+					if (metaCalculada.getNome().trim().equals(meta)
+							&& metaCalculada.getCalculo() > 0.1) {
+						titulo = this.tituloService.find(Titulo.class, id);
+						modelMap.addAttribute("titulo", titulo);
+						modelMap.addAttribute("metaCalculada", metaCalculada);
+
+						return "meta/detalhe";
+
+					}
+
 				}
 
 			}
@@ -240,6 +238,7 @@ public class MetaController {
 		}
 		redirectAttributes.addFlashAttribute("info",
 				"Esse titulo não possui meta.");
+
 		return "redirect:/meta/listar";
 
 	}

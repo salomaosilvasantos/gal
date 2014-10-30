@@ -1,8 +1,6 @@
 package br.ufc.npi.gal.service.impl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,17 +28,6 @@ public class CalculoMetaServiceImpl implements CalculoMetaService {
 		
 		return calculadorMeta.calcular(tituloService.find(Titulo.class),
 				"inep 5", 6, 2);
-
-	}
-
-	public Map<String, List<ResultadoCalculo>> geraCalculo() {
-		Map<String, List<ResultadoCalculo>> resultados = new HashMap<String, List<ResultadoCalculo>>();
-		
-		for (Meta meta : metaService.find(Meta.class)) {
-			resultados.put(meta.getNome(), calculadorMeta.calcular(tituloService.find(Titulo.class), meta.getNome(), meta.getIndiceCalculoBasica(),meta.getIndiceCalculoComplementar()));
-			//resultados.put(meta.getNome(), calculadorMeta.calcular(tituloService.find(Titulo.class), "Meta Repetida", meta.getIndiceCalculoBasica(),meta.getIndiceCalculoComplementar()));
-		}
-		return resultados;
 
 	}
 	

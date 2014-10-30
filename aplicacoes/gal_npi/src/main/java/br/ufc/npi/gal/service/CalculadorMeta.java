@@ -81,10 +81,7 @@ public class CalculadorMeta {
 	}
 
 	public List<ResultadoCalculo> calcular2(List<Titulo> titulos,
-			List<Meta> metas/*
-							 * String nomeMeta,double indiceCalculoBasica,
-							 * double indiceCalculoComplementar
-							 */) {
+			List<Meta> metas) {
 		List<ResultadoCalculo> resultadoCalculo = new ArrayList<ResultadoCalculo>();
 		MetaCalculada metaCalculada;
 		DetalheMetaCalculada detalheMeta;

@@ -48,3 +48,14 @@ div.panel-heading a#editar {
 .nav-tabs > li > a {
 	font-weight: bold;
 }
+
+table#resultado tbody tr td,
+table#resultado thead tr th {
+	text-align: center;
+	vertical-align: middle;
+}
+
+div#container {
+	margin: 0px auto;
+	width: 90%;
+}
