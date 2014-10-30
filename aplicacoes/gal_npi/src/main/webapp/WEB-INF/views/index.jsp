@@ -5,15 +5,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Disciplinas</title>
+<title>Início</title>
 <jsp:include page="fragments/htmlHead.jsp" />
 </head>
 <body>
-	<div id="container" style="width: 1000px; margin: 0 auto;">
+	<div id="container">
 
 		<jsp:include page="fragments/header.jsp" />
-		
-		   <h3>Descrição do Sistema Gestão de Aquisição de Livros.</h3>
+
+		<h3>Descrição do Sistema Gestão de Aquisição de Livros.</h3>
 		<jsp:include page="fragments/footer.jsp" />
 	</div>
 </body>
