@@ -6,7 +6,4 @@ public interface CalculoMetaService {
 
 	public abstract List<ResultadoCalculo> gerarCalculo();
 
-	public abstract List<ResultadoCalculo> gerarCalculo2();
-	
-    
 }

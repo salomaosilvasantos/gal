@@ -24,8 +24,7 @@
 	<div id="container">
 
 		<jsp:include page="../fragments/header.jsp" />
-		<a href="<c:url value="/meta/downloadMetaDetalhada"></c:url>">Download
-			do relatorio contendo o detalhamento das metas</a> <br /> <br /> <br />
+
 		<input id="idCurso" type="hidden" value="${idCurso}" /> <select
 			id="seleciona">
 			<option value="-1">Todos os Cursos</option>
@@ -103,11 +102,11 @@
 						cssCellStyle="background-color:${indice.count%2==0 ? '#EAEBFF' : '#D3D6FF'};">
 
 						<c:if test="${(meta.calculo) > 0.1}">
-						<div title="Detalhe da ${meta.nome}">
-							<a class="btn btn-primary"
-								href="<c:url value = "/meta/${resultado.titulo.id}/detalhe/${meta.nome}"></c:url>">
-								<span class="glyphicon glyphicon-zoom-in"></span>
-							</a>
+							<div title="Detalhe da ${meta.nome}">
+								<a class="btn btn-primary"
+									href="<c:url value = "/meta/${resultado.titulo.id}/detalhe/${meta.nome}"></c:url>">
+									<span class="glyphicon glyphicon-zoom-in"></span>
+								</a>
 							</div>
 						</c:if>
 						<c:if test="${(meta.calculo) <= 0.0}">

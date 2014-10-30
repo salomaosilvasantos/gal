@@ -25,14 +25,8 @@ public class CalculoMetaServiceImpl implements CalculoMetaService {
 	private MetaService metaService;
 
 	public List<ResultadoCalculo> gerarCalculo() {
-		
-		return calculadorMeta.calcular(tituloService.find(Titulo.class),
-				"inep 5", 6, 2);
-
-	}
-	
-	public List<ResultadoCalculo> gerarCalculo2(){
-		return calculadorMeta.calcular2(tituloService.find(Titulo.class),metaService.find(Meta.class));
+		return calculadorMeta.calcular2(tituloService.find(Titulo.class),
+				metaService.find(Meta.class));
 	}
 
 }
