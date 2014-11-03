@@ -42,7 +42,7 @@ public class CursoController {
 	@RequestMapping(value = "/editar", method = RequestMethod.POST)
 	public String atualizar(@Valid Curso curso, BindingResult result,
 			RedirectAttributes redirectAttributes) {
-		if (result.hasErrors() || result.hasFieldErrors("codigo")) {
+		if (result.hasErrors()) {
 			return "curso/editar";
 		}
 		
