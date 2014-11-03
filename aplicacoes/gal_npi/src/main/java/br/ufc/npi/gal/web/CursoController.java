@@ -21,13 +21,15 @@ public class CursoController {
 
 	@Inject
 	private CursoService cursoService;
-	private static final String CURSO_REDIRECT_LISTAR = "redirect:/curso/listar";
-	private static final String CURSO_ADICIONAR = "curso/adicionar";
+	private static final String PATH_REDIRECT_CURSO_LISTAR = "redirect:/curso/listar";
+	private static final String PATH_CURSO_ADICIONAR = "curso/adicionar";
+	private static final String PATH_CURSO_LISTAR = "curso/listar";
+	private static final String PATH_CURSO_EDITAR = "curso/editar";
 
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("cursos", this.cursoService.find(Curso.class));
-		return "curso/listar";
+		return PATH_CURSO_LISTAR;
 	}
 
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
@@ -35,10 +37,10 @@ public class CursoController {
 		Curso curso = this.cursoService.find(Curso.class, id);
 
 		if (curso == null) {
-			return CURSO_REDIRECT_LISTAR;
+			return PATH_REDIRECT_CURSO_LISTAR;
 		}
 		model.addAttribute("curso", curso);
-		return "curso/editar";
+		return PATH_CURSO_EDITAR;
 	}
 
 	@RequestMapping(value = "/editar", method = RequestMethod.POST)
@@ -47,31 +49,31 @@ public class CursoController {
 		String codigo = "codigo";
 		
 		if (result.hasErrors()) {
-			return "curso/editar";
+			return PATH_CURSO_EDITAR;
 		}
 		
 		if (result.hasFieldErrors(codigo)) {
-			return "curso/editar";
+			return PATH_CURSO_EDITAR;
 		}
 
 		if (cursoService
 				.getOutroCursoByCodigo(curso.getId(), curso.getCodigo()) != null) {
 			result.rejectValue(codigo, "Repeat.curso.codigo",
 					"Já existe um curso com esse código");
-			return "curso/editar";
+			return PATH_CURSO_EDITAR;
 		}
 		if (cursoService.getOutroCursoBySigla(curso.getId(), curso.getSigla()
 				.toUpperCase()) != null) {
 			result.rejectValue("sigla", "Repeat.curso.sigla",
 					"Já existe um curso com essa sigla");
-			return "curso/editar";
+			return PATH_CURSO_EDITAR;
 		}
 
 		curso.setSigla(curso.getSigla().toUpperCase());
 		cursoService.update(curso);
 		redirectAttributes.addFlashAttribute("info",
 				"Curso atualizado com sucesso.");
-		return CURSO_REDIRECT_LISTAR;
+		return PATH_REDIRECT_CURSO_LISTAR;
 
 	}
 
@@ -84,43 +86,43 @@ public class CursoController {
 			redirectAttributes.addFlashAttribute("info",
 					"Curso removido com sucesso.");
 		}
-		return CURSO_REDIRECT_LISTAR;
+		return PATH_REDIRECT_CURSO_LISTAR;
 	}
 
 	@RequestMapping(value = "/adicionar")
 	public String adicionar(ModelMap modelMap) {
 		modelMap.addAttribute("curso", new Curso());
-		return CURSO_ADICIONAR;
+		return PATH_CURSO_ADICIONAR;
 	}
 
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
 	public String adicionar(@Valid Curso curso, BindingResult result,
 			final RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
-			return CURSO_ADICIONAR;
+			return PATH_CURSO_ADICIONAR;
 		}
 
 		if (cursoService.getCursoByCodigo(curso.getCodigo()) != null) {
 			result.rejectValue("codigo", "Repeat.curso.codigo",
 					"Já existe um curso com esse código");
-			return CURSO_ADICIONAR;
+			return PATH_CURSO_ADICIONAR;
 		}
 		if (curso.getNome().trim().isEmpty()) {
 			result.rejectValue("codigo", "Repeat.curso.nome",
 					"Campo obrigatório.");
-			return CURSO_ADICIONAR;
+			return PATH_CURSO_ADICIONAR;
 		}
 		if (cursoService.getCursoBySigla(curso.getSigla().toUpperCase()) != null) {
 			result.rejectValue("sigla", "Repeat.sigla.sigla",
 					"Já existe um curso com essa sigla");
-			return CURSO_ADICIONAR;
+			return PATH_CURSO_ADICIONAR;
 		}
 
 		curso.setSigla(curso.getSigla().toUpperCase());
 		cursoService.save(curso);
 		redirectAttributes.addFlashAttribute("info",
 				"Curso adicionado com sucesso.");
-		return CURSO_REDIRECT_LISTAR;
+		return PATH_REDIRECT_CURSO_LISTAR;
 	}
 
 }
