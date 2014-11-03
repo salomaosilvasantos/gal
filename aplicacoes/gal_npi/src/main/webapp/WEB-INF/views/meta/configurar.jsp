@@ -10,8 +10,20 @@
 <jsp:include page="../fragments/htmlHead.jsp" />
 </head>
 <body>
-	<div id="container" style="width: 1000px; margin: 0 auto;">
+	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
+		
+		<div style="margin-top: 40px; font-size:17px; " >
+		<p>
+			<strong>Meta:</strong> Índice estabelecido pelo MEC de total de exemplares por quantidade de alunos por título.<br/>
+			<strong>Quantidade de alunos:</strong> Quantidade estimada de alunos de uma disciplina para um determinado currículo.<br/><br/>
+			
+			<strong>Nome da meta:</strong> Um texto que identifica a meta. <br>
+			<strong>Índice para cálculo de bibliografia básica:</strong> Valor para ser usado na fórmula de cálculo da meta para titulos de bibliografia básica. <br/>Resumidamente, é a quantidade de alunos por um exemplar. <strong>Ex:</strong> 6 alunos para um exemplar. <br/>
+			<strong>Índice para cálculo de bibliografia complementar:</strong> Valor para ser usado na fórmula de cálculo da meta para títulos de bibliografia complementar.<br/>Resumidamente, é a quantidade de livros por disciplina. <strong>Ex:</strong> 2 livros para disciplina de matemática.<br/><br/>
+		</p>
+		</div>
+		
 		
 		<form:form servletRelativeAction="/meta/configurar" method="post" modelAttribute="metaForm" role="form">
 
@@ -19,8 +31,8 @@
 				<!-- here should go some titles... -->
 				<tr>
 					<th>Nome da Meta</th>
-					<th>Indice Cálculo Básico</th>
-					<th>Indice Cálculo Complementar</th>
+					<th>Indice Cálculo Bibliografia Básica</th>
+					<th>Indice Cálculo Bibliografia Complementar</th>
 				</tr>
 				<c:forEach items="${metas}" var="meta" varStatus="status">
 					<tr>

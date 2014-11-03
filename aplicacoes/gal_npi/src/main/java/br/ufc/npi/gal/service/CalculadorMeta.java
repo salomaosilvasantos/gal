@@ -16,7 +16,7 @@ public class CalculadorMeta {
 
 	private static final String BIBLIOGRAFIA_TIPO_COMPLEMENTAR = "Complementar";
 
-	public List<ResultadoCalculo> calcular2(List<Titulo> titulos,
+	public List<ResultadoCalculo> calcular(List<Titulo> titulos,
 			List<Meta> metas) {
 		List<ResultadoCalculo> resultadoCalculo = new ArrayList<ResultadoCalculo>();
 		MetaCalculada metaCalculada;
