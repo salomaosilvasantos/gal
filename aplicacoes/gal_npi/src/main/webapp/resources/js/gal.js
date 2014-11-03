@@ -87,6 +87,8 @@ $( document ).ready(function() {
 	});
 	
 	
+	
+	
 
 	$("select#seleciona").change(function() { 
 		var option = $("#seleciona").val();
@@ -107,15 +109,31 @@ $( document ).ready(function() {
 	
 	$("#seleciona").val($("#idCurso").val());
 
+	$(document).on("click", ".open-AddBookDialog",
+			function() {
+		var id = $(this).data('id');
+		$(".modal-body #id").val(id);
+	});
 	 	
 });
 
-$(document).on("click", ".open-AddBookDialog",
-		function() {
-			var id = $(this).data('id');
-			$(".modal-body #id").val(id);
-		});
 
 function goBack() {
 	window.history.back()
 }
+
+function mascara(o,f){
+    v_obj=o
+    v_fun=f
+    setTimeout("execmascara()",1)
+}
+	
+function execmascara(){
+    v_obj.value=v_fun(v_obj.value)
+}
+
+function soNumeros(v){
+    return v.replace(/\D/g,"")
+}
+
+
