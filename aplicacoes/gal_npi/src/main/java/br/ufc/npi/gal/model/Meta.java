@@ -29,7 +29,6 @@ public class Meta implements Serializable {
 
 	private double indiceCalculoComplementar;
 
-	private boolean status;
 
 	public Integer getId() {
 		return id;
@@ -61,14 +60,6 @@ public class Meta implements Serializable {
 
 	public void setIndiceCalculoComplementar(double indiceCalculoComplementar) {
 		this.indiceCalculoComplementar = indiceCalculoComplementar;
-	}
-
-	public boolean isStatus() {
-		return status;
-	}
-
-	public void setStatus(boolean status) {
-		this.status = status;
 	}
 
 	@Override
