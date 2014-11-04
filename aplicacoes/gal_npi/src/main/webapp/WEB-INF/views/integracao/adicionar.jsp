@@ -41,8 +41,8 @@
 					alunos</label>
 				<div class="col-sm-10">
 					<form:input id="quantidadeAlunos" class="form-control numeros"
-						style="width: 150px;" placeholder="Quantidade alunos"
-						path="quantidadeAlunos" onkeypress="mascara(this,soNumeros)"
+						style="width: 150px;" placeholder="Quantidade alunos" maxlength="4"
+						path="quantidadeAlunos" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)"
 						required="true" />
 					<form:errors path="quantidadeAlunos" cssClass="error" />
 				</div>
@@ -53,8 +53,8 @@
 					oferta</label>
 				<div class="col-sm-10">
 					<form:input id="semestreOferta" class="form-control numeros"
-						style="width: 150px;" placeholder="Semestre oferta"
-						path="semestreOferta" onkeypress="mascara(this,soNumeros)"
+						style="width: 150px;" placeholder="Semestre oferta" maxlength="2"
+						path="semestreOferta" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)"
 						required="true" />
 					<form:errors path="semestreOferta" cssClass="error" />
 				</div>
