@@ -50,12 +50,13 @@ public class IntegracaoCurricularController {
 		return "redirect:/curso/listar";
 	}
 	
-	@RequestMapping(value = "/adicionar", method = RequestMethod.GET)
-	public String adicionar(String disciplina, Integer quantidadeAlunos, Integer semestreOferta, Integer id, ModelMap modelMap, final RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
+	public String adicionar(String disciplina, Integer quantidadeAlunos, Integer semestreOferta, Integer id_curriculo, final RedirectAttributes redirectAttributes) {
 		IntegracaoCurricular integracao = new IntegracaoCurricular();
 		Disciplina otaDisciplina = disciplinaService.getDisciplinaByCodigo(disciplina);
-		System.out.println(id);
-		EstruturaCurricular estruturaCurricular = estruturaService.find(EstruturaCurricular.class, id);
+		System.out.println("###############################$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+		System.out.println(id_curriculo);
+		EstruturaCurricular estruturaCurricular = estruturaService.find(EstruturaCurricular.class, id_curriculo);
 		List<IntegracaoCurricular> integracaoList = estruturaCurricular.getCurriculos();
 		
 		integracao.setDisciplina(otaDisciplina);
@@ -81,9 +82,7 @@ public class IntegracaoCurricularController {
 						"Essa disciplina já está vinculada");
 				return "redirect:/curso/listar";
 			}
-		}
-		
-		
+		}		
 		integracaoService.save(integracao);
 		
 		redirectAttributes.addFlashAttribute("info",
@@ -91,15 +90,16 @@ public class IntegracaoCurricularController {
 		return "redirect:/curso/listar";
 	}
 
-	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
-	public String adicionar(IntegracaoCurricular integracao, BindingResult result, final RedirectAttributes redirectAttributes) {
-		if (result.hasErrors()) {
-			return "integracao/adicionar";
-		}
-
-		redirectAttributes.addFlashAttribute("info",
-				"Integracao Curricular adicionada com sucesso.");
-		return "redirect:/integracao/listar";
+	@RequestMapping(value = "/{id_curriculo}/adicionar")
+	public String adicionar(ModelMap modelMap, @PathVariable("id_curriculo") Integer id_curriculo, final RedirectAttributes redirectAttributes) {
+		
+		
+		modelMap.addAttribute("id_curriculo", id_curriculo);
+		modelMap.addAttribute("integracao", new IntegracaoCurricular());
+		
+		redirectAttributes.addFlashAttribute("id_curriculo",
+				id_curriculo);
+		return "integracao/adicionar";
 	}
 	
 	@RequestMapping(value = "/{id_disciplina}/{id_curriculo}/editar", method = RequestMethod.GET)

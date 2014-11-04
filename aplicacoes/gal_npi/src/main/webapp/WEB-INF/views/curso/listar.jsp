@@ -101,7 +101,7 @@
 									<div class="tab-pane ${active }" id="${curriculo.anoSemestre }">
 
 										<a class="btn btn-success"
-											href="<c:url value="/integracao/adicionar" ></c:url>">Vincular Disciplina</a>
+											href="<c:url value="/integracao/${curriculo.id}/adicionar" ></c:url>">Vincular Disciplina</a>
 
 
 										<div class="panel panel-default">
