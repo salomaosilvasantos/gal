@@ -36,7 +36,9 @@ import java.util.logging.Logger;
 @Controller
 @RequestMapping("meta")
 public class MetaController {
+	
 	private final static Logger LOGGER = Logger.getLogger(MetaController.class.getName());
+	private static final String SLASH = "\";\"";
 	
 	@Inject
 	private CalculoMetaService calculo;
@@ -46,14 +48,13 @@ public class MetaController {
 
 	@Inject
 	private CursoService cursoService;
-
+	
 	public MetaController() {
 		super();
 
 	}
 
 	public File criaRelatorioMetaDetalhado() {
-		String under = "\";\"";
 
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
 		BufferedWriter str = cria.abreFile("metaDetalhada.csv");
@@ -68,13 +69,13 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalheImpar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() +under
+					linha = "\"" + element.getTitulo().getNome() +SLASH
 							+ element.getTitulo().getIsbn()
 							+ "\";\"Meta Impar\";\""
-							+ detalheMetaCalculada.getCurso() +under
-							+ detalheMetaCalculada.getDisciplina() +under
+							+ detalheMetaCalculada.getCurso() +SLASH
+							+ detalheMetaCalculada.getDisciplina() +SLASH
 							+ detalheMetaCalculada.getTipoBibliografia()
-							+under
+							+SLASH
 							+ df.format(detalheMetaCalculada.getCalculo())
 							+ "\"";
 					cria.escreveFile(str, linha);
@@ -85,13 +86,13 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalhePar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() +under
+					linha = "\"" + element.getTitulo().getNome() +SLASH
 							+ element.getTitulo().getIsbn()
 							+ "\";\"Meta Par\";\""
-							+ detalheMetaCalculada.getCurso() +under
-							+ detalheMetaCalculada.getDisciplina() +under
+							+ detalheMetaCalculada.getCurso() +SLASH
+							+ detalheMetaCalculada.getDisciplina() +SLASH
 							+ detalheMetaCalculada.getTipoBibliografia()
-							+under
+							+SLASH
 							+ df.format(detalheMetaCalculada.getCalculo())
 							+ "\"";
 
