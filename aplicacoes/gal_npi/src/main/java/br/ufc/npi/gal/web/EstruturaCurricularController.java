@@ -46,13 +46,12 @@ public class EstruturaCurricularController {
 	
 	@RequestMapping(value="/{id}/editar", method=RequestMethod.POST)
 	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
-		System.out.println(estrutura);
-		Curso curso = cursoService.find(Curso.class, id);
 		
 		if(result.hasErrors()){
 			return "estrutura/editar";
 		}
 		
+		Curso curso = cursoService.find(Curso.class, id);
 		estrutura.setCurso(curso);
 		
 		estruturaCurricularService.update(estrutura);
@@ -68,7 +67,7 @@ public class EstruturaCurricularController {
 			this.estruturaCurricularService.delete(estruturaCurricular);
 			
 		}
-		redirectAttributes.addFlashAttribute("info","Curriculo removido com sucesso");
+		redirectAttributes.addFlashAttribute("info","Estrutura Curricular removida com sucesso");
 		return "redirect:/curso/listar";
 	}
 	
@@ -85,9 +84,6 @@ public class EstruturaCurricularController {
 	public String adicionar(@Valid EstruturaCurricular estruturaCurricular, BindingResult result, @PathVariable("id") Integer id,
 			RedirectAttributes redirectAttributes, ModelMap modelMap) {
 		
-		Curso curso = this.cursoService.find(Curso.class, id);
-		modelMap.addAttribute("curso",curso);
-		
 		if (result.hasErrors()) {
 			return "estrutura/adicionar";
 		}
@@ -98,11 +94,14 @@ public class EstruturaCurricularController {
 			return "estrutura/adicionar";
 		}
 		
-		//curso pode ter dois semestres iguais?
+		
 		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(id, estruturaCurricular.getAnoSemestre())!=null){
 			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
 			return "estrutura/adicionar";
 		}
+		
+		Curso curso = this.cursoService.find(Curso.class, id);
+		modelMap.addAttribute("curso",curso);
 		
 		estruturaCurricular.setCurso(curso);
 		estruturaCurricular.setId(null);
@@ -110,7 +109,7 @@ public class EstruturaCurricularController {
 		estruturaCurricularService.save(estruturaCurricular);
 		
 		redirectAttributes.addFlashAttribute("info",
-				"Estrutura adicionada com sucesso.");
+				"Estrutura Curricular adicionada com sucesso.");
 		return "redirect:/curso/listar";
 	}
 }
