@@ -15,11 +15,12 @@
 		<div style="margin-top: 100px; text-align: center; font-weight: bold;">
 			<h3>Seja Bem-Vindo ao Sistema Gestão de Aquisição de Livros
 				(GAL).</h3>
-			<p>O GAL é um sistema de informação que cadastra títulos,
+			<p>
+				O GAL é um sistema de informação que cadastra títulos,
 				bibliografias, cursos, disciplinas e acervo, para que baseado nesses
-				dados, <br/>procura dos discentes e nas metas a serem atingidas, apoie a
-				realização de análises e decisões sobre quais títulos serão pedidos
-				no edital.</p>
+				dados <br /> e nas metas a serem atingidas, apoie a realização de
+				análises e decisões sobre quais títulos serão pedidos no edital.
+			</p>
 		</div>
 
 

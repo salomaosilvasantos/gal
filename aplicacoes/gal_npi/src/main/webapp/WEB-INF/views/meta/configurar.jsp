@@ -20,7 +20,7 @@
 			
 			<strong>Nome da meta:</strong> Um texto que identifica a meta. <br>
 			<strong>Índice para cálculo de bibliografia básica:</strong> Valor para ser usado na fórmula de cálculo da meta para titulos de bibliografia básica. <br/>Resumidamente, é a quantidade de alunos por um exemplar. <strong>Ex:</strong> 6 alunos para um exemplar. <br/>
-			<strong>Índice para cálculo de bibliografia complementar:</strong> Valor para ser usado na fórmula de cálculo da meta para títulos de bibliografia complementar.<br/>Resumidamente, é a quantidade de livros por disciplina. <strong>Ex:</strong> 2 livros para disciplina de matemática.<br/><br/>
+			<strong>Índice para cálculo de bibliografia complementar:</strong> Valor para ser usado na fórmula de cálculo da meta para títulos de bibliografia complementar.<br/>Resumidamente, é a quantidade de livros por disciplina. <strong>Ex:</strong> 2 livros para cada disciplina em que pertece a bibliografia complementar.<br/><br/>
 		</p>
 		</div>	
 		

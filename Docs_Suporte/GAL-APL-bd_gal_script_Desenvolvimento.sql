@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS disciplinas;
 DROP TABLE IF EXISTS papel_usuario;
 DROP TABLE IF EXISTS papel;
 DROP TABLE IF EXISTS usuario;
+DROP TABLE IF EXISTS meta;
 --
 -- TOC entry 188 (class 3079 OID 11791)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
@@ -350,6 +351,21 @@ CREATE TABLE usuario (
 
 
 ALTER TABLE public.usuario OWNER TO postgres;
+
+
+CREATE TABLE meta
+(
+  id_mt serial NOT NULL,
+  indicecalculobasica double precision NOT NULL,
+  indicecalculocomplementar double precision NOT NULL,
+  nome character varying(255) NOT NULL,
+  CONSTRAINT meta_pkey PRIMARY KEY (id_mt)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE meta
+  OWNER TO postgres;
 
 --
 -- TOC entry 187 (class 1259 OID 18399)
@@ -7500,6 +7516,12 @@ INSERT INTO titulos (id_t, isbn, nome_titulo, tipo_titulo) VALUES (999, '9788574
 
 INSERT INTO usuario (id, habilitado, login, senha) VALUES (1, true, 'teste', '46070d4bf934fb0d4b06d9e2c46e346944e322444900a435d7d9a95e6d7435f5');
 
+INSERT INTO meta(id_mt, indicecalculobasica, indicecalculocomplementar, nome)
+    VALUES (1, 6, 2, 'Inep 5');
+INSERT INTO meta(id_mt, indicecalculobasica, indicecalculocomplementar, nome)
+    VALUES (2, 5, 2, 'Meta A');	
+INSERT INTO meta(id_mt, indicecalculobasica, indicecalculocomplementar, nome)
+    VALUES (3, 4, 0, 'Meta B');	
 
 --
 -- TOC entry 2113 (class 0 OID 0)
