@@ -3,10 +3,12 @@ package br.ufc.npi.gal.web;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -37,15 +39,15 @@ public class IntegracaoCurricularController {
 		return "integracao/listar";
 	}
 	
-	@RequestMapping(value = "/excluir", method = RequestMethod.GET)
-	public String excluir(RedirectAttributes redirectAttributes) {
-		IntegracaoCurricular integracao = integracaoService.getIntegracaoByDoisIds(1, 4);
+	@RequestMapping(value = "/{id_disciplina}/{id_curriculo}/excluir", method = RequestMethod.GET)
+	public String excluir(RedirectAttributes redirectAttributes,@PathVariable("id_disciplina") Integer id_disciplina, @PathVariable("id_curriculo") Integer id_curriculo) {
+		IntegracaoCurricular integracao = integracaoService.getIntegracaoByDoisIds(id_disciplina, id_curriculo);
 		if (integracao != null) {
 			this.integracaoService.delete(integracao);
 			redirectAttributes.addFlashAttribute("info",
-					"Disciplina removida com sucesso.");
+					"Integração Curricular removida com sucesso.");
 		}
-		return "redirect:/integracao/listar";
+		return "redirect:/curso/listar";
 	}
 	
 	@RequestMapping(value = "/adicionar", method = RequestMethod.GET)
@@ -99,5 +101,41 @@ public class IntegracaoCurricularController {
 				"Integracao Curricular adicionada com sucesso.");
 		return "redirect:/integracao/listar";
 	}
+	
+	@RequestMapping(value = "/{id_disciplina}/{id_curriculo}/editar", method = RequestMethod.GET)
+	public String editar(@PathVariable("id_disciplina") Integer id_disciplina,@PathVariable("id_curriculo") Integer id_curriculo, ModelMap modelMap) {
+
+		IntegracaoCurricular integracao = this.integracaoService.getIntegracaoByDoisIds(id_disciplina, id_curriculo);
+
+		if (integracao == null) {
+			return "redirect:/curso/listar";
+
+		}
+		modelMap.addAttribute("integracao", integracao);
+		return "integracao/editar";
+	}
+	
+	@RequestMapping(value = "/editar", method = RequestMethod.POST)
+	public String atualizar(@Valid IntegracaoCurricular integracao, BindingResult result,
+			RedirectAttributes redirectAttributes) {
+		
+		
+		if (result.hasErrors()) {
+			return "integracao/editar";
+		}
+
+		if(integracao.getSemestreOferta() == null || integracao.getSemestreOferta() <= 0 || integracao.getSemestreOferta() > 10){
+			redirectAttributes.addFlashAttribute("error",
+					"Semestre de oferta inválido");
+			return "redirect:/curso/listar";
+		}
+
+		integracaoService.update(integracao);
+		redirectAttributes.addFlashAttribute("info",
+				"Disciplina atualizada com sucesso.");
+		return "redirect:/curso/listar";
+
+	}
+	
 	
 }

@@ -32,8 +32,8 @@
 				<c:out value="${info}"></c:out>
 			</div>
 		</c:if>
-		
-		
+
+
 
 		<div id="button-add">
 			<a href="<c:url value="/curso/adicionar" ></c:url>">
@@ -87,7 +87,7 @@
 								</c:forEach>
 							</ul>
 
-							
+
 
 							<div class="tab-content">
 								<c:forEach items="${curso.curriculos}" var="curriculo"
@@ -99,13 +99,11 @@
 										<c:set var="active" value=""></c:set>
 									</c:if>
 									<div class="tab-pane ${active }" id="${curriculo.anoSemestre }">
-									
-									<a data-toggle="modal" data-id="${curriculo.id }"
-							class="open-AddBookDialog btn btn-success" href="#add-disciplina">Vincular Disciplina</a>
-									
-<%-- 									<input type="button" id="${curriculo.id }" value="Adicionar Disciplina" --%>
-<!-- 								data-target="#add-disciplina" data-toggle="modal" > -->
-								
+
+										<a class="btn btn-success"
+											href="<c:url value="/integracao/adicionar" ></c:url>">Vincular Disciplina</a>
+
+
 										<div class="panel panel-default">
 											<datatables:table id="estrutura${curso.id}"
 												data="${curriculo.curriculos}" cdn="true" row="integracao"
@@ -128,14 +126,14 @@
 
 												<datatables:column title="Editar">
 													<a class="btn btn-primary"
-														href="<c:url value="/disciplina/${disciplina.id }/editar" ></c:url>"><span
+														href="<c:url value="/integracao/${integracao.disciplina.id}/${curriculo.id}/editar" ></c:url>"><span
 														class="glyphicon glyphicon-edit"></span></a>
 												</datatables:column>
 
 												<datatables:column title="Excluir">
 													<a id="excluir" class="btn btn-danger" data-toggle="modal"
 														data-target="#confirm-delete" href="#"
-														data-href="<c:url value="/disciplina/${disciplina.id}/excluir" ></c:url>">
+														data-href="<c:url value="/integracao/${integracao.disciplina.id}/${curriculo.id}/excluir" ></c:url>">
 														<span class="glyphicon glyphicon-trash"></span>
 													</a>
 												</datatables:column>
@@ -160,6 +158,23 @@
 				<div class="modal-body">Tem certeza de que deseja excluir esse
 					curso?</div>
 				<div class="modal-footer">
+					<a href="integracao/excluir" class="btn btn-danger">Excluir</a>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="modal fade" id="confirm-delete-integracao" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">Excluir</div>
+				<div class="modal-body">Tem certeza de que deseja excluir essa
+					integração?</div>
+				<div class="modal-footer">
 					<a href="#" class="btn btn-danger">Excluir</a>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
 				</div>
@@ -182,44 +197,52 @@
 							<label class="control-label" style="font-size: 20px;">Adicionar
 								Disciplina</label>
 						</div>
-						
+
 						<div class="form-group">
-							<label for="disciplina" class="col-sm-2 control-label">Código Disciplina</label>
+							<label for="disciplina" class="col-sm-2 control-label">Código
+								Disciplina</label>
 							<div class="col-sm-10">
-								<form:input id="disciplina" class="form-control" style="width: 150px;"
-									placeholder="Código disciplina" path="disciplina" required="true"/>
+								<form:input id="disciplina" class="form-control"
+									style="width: 150px;" placeholder="Código disciplina"
+									path="disciplina" required="true" />
 								<form:errors path="disciplina" cssClass="error" />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label for="quantidadeAlunos" class="col-sm-2 control-label">Quantidade alunos</label>
+							<label for="quantidadeAlunos" class="col-sm-2 control-label">Quantidade
+								alunos</label>
 							<div class="col-sm-10">
-								<form:input id="nome" class="form-control" style="width: 150px;"
-									placeholder="Quantidade alunos" path="quantidadeAlunos" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)" required="true"/>
+								<form:input id="quantidadedeAlunos" class="form-control numeros"
+									style="width: 150px;" placeholder="Quantidade alunos"
+									path="quantidadeAlunos" onkeypress="mascara(this,soNumeros)"
+									required="true" />
 								<form:errors path="quantidadeAlunos" cssClass="error" />
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label for="semestreOferta" class="col-sm-2 control-label">Semestre oferta</label>
+							<label for="semestreOferta" class="col-sm-2 control-label">Semestre
+								oferta</label>
 							<div class="col-sm-10">
-								<form:input id="semestreOferta" class="form-control"
+								<form:input id="semestreOferta" class="form-control numeros"
 									style="width: 150px;" placeholder="Semestre oferta"
-									path="semestreOferta" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)" required="true"/>
+									path="semestreOferta" onkeypress="mascara(this,soNumeros)"
+									required="true" />
 								<form:errors path="semestreOferta" cssClass="error" />
 							</div>
 						</div>
-						
-						
+
+
+
 						<div class="controls">
 							<input id="criar" class="btn btn-primary" type="submit"
 								value="Adicionar" /> <a
 								href="<c:url value="/curso/listar"></c:url>"
 								class="btn btn-default">Cancelar</a>
 						</div>
-						
-						
+
+
 					</form:form>
 				</div>
 
@@ -229,5 +252,3 @@
 	</div>
 </body>
 </html>
-
-
