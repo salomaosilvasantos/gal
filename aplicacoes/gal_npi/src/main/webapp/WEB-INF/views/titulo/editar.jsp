@@ -11,7 +11,7 @@
 </head>
 
 <body>
-	<div id="container" style="width: 1000px; margin: 0 auto;">
+	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
 		<form:form servletRelativeAction="/titulo/editar" method="post" modelAttribute="titulo" role="form" class="form-horizontal">
 			<form:input path="id" type="hidden" />

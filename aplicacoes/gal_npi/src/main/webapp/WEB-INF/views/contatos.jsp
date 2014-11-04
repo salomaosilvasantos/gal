@@ -11,7 +11,7 @@
 <jsp:include page="fragments/htmlHead.jsp" />
 </head>
 <body>
-	<div id="container" style="width: 1000px; margin: 0 auto;">
+	<div id="container" >
 		<jsp:include page="fragments/header.jsp" />
 
 		<div style="margin-top: 100px; text-align: center; font-weight: bold;">
