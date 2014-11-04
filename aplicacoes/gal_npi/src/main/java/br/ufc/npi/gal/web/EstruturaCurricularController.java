@@ -40,13 +40,13 @@ public class EstruturaCurricularController {
 		}
 		modelMap.addAttribute("curso", estruturaCurricular.getCurso());
 		modelMap.addAttribute("estruturaCurricular", estruturaCurricular);
+		System.out.println(estruturaCurricular);
 		return "estrutura/editar";
 	}
 	
 	@RequestMapping(value="/{id}/editar", method=RequestMethod.POST)
 	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
-		
-		
+
 		if(result.hasErrors()){
 			return "estrutura/editar";
 		}
@@ -97,7 +97,7 @@ public class EstruturaCurricularController {
 			return "estrutura/adicionar";
 		}
 		
-		
+		//curso pode ter dois semestres iguais?
 		if(estruturaCurricularService.getOutraEstruturaCurricularByAnoSemestre(id, estruturaCurricular.getAnoSemestre())!=null){
 			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
 			return "estrutura/adicionar";

@@ -203,6 +203,8 @@ public class CadastroExemplarTituloNoBanco {
         }
         else
             JOptionPane.showMessageDialog(null, "Voce nao selecionou nenhum diretorio.");
+        
+        JOptionPane.showMessageDialog(null, "Operação realizada!");
 		
 	}
 
