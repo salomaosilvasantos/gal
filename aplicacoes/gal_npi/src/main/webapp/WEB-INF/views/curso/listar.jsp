@@ -215,7 +215,7 @@
 							<div class="col-sm-10">
 								<form:input id="quantidadedeAlunos" class="form-control numeros"
 									style="width: 150px;" placeholder="Quantidade alunos"
-									path="quantidadeAlunos" onkeypress="mascara(this,soNumeros)"
+									path="quantidadeAlunos" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)"
 									required="true" />
 								<form:errors path="quantidadeAlunos" cssClass="error" />
 							</div>
@@ -227,7 +227,7 @@
 							<div class="col-sm-10">
 								<form:input id="semestreOferta" class="form-control numeros"
 									style="width: 150px;" placeholder="Semestre oferta"
-									path="semestreOferta" onkeypress="mascara(this,soNumeros)"
+									path="semestreOferta" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)"
 									required="true" />
 								<form:errors path="semestreOferta" cssClass="error" />
 							</div>
