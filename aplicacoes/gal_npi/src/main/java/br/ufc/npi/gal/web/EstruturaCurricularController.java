@@ -45,13 +45,16 @@ public class EstruturaCurricularController {
 	}
 	
 	@RequestMapping(value="/{id}/editar", method=RequestMethod.POST)
-	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
+	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,
+			@PathVariable("id") Integer id, ModelMap modelMap){
+		
+		Curso curso = this.cursoService.find(Curso.class, id);
+		modelMap.addAttribute("curso",curso);
 		
 		if(result.hasErrors()){
 			return "estrutura/editar";
 		}
-		
-		Curso curso = cursoService.find(Curso.class, id);
+	
 		estrutura.setCurso(curso);
 		
 		estruturaCurricularService.update(estrutura);
