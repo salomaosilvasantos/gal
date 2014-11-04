@@ -51,16 +51,19 @@ public class IntegracaoCurricularController {
 	}
 	
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
-	public String adicionar(String disciplina, Integer quantidadeAlunos, Integer semestreOferta, Integer id_curriculo, final RedirectAttributes redirectAttributes) {
+	public String adicionar(String disciplina, Integer quantidadeAlunos, Integer semestreOferta, Integer estruturaCurricular, final RedirectAttributes redirectAttributes) {
 		IntegracaoCurricular integracao = new IntegracaoCurricular();
 		Disciplina otaDisciplina = disciplinaService.getDisciplinaByCodigo(disciplina);
 		System.out.println("###############################$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-		System.out.println(id_curriculo);
-		EstruturaCurricular estruturaCurricular = estruturaService.find(EstruturaCurricular.class, id_curriculo);
-		List<IntegracaoCurricular> integracaoList = estruturaCurricular.getCurriculos();
+		System.out.println(estruturaCurricular);
+		System.out.println(disciplina);
+		System.out.println(semestreOferta);
+		System.out.println(quantidadeAlunos);
+		EstruturaCurricular estruturaCurricular2 = estruturaService.find(EstruturaCurricular.class, estruturaCurricular);
+		List<IntegracaoCurricular> integracaoList = estruturaCurricular2.getCurriculos();
 		
 		integracao.setDisciplina(otaDisciplina);
-		integracao.setEstruturaCurricular(estruturaCurricular);
+		integracao.setEstruturaCurricular(estruturaCurricular2);
 		integracao.setQuantidadeAlunos(quantidadeAlunos);
 		integracao.setSemestreOferta(semestreOferta);
 		

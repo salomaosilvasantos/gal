@@ -15,10 +15,10 @@
 
 		<form:form servletRelativeAction="/integracao/adicionar" method="post"
 			modelAttribute="integracao" role="form" class="form-horizontal">
-			<form:input path="id_curriculo" type="hidden" />
 			
-			
-<%-- 			<form:input path="id_curriculo" type="text" id="id_curriculo"/> --%>
+			<form:input id="estruturaCurricular" class="form-control"
+						style="width: 150px;" type="hidden" value="${id_curriculo}"
+						path="estruturaCurricular" required="true" />
 			
 			<div class="form-group">
 				<label class="control-label" style="font-size: 20px;">Vincular
@@ -26,13 +26,13 @@
 			</div>
 
 			<div class="form-group">
-				<label for="disciplina.codigo" class="col-sm-2 control-label">Código
+				<label for="disciplina" class="col-sm-2 control-label">Código
 					Disciplina</label>
 				<div class="col-sm-10">
 					<form:input id="disciplina" class="form-control"
 						style="width: 150px;" placeholder="Código disciplina"
-						path="disciplina.codigo" required="true" />
-					<form:errors path="disciplina.codigo" cssClass="error" />
+						path="disciplina" required="true" />
+					<form:errors path="disciplina" cssClass="error" />
 				</div>
 			</div>
 
