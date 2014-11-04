@@ -29,7 +29,7 @@
 					Disciplina</label>
 				<div class="col-sm-10">
 					<form:input id="disciplina.codigo" class="form-control"
-						style="width: 150px;" placeholder="Código disciplina" disabled="true"
+						placeholder="Código disciplina" disabled="true"
 						path="disciplina.codigo" required="true" /> 
 					<form:errors path="disciplina" cssClass="error" /> 
 				</div>
@@ -40,7 +40,7 @@
 					alunos</label>
 				<div class="col-sm-10">
 					<form:input id="quantidadedeAlunos" class="form-control numeros"
-						style="width: 150px;" maxlength="4" placeholder="Quantidade alunos"
+						maxlength="4" placeholder="Quantidade alunos"
 						path="quantidadeAlunos" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)"
 						required="true" />
 					<form:errors path="quantidadeAlunos" cssClass="error" />
@@ -52,7 +52,7 @@
 					oferta</label>
 				<div class="col-sm-10">
 					<form:input id="semestreOferta" class="form-control numeros"
-						style="width: 150px;" placeholder="Semestre oferta"
+						placeholder="Semestre oferta"
 						path="semestreOferta" maxlength="2" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)"
 						required="true" />
 					<form:errors path="semestreOferta" cssClass="error" />
