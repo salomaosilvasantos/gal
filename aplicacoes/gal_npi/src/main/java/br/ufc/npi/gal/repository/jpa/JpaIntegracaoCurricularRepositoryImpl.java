@@ -14,10 +14,10 @@ import br.ufc.npi.gal.repository.IntegracaoCurricularRepository;
 public class JpaIntegracaoCurricularRepositoryImpl extends GenericRepositoryImpl<IntegracaoCurricular> implements IntegracaoCurricularRepository{
 
 	@Override
-	public IntegracaoCurricular getIntegracao(Integer id_disciplina, Integer id_curriculo) {
+	public IntegracaoCurricular getIntegracao(Integer idDisciplina, Integer idCurriculo) {
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("id_disciplina", id_disciplina);
-		params.put("id_curriculo", id_curriculo);
+		params.put("id_disciplina", idDisciplina);
+		params.put("id_curriculo", idCurriculo);
 		List<IntegracaoCurricular> result = find(QueryType.JPQL, "from IntegracaoCurricular where id_disciplina = :id_disciplina and id_curriculo = :id_curriculo", params);
 		if(result != null && !result.isEmpty()) {
 			return result.get(0);

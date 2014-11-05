@@ -17,6 +17,7 @@ public class IntegracaoCurricular {
 	@ManyToOne
 	@JoinColumn(name = "id_curriculo")
 	private EstruturaCurricular estruturaCurricular;
+	
 	@Id
 	@ManyToOne
 	@JoinColumn(name = "id_disciplina")
