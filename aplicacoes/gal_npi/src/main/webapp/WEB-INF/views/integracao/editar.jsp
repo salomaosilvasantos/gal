@@ -10,7 +10,7 @@
 <jsp:include page="../fragments/htmlHead.jsp" />
 </head>
 <body>
-	<div id="container" style="width: 1000px; margin: 0 auto;">
+	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
 
 		<form:form servletRelativeAction="/integracao/editar" method="post"

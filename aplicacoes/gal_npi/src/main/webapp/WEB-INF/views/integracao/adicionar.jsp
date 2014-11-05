@@ -17,7 +17,7 @@
 			modelAttribute="integracao" role="form" class="form-horizontal">
 			
 			<form:input id="estruturaCurricular" class="form-control"
-						style="width: 150px;" type="hidden" value="${id_curriculo}"
+						style="width: 150px;" type="hidden" value="${idCurriculo}"
 						path="estruturaCurricular" required="true" />
 			
 			<div class="form-group">
