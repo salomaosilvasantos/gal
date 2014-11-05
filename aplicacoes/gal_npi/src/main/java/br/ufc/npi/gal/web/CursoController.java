@@ -46,6 +46,7 @@ public class CursoController {
 		if (result.hasErrors()) {
 			return "curso/editar";
 		}
+
 		if (cursoService
 				.getOutroCursoByCodigo(curso.getId(), curso.getCodigo()) != null) {
 			result.rejectValue("codigo", "Repeat.curso.codigo",

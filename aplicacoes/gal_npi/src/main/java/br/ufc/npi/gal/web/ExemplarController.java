@@ -51,10 +51,12 @@ public class ExemplarController {
 			return "exemplar/adicionar";
 		}
 		
+
 		if(exemplarService.getExemplarByCodigo(exemplar.getCodigoExemplar()) != null) {
 			result.rejectValue("codigoExemplar", "Repeat.exemplar.codigoExemplar", "Já existe um exemplar com esse codigo");
 			return "exemplar/adicionar";
 		}
+
 		exemplar.setId(null);
 		exemplar.setTitulo(titulo);	
 		exemplarService.save(exemplar);
