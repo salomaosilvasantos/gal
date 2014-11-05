@@ -46,19 +46,13 @@ public class CursoController {
 	@RequestMapping(value = "/editar", method = RequestMethod.POST)
 	public String atualizar(@Valid Curso curso, BindingResult result,
 			RedirectAttributes redirectAttributes) {
-		String codigo = "codigo";
-		
 		if (result.hasErrors()) {
 			return PATH_CURSO_EDITAR;
 		}
 		
-		if (result.hasFieldErrors(codigo)) {
-			return PATH_CURSO_EDITAR;
-		}
-
 		if (cursoService
 				.getOutroCursoByCodigo(curso.getId(), curso.getCodigo()) != null) {
-			result.rejectValue(codigo, "Repeat.curso.codigo",
+			result.rejectValue("codigo", "Repeat.curso.codigo",
 					"Já existe um curso com esse código");
 			return PATH_CURSO_EDITAR;
 		}

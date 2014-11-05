@@ -34,17 +34,13 @@ public class DisciplinaController {
 	private BibliografiaService bibliografiaService;
 	private static final String COMPLEMENTAR = "Complementar";
 	private static final String BASICA = "Básica";
-	private static final String PATH_REDIRECT_DISCIPLINA_LISTAR = "redirect:/disciplina/listar";
-	private static final String PATH_DISCIPLINA_ADICIONAR = "disciplina/adicionar";
-	private static final String PATH_DISCIPLINA_EDITAR = "disciplina/editar";
-	private static final String PATH_DISCIPLINA_LISTAR = "disciplina/listar";
 	
 	
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("disciplinas",
 				this.disciplinaService.find(Disciplina.class));
-		return PATH_DISCIPLINA_LISTAR;
+		return "disciplina/listar";
 	}
 
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
@@ -54,38 +50,38 @@ public class DisciplinaController {
 				id);
 
 		if (disciplina == null) {
-			return PATH_REDIRECT_DISCIPLINA_LISTAR;
+			return "redirect:/disciplina/listar";
 
 		}
 		modelMap.addAttribute("disciplina", disciplina);
-		return PATH_DISCIPLINA_EDITAR;
+		return "disciplina/editar";
 	}
 
 	@RequestMapping(value = "/editar", method = RequestMethod.POST)
 	public String atualizar(@Valid Disciplina disciplina, BindingResult result,
 			RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
-			return PATH_DISCIPLINA_EDITAR;
+			return "disciplina/editar";
 		}
 
 		if (disciplinaService.getOutraDisciplinaByCodigo(disciplina.getId(),
 				disciplina.getCodigo()) != null) {
 			result.rejectValue("codigo", "Repeat.disciplina.codigo",
 					"Já existe uma disciplina com esse código");
-			return PATH_DISCIPLINA_EDITAR;
+			return "disciplina/editar";
 		}
 		if (disciplinaService.getOutraDisciplinaByNome(disciplina.getId(),
 				disciplina.getNome().toUpperCase()) != null) {
 			result.rejectValue("nome", "Repeat.disciplina.nome",
 					"Já existe uma disciplina com esse nome");
-			return PATH_DISCIPLINA_EDITAR;
+			return "disciplina/editar";
 		}
 
 		disciplina.setNome(disciplina.getNome().toUpperCase());
 		disciplinaService.update(disciplina);
 		redirectAttributes.addFlashAttribute("info",
 				"Disciplina atualizada com sucesso.");
-		return PATH_REDIRECT_DISCIPLINA_LISTAR;
+		return "redirect:/disciplina/listar";
 
 	}
 
@@ -98,13 +94,13 @@ public class DisciplinaController {
 			redirectAttributes.addFlashAttribute("info",
 					"Disciplina removida com sucesso.");
 		}
-		return PATH_REDIRECT_DISCIPLINA_LISTAR;
+		return "redirect:/disciplina/listar";
 	}
 
 	@RequestMapping(value = "/adicionar")
 	public String adicionar(ModelMap modelMap) {
 		modelMap.addAttribute("disciplina", new Disciplina());
-		return PATH_DISCIPLINA_ADICIONAR;
+		return "disciplina/adicionar";
 	}
 
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
@@ -112,31 +108,31 @@ public class DisciplinaController {
 			RedirectAttributes redirectAttributes) {
 
 		if (result.hasErrors()) {
-			return PATH_DISCIPLINA_ADICIONAR;
+			return "disciplina/adicionar";
 		}
 
 		if (disciplinaService.getDisciplinaByCodigo(disciplina.getCodigo()) != null) {
 			result.rejectValue("codigo", "Repeat.disciplina.codigo",
 					"Já existe uma disciplina com esse código");
-			return PATH_DISCIPLINA_ADICIONAR;
+			return "disciplina/adicionar";
 		}
 		if (disciplina.getNome().trim().isEmpty()) {
 			result.rejectValue("nome", "Repeat.disciplina.nome",
 					"Campo obrigatório.");
-			return PATH_DISCIPLINA_ADICIONAR;
+			return "disciplina/adicionar";
 		}
 		if (disciplinaService.getDisciplinaByNome(disciplina.getNome()
 				.toUpperCase()) != null) {
 			result.rejectValue("nome", "Repeat.disciplina.nome",
 					"Já existe uma disciplina com esse nome");
-			return PATH_DISCIPLINA_ADICIONAR;
+			return "disciplina/adicionar";
 		}
 
 		disciplina.setNome(disciplina.getNome().toUpperCase());
 		disciplinaService.save(disciplina);
 		redirectAttributes.addFlashAttribute("info",
 				"Disciplina adicionada com sucesso.");
-		return PATH_REDIRECT_DISCIPLINA_LISTAR;
+		return "redirect:/disciplina/listar";
 	}
 
 	@RequestMapping(value = "/{id}/vincular", method = RequestMethod.GET)
@@ -147,7 +143,7 @@ public class DisciplinaController {
 				id);
 		List<Titulo> titulos = this.tituloService.find(Titulo.class);
 		if (disciplina == null) {
-			return PATH_REDIRECT_DISCIPLINA_LISTAR;
+			return "redirect:/disciplina/listar";
 
 		}
 		List<Bibliografia> bibliografias = disciplina.getBibliografias();
