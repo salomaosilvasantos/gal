@@ -35,10 +35,10 @@ public class CriaArquivoCsvETxt {
 
 	}
 
-	public void fechaFile(BufferedWriter StrW) {
+	public void fechaFile(BufferedWriter bufferFile) {
 		// Fechamos o buffer
 		try {
-			StrW.close();
+			bufferFile.close();
 		} catch (IOException e) {
 		
 			e.printStackTrace();
@@ -46,10 +46,10 @@ public class CriaArquivoCsvETxt {
 
 	}
 
-	public void escreveFile(BufferedWriter StrW, String linha) {
+	public void escreveFile(BufferedWriter bufferFile, String linha) {
 		// Escrita dos dados da tabela
 		try {
-			StrW.write(linha + "\n");
+			bufferFile.write(linha + "\n");
 		} catch (IOException e) {
 
 			e.printStackTrace();

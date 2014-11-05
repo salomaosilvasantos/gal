@@ -52,8 +52,7 @@ public class Curso implements Serializable {
 
 	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class)
 	private List<EstruturaCurricular> curriculos;
-  
-	
+
 	public Integer getId() {
 		return id;
 	}

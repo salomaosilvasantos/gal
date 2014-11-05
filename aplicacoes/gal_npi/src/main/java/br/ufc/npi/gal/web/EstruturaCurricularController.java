@@ -45,6 +45,7 @@ public class EstruturaCurricularController {
 	}
 	
 	@RequestMapping(value="/{id}/editar", method=RequestMethod.POST)
+
 	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,
 			@PathVariable("id") Integer id, ModelMap modelMap){
 		
@@ -54,7 +55,7 @@ public class EstruturaCurricularController {
 		if(result.hasErrors()){
 			return "estrutura/editar";
 		}
-	
+		
 		estrutura.setCurso(curso);
 		
 		estruturaCurricularService.update(estrutura);
@@ -106,7 +107,7 @@ public class EstruturaCurricularController {
 			return "estrutura/adicionar";
 		}
 		
-	
+
 		
 		estruturaCurricular.setCurso(curso);
 		estruturaCurricular.setId(null);
