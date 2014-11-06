@@ -13,7 +13,7 @@
 <body>
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
-		<form:form servletRelativeAction="/exemplar/${exemplar.titulo.id}/editar" method="post" modelAttribute="exemplar" role="form" class="form-horizontal">
+		<form:form servletRelativeAction="/exemplar/${titulo.id}/editar" method="post" modelAttribute="exemplar" role="form" class="form-horizontal">
 			<form:input path="id" type="hidden" />
 			
 			
@@ -34,7 +34,7 @@
 			
 			<div class="controls">
 				<input id="criar" class="btn btn-primary" type="submit" value="Salvar"/>
-				<a href="<c:url value="/exemplar/${exemplar.titulo.id}/listar"></c:url>" class="btn btn-default">Cancelar</a>
+				<a href="<c:url value="/exemplar/${titulo.id}/listar"></c:url>" class="btn btn-default">Cancelar</a>
 			</div>
 		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />

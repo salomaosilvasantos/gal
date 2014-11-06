@@ -63,12 +63,15 @@ public class ExemplarController {
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
 		Exemplar exemplar = this.exemplarService.find(Exemplar.class, id);
 		modelMap.addAttribute("exemplar", exemplar);
+		modelMap.addAttribute("titulo", exemplar.getTitulo());
 		return "exemplar/editar";
 	}
 	
 	@RequestMapping(value = "/{id}/editar", method=RequestMethod.POST)
-	public String atualizar( @Valid Exemplar exemplar, BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
+	public String atualizar( @Valid Exemplar exemplar, BindingResult result, 
+			RedirectAttributes redirectAttributes,@PathVariable("id") Integer id,ModelMap modelMap){
 		Titulo titulo = this.tituloService.find(Titulo.class, id);
+		modelMap.addAttribute("titulo",titulo);
 		if (result.hasErrors()) {
 			return "exemplar/editar";
 		}
