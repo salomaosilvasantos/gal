@@ -33,6 +33,7 @@
 
 		<!-- Database access -->
 		<postgresql.version>9.1-901.jdbc4</postgresql.version>
+		<tomcat-jdbc.version>7.0.42</tomcat-jdbc.version>
 
 		<!-- Spring Security -->
 		<spring.security.version>3.2.1.RELEASE</spring.security.version>
@@ -146,6 +147,14 @@
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.version}</version>
+		</dependency>
+		
+		<!-- teste tomcat -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jdbc</artifactId>
+			<version>${tomcat-jdbc.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!-- Logging with SLF4J & LogBack -->
