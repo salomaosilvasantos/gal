@@ -12,7 +12,7 @@
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
 		<form:form servletRelativeAction="/estrutura/${curso.id}/adicionar" method="post" modelAttribute="estruturaCurricular" role="form" class="form-horizontal">
-			
+			<form:input path="id" type="hidden" />
 			<div class="form-group" style="text-align: center;">
 				<label class="control-label" style="font-size: 20px;">Adicionar Nova Estrutura Curricular</label>
 			</div>

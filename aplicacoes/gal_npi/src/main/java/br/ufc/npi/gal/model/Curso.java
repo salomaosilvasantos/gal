@@ -37,6 +37,7 @@ public class Curso implements Serializable {
 	@NotNull(message = "Campo obrigatório")
 	@Column(name = "cod_c")
 	@NumberFormat(style = Style.NUMBER)
+
 	private Integer codigo;
 
 	@NotEmpty(message = "Campo obrigatório")
@@ -52,8 +53,7 @@ public class Curso implements Serializable {
 
 	@OneToMany(mappedBy = "curso", targetEntity = EstruturaCurricular.class)
 	private List<EstruturaCurricular> curriculos;
-  
-	
+
 	public Integer getId() {
 		return id;
 	}

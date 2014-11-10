@@ -6,8 +6,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-public class CriaArquivoCsvETxt {
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+
+public class CriaArquivoCsvETxt {
+	private final static Logger LOGGER = Logger.getLogger(CriaArquivoCsvETxt.class.getName());
+	
+	
 	// Para a execução das duas classes abaixo é importar algumas classes do
 	// Java.
 	private File file;
@@ -29,30 +35,34 @@ public class CriaArquivoCsvETxt {
 					new FileOutputStream(file), "Unicode"));
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.setLevel(Level.INFO);
+			LOGGER.severe(e.getMessage());
+			
 		}
 		return StrW;
 
 	}
 
-	public void fechaFile(BufferedWriter StrW) {
+	public void fechaFile(BufferedWriter bufferFile) {
 		// Fechamos o buffer
 		try {
-			StrW.close();
+			bufferFile.close();
 		} catch (IOException e) {
 		
-			e.printStackTrace();
+			LOGGER.setLevel(Level.INFO);
+			LOGGER.severe(e.getMessage());
 		}
 
 	}
 
-	public void escreveFile(BufferedWriter StrW, String linha) {
+	public void escreveFile(BufferedWriter bufferFile, String linha) {
 		// Escrita dos dados da tabela
 		try {
-			StrW.write(linha + "\n");
+			bufferFile.write(linha + "\n");
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			LOGGER.setLevel(Level.INFO);
+			LOGGER.severe(e.getMessage());
 		}
 	}
 }
