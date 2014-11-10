@@ -13,6 +13,14 @@
 	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
 		
+		<c:if test="${not empty error}">
+			<div class="alert alert-danger alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<c:out value="${error}"></c:out>
+			</div>
+		</c:if>
+		
+		
 		<div style="margin-top: 40px; font-size:17px; " >
 		<p>
 			<strong>Meta:</strong> Índice estabelecido pelo MEC de total de exemplares por quantidade de alunos por título.<br/>

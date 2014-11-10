@@ -358,14 +358,16 @@ CREATE TABLE meta
   id_mt serial NOT NULL,
   indicecalculobasica double precision NOT NULL,
   indicecalculocomplementar double precision NOT NULL,
-  nome character varying(255) NOT NULL,
-  CONSTRAINT meta_pkey PRIMARY KEY (id_mt)
+  nome character varying(255),
+  CONSTRAINT meta_pkey PRIMARY KEY (id_mt),
+  CONSTRAINT uk_nbvcapk9uu3j8b59tor0pvsh2 UNIQUE (nome)
 )
 WITH (
   OIDS=FALSE
 );
 ALTER TABLE meta
   OWNER TO postgres;
+
 
 --
 -- TOC entry 187 (class 1259 OID 18399)

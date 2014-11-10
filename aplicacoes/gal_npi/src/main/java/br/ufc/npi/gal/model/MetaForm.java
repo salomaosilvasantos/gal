@@ -4,7 +4,7 @@ import java.util.List;
 
 public class MetaForm {
 
-	private List<Meta> metas;
+	private static List<Meta> metas;
 
 	public List<Meta> getMetas() {
 		return metas;

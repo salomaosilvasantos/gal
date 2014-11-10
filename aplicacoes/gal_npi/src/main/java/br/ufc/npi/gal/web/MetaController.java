@@ -240,21 +240,29 @@ public class MetaController {
 
 	@RequestMapping(value = "/configurar")
 	public String configurar(ModelMap modelMap) {
-		MetaForm metaForm = new MetaForm();
-		metaForm.setMetas(metaService.find(Meta.class));
-		modelMap.addAttribute("metas", metaForm.getMetas());
+
+		modelMap.addAttribute("metas", metaService.find(Meta.class));
 		return "meta/configurar";
 	}
 
 	@RequestMapping(value = "/configurar", method = RequestMethod.POST)
 	public String configurar(@Valid MetaForm metaForm, BindingResult result,
-			RedirectAttributes redirectAttributes) {
+			ModelMap modelMap, RedirectAttributes redirectAttributes) {
 
 		if (result.hasErrors()) {
 			return "meta/configurar";
 		}
 		for (Meta meta : metaForm.getMetas()) {
-			metaService.update(meta);
+			try {
+				metaService.update(meta);
+			} catch (Exception e) {
+				modelMap.addAttribute("metas", metaForm.getMetas());
+				redirectAttributes.addFlashAttribute("error",
+						"Já existe uma meta com esse nome. Meta não configurada.");
+				return "redirect:/meta/configurar";
+
+			}
+
 		}
 		redirectAttributes.addFlashAttribute("info",
 				"Meta configurada com sucesso.");
