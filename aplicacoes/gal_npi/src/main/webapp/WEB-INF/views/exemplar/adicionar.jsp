@@ -12,7 +12,7 @@
 	<div id="container" style="width: 1000px; margin: 0 auto;">
 		<jsp:include page="../fragments/header.jsp" />
 		<form:form servletRelativeAction="/exemplar/${titulo.id}/adicionar" method="post" modelAttribute="exemplar" role="form" class="form-horizontal">
-			
+			<form:input path="id" type="hidden" />
 			<div class="form-group" style="text-align: center;">
 				<label class="control-label" style="font-size: 20px;">Adicionar Exemplar</label>
 			</div>

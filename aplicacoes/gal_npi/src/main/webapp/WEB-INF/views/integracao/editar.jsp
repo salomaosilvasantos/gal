@@ -6,33 +6,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Vincular Disciplina</title>
+<title>Editar Vinculo</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
 </head>
 <body>
-	<div id="container" style="width: 1000px; margin: 0 auto;">
+	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
 
-		<form:form servletRelativeAction="/integracao/adicionar" method="post"
+		<form:form servletRelativeAction="/integracao/editar" method="post"
 			modelAttribute="integracao" role="form" class="form-horizontal">
 			
-			<form:input id="estruturaCurricular" class="form-control"
-						style="width: 150px;" type="hidden" value="${idCurriculo}"
-						path="estruturaCurricular" required="true" />
-			
+			<form:input path="estruturaCurricular.id" type="hidden" />
+			<form:input path="disciplina.id" type="hidden" />
+						
 			<div class="form-group">
-				<label class="control-label" style="font-size: 20px;">Vincular
-					Disciplina</label>
+				<label class="control-label" style="font-size: 20px;">Editar
+					Vinculo</label>
 			</div>
 
 			<div class="form-group">
-				<label for="disciplina" class="col-sm-2 control-label">Código
+				<label for="disciplina.codigo" class="col-sm-2 control-label">Código
 					Disciplina</label>
 				<div class="col-sm-10">
-					<form:input id="disciplina" class="form-control"
-						placeholder="Código disciplina"
-						path="disciplina" required="true" />
-					<form:errors path="disciplina" cssClass="error" />
+					<form:input id="disciplina.codigo" class="form-control"
+						placeholder="Código disciplina" disabled="true"
+						path="disciplina.codigo" required="true" /> 
+					<form:errors path="disciplina" cssClass="error" /> 
 				</div>
 			</div>
 
@@ -40,8 +39,8 @@
 				<label for="quantidadeAlunos" class="col-sm-2 control-label">Quantidade
 					alunos</label>
 				<div class="col-sm-10">
-					<form:input id="quantidadeAlunos" class="form-control numeros"
-						placeholder="Quantidade alunos" maxlength="4"
+					<form:input id="quantidadedeAlunos" class="form-control numeros"
+						maxlength="4" placeholder="Quantidade alunos"
 						path="quantidadeAlunos" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)"
 						required="true" />
 					<form:errors path="quantidadeAlunos" cssClass="error" />
@@ -53,8 +52,8 @@
 					oferta</label>
 				<div class="col-sm-10">
 					<form:input id="semestreOferta" class="form-control numeros"
-						placeholder="Semestre oferta" maxlength="2"
-						path="semestreOferta" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)"
+						placeholder="Semestre oferta"
+						path="semestreOferta" maxlength="2" onkeypress="mascara(this,soNumeros)" onchange="mascara(this,soNumeros)"
 						required="true" />
 					<form:errors path="semestreOferta" cssClass="error" />
 				</div>
@@ -64,8 +63,9 @@
 
 			<div class="controls">
 				<input id="criar" class="btn btn-primary" type="submit"
-					value="Adicionar" /> <a
-					href="<c:url value="/curso/listar"></c:url>"
+					value="Adicionar" /> 
+					
+				<a	href="<c:url value="/curso/listar"></c:url>"
 					class="btn btn-default">Cancelar</a>
 			</div>
 

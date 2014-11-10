@@ -33,24 +33,26 @@ public class EstruturaCurricularController {
 	}
 
 	@RequestMapping(value="/{id}/editar",method = RequestMethod.GET)
-	public String editar(@PathVariable("id") Integer id, ModelMap modelMap){
+	public String editar(@PathVariable("id") Integer id, ModelMap modelMap, RedirectAttributes redirectAttributes){
 		EstruturaCurricular estruturaCurricular = this.estruturaCurricularService.find(EstruturaCurricular.class, id);
 		if(estruturaCurricular == null){
+			redirectAttributes.addFlashAttribute("error","Estrutura Curricular Inexistente");
 			return "curso/listar";
 		}
 		modelMap.addAttribute("curso", estruturaCurricular.getCurso());
 		modelMap.addAttribute("estruturaCurricular", estruturaCurricular);
-		
+
 		return "estrutura/editar";
 	}
 	
 	@RequestMapping(value="/{id}/editar", method=RequestMethod.POST)
-	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
-	
-		Curso curso = cursoService.find(Curso.class, id);
 
+	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,
+			@PathVariable("id") Integer id, ModelMap modelMap){
+		
+		Curso curso = this.cursoService.find(Curso.class, id);
 		modelMap.addAttribute("curso",curso);
-	
+		
 		if(result.hasErrors()){
 			return "estrutura/editar";
 		}
@@ -77,8 +79,7 @@ public class EstruturaCurricularController {
 	@RequestMapping(value="/{id}/adicionar",method = RequestMethod.GET)
 	public String adicionar(@PathVariable("id") Integer id,ModelMap modelMap){
 		
-		Curso curso = this.cursoService.find(Curso.class, id);
-		modelMap.addAttribute("curso",curso);
+		modelMap.addAttribute("curso", cursoService.find(Curso.class, id));
 		modelMap.addAttribute("estruturaCurricular", new EstruturaCurricular());
 		return "estrutura/adicionar";
 	}
@@ -107,7 +108,6 @@ public class EstruturaCurricularController {
 		}
 		
 		estruturaCurricular.setCurso(curso);
-		estruturaCurricular.setId(null);
 			
 		estruturaCurricularService.save(estruturaCurricular);
 		
