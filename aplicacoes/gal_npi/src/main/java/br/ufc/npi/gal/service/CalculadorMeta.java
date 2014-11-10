@@ -47,9 +47,7 @@ public class CalculadorMeta {
 								.getTipoBibliografia())) {
 							calculo = meta.getIndiceCalculoComplementar();
 						} else {
-							calculo = ((double) integracaoCurricular
-									.getQuantidadeAlunos() / (double) meta
-									.getIndiceCalculoBasica());
+							calculo = (integracaoCurricular.getQuantidadeAlunos() /meta.getIndiceCalculoBasica());
 						}
 
 						detalheMeta.setCalculo(calculo);
