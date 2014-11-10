@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -194,7 +195,13 @@ public class MetaController {
 			@PathVariable("meta") String meta) {
 		String csvFileName = "metaDetalhada.csv";
 		InputStream is = null;
-		File file = criaRelatorioMetaDetalhado(meta);
+		File file = null;
+		try {
+			file = criaRelatorioMetaDetalhado(meta);
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		try {
 
 			is = new FileInputStream(file);
@@ -222,9 +229,9 @@ public class MetaController {
 
 	}
 
-	public File criaRelatorioMetaDetalhado(String meta) {
+	public File criaRelatorioMetaDetalhado(String meta) throws IOException {
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
-		BufferedWriter str = cria.abreFile("metaDetalhada.csv");
+		BufferedWriter str = cria.abreFile("metaDetalhada_"+meta+".csv");
 		DecimalFormat df = new DecimalFormat("#,###.0");
 		String linha = new String();
 		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;" + meta;

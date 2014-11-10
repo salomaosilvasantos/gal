@@ -2,16 +2,14 @@ package br.ufc.npi.gal.web;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.UnsupportedEncodingException;
 
 
 public class CriaArquivoCsvETxt {
-	private final static Logger LOGGER = Logger.getLogger(CriaArquivoCsvETxt.class.getName());
 	
 	
 	// Para a execução das duas classes abaixo é importar algumas classes do
@@ -26,43 +24,29 @@ public class CriaArquivoCsvETxt {
 		this.file = file;
 	}
 
-	public BufferedWriter abreFile(String nomeArquivo) {
+	public BufferedWriter abreFile(String nomeArquivo) throws UnsupportedEncodingException, FileNotFoundException {
 		// Criação de um buffer para a escrita em uma stream
 		BufferedWriter StrW = null;
-		try {
+	
 			file = new File(nomeArquivo);
 			StrW = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream(file), "Unicode"));
 
-		} catch (IOException e) {
-			LOGGER.setLevel(Level.INFO);
-			LOGGER.severe(e.getMessage());
-			
-		}
-		return StrW;
+			return StrW;
 
 	}
 
-	public void fechaFile(BufferedWriter bufferFile) {
+	public void fechaFile(BufferedWriter bufferFile) throws IOException {
 		// Fechamos o buffer
-		try {
-			bufferFile.close();
-		} catch (IOException e) {
 		
-			LOGGER.setLevel(Level.INFO);
-			LOGGER.severe(e.getMessage());
-		}
+			bufferFile.close();
+		
 
 	}
 
-	public void escreveFile(BufferedWriter bufferFile, String linha) {
+	public void escreveFile(BufferedWriter bufferFile, String linha) throws IOException {
 		// Escrita dos dados da tabela
-		try {
+		
 			bufferFile.write(linha + "\n");
-		} catch (IOException e) {
-
-			LOGGER.setLevel(Level.INFO);
-			LOGGER.severe(e.getMessage());
-		}
 	}
 }
