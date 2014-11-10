@@ -48,9 +48,11 @@
 						<td><input name="metas[${status.index}].nome"
 							value="${meta.nome}" /></td>
 						<td><input name="metas[${status.index}].indiceCalculoBasica"
-							value="${meta.indiceCalculoBasica}" /></td>
+							value="${meta.indiceCalculoBasica}" type="number" min="1" required="required" pattern="[1-9]+([\.|,][0-9]{2})?" step="0.01"
+            title="Este número pode ser um inteiro ou um decimal com 2 casas."/></td>
 						<td><input name="metas[${status.index}].indiceCalculoComplementar"
-							value="${meta.indiceCalculoComplementar}" /></td>
+							value="${meta.indiceCalculoComplementar}" type="number" min="0" required="required" pattern="[0-9]+([\.|,][0-9]{2})?" step="0.01"
+            title="Este número pode ser um inteiro ou um decimal com 2 casas."/></td>
 
 
 					</tr>

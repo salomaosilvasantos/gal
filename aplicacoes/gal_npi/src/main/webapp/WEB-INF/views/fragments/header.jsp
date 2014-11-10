@@ -46,7 +46,6 @@
 					data-toggle="dropdown">Meta<b class="caret"></b></a>
 					<ul class="dropdown-menu">
 						<li><a href="<c:url value='/meta/configurar'/>">Configurar</a></li>
-						<li class="divider"></li>
 						<li><a href="<c:url value='/meta/listar'/>">Listar</a></li>
 						<li class="divider"></li>
 						<li><a href="<c:url value='/meta/downloadMetaDetalhada'/>">Download</a></li>
