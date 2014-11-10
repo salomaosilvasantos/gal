@@ -49,7 +49,7 @@
 						<li class="divider"></li>
 						<li><a href="<c:url value='/meta/listar'/>">Listar</a></li>
 						<li class="divider"></li>
-						<li><a href="<c:url value='/meta/download'/>">Download</a></li>
+						<li><a href="<c:url value='/meta/downloadMetaDetalhada'/>">Download</a></li>
 
 						
 					</ul></li>

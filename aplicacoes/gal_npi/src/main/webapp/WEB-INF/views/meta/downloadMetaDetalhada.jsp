@@ -19,13 +19,11 @@
 				<th>Nome da Meta</th>
 				<th>Link para Download da meta detalhada</th>
 			</tr>
-			<c:forEach items="${metas}" var="meta" varStatus="status">
+			<c:forEach items="${metas}" var="meta">
 				<tr>
-					
-					<td>${meta.nome}</td>
-					<td>${meta.nome}</td>
-					
 
+					<td>${meta.nome}</td>
+					<td><a href="<c:url value='/meta/downloadMetaDetalhada/${meta.nome}'/>">Download Detalhado ${meta.nome}</a></td>
 
 				</tr>
 			</c:forEach>
