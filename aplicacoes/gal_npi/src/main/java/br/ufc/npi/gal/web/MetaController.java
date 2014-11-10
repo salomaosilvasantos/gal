@@ -257,8 +257,9 @@ public class MetaController {
 				metaService.update(meta);
 			} catch (Exception e) {
 				modelMap.addAttribute("metas", metaForm.getMetas());
-				redirectAttributes.addFlashAttribute("error",
-						"Já existe uma meta com esse nome. Meta não configurada.");
+				redirectAttributes
+						.addFlashAttribute("error",
+								"Já existe uma meta com esse nome. Meta não configurada.");
 				return "redirect:/meta/configurar";
 
 			}
