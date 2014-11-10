@@ -68,3 +68,7 @@
 	font-weight: bold;
 }
 
+#container{
+	width: 1000px; 
+	margin: 0 auto;
+}
