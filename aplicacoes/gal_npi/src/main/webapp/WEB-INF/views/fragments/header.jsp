@@ -49,13 +49,9 @@
 						<li class="divider"></li>
 						<li><a href="<c:url value='/meta/listar'/>">Listar</a></li>
 						<li class="divider"></li>
+						<li><a href="<c:url value='/meta/download'/>">Download</a></li>
 
-						<li class="dropdown-submenu"><a tabindex="-1" href="#">Download</a>
-							<ul class="dropdown-menu">
-								<li><a tabindex="-1" href="#">Opção 01</a></li>
-								<li><a href="#">Opção 02</a></li>
-								<li><a href="#">Opção 03</a></li>
-							</ul></li>
+						
 					</ul></li>
 				<li><a href="<c:url value='/contatos'/>">Contatos</a>
 			</ul>

@@ -1,11 +1,21 @@
 package br.ufc.npi.gal.web;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -47,92 +57,117 @@ public class MetaController {
 
 	}
 
-	// Definir nova logistica para varias metas
-	// public File criaRelatorioMetaDetalhado() {
-	// CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
-	// BufferedWriter str = cria.abreFile("metaDetalhada.csv");
-	// DecimalFormat df = new DecimalFormat("#,###.0");
-	// String linha = new String();
-	// linha =
-	// "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;Meta";
-	// cria.escreveFile(str, linha);
-	// List<DetalheMetaCalculada> metacalculada;
-	// List<ResultadoCalculo> resultados = calculo.gerarCalculo();
-	// for (ResultadoCalculo element : resultados) {
-	// metacalculada = null;
-	// metacalculada = element.getMetaCalculada().getDetalheImpar();
-	// if (!metacalculada.isEmpty()) {
-	// for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-	// linha = "\"" + element.getTitulo().getNome() + "\";\""
-	// + element.getTitulo().getIsbn()
-	// + "\";\"Meta Impar\";\""
-	// + detalheMetaCalculada.getCurso() + "\";\""
-	// + detalheMetaCalculada.getDisciplina() + "\";\""
-	// + detalheMetaCalculada.getTipoBibliografia()
-	// + "\";\""
-	// + df.format(detalheMetaCalculada.getCalculo())
-	// + "\"";
-	// cria.escreveFile(str, linha);
-	// }
-	// }
-	//
-	// metacalculada = null;
-	// metacalculada = element.getMetaCalculada().getDetalhePar();
-	// if (!metacalculada.isEmpty()) {
-	// for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-	// linha = "\"" + element.getTitulo().getNome() + "\";\""
-	// + element.getTitulo().getIsbn()
-	// + "\";\"Meta Par\";\""
-	// + detalheMetaCalculada.getCurso() + "\";\""
-	// + detalheMetaCalculada.getDisciplina() + "\";\""
-	// + detalheMetaCalculada.getTipoBibliografia()
-	// + "\";\""
-	// + df.format(detalheMetaCalculada.getCalculo())
-	// + "\"";
-	//
-	// cria.escreveFile(str, linha);
-	// }
-	// }
-	//
-	// }
-	// cria.fechaFile(str);
-	// return cria.getFile();
-	// }
-	//
-	// @RequestMapping(value = "/downloadMetaDetalhada", method =
-	// RequestMethod.GET)
-	// public void downloadMetaDetalhada(ModelMap modelMap,
-	// HttpServletResponse response, HttpSession session) {
-	// String csvFileName = "metaDetalhada.csv";
-	// InputStream is = null;
-	// File file = criaRelatorioMetaDetalhado();
-	// try {
-	//
-	// is = new FileInputStream(file);
-	// response.setContentType("text/csv");
-	// String headerKey = "Content-Disposition";
-	// String headerValue = String.format("attachment; filename=\"%s\"",
-	// csvFileName);
-	// response.setHeader(headerKey, headerValue);
-	// IOUtils.copy(is, response.getOutputStream());
-	// response.flushBuffer();
-	// } catch (FileNotFoundException e1) {
-	//
-	// e1.printStackTrace();
-	// } catch (IOException e) {
-	//
-	// e.printStackTrace();
-	// } finally {
-	// try {
-	// is.close();
-	// file.delete();
-	// } catch (IOException e) {
-	//
-	// e.printStackTrace();
-	// }
-	// }
-	//
-	// }
+	public File criaRelatorioMetaDetalhado(String meta) {
+		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
+		BufferedWriter str = cria.abreFile("metaDetalhada.csv");
+		DecimalFormat df = new DecimalFormat("#,###.0");
+		String linha = new String();
+		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;Meta";
+		cria.escreveFile(str, linha);
+		List<DetalheMetaCalculada> metacalculada;
+		List<ResultadoCalculo> resultados = downloadMetaDetalhadaByMeta(meta);
+		for (ResultadoCalculo element : resultados) {
+			metacalculada = null;
+			metacalculada = element.getMetaCalculada().getDetalheImpar();
+			if (!metacalculada.isEmpty()) {
+				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
+					linha = "\"" + element.getTitulo().getNome() + "\";\""
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Impar\";\""
+							+ detalheMetaCalculada.getCurso() + "\";\""
+							+ detalheMetaCalculada.getDisciplina() + "\";\""
+							+ detalheMetaCalculada.getTipoBibliografia()
+							+ "\";\""
+							+ df.format(detalheMetaCalculada.getCalculo())
+							+ "\"";
+					cria.escreveFile(str, linha);
+				}
+			}
+
+			metacalculada = null;
+			metacalculada = element.getMetaCalculada().getDetalhePar();
+			if (!metacalculada.isEmpty()) {
+				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
+					linha = "\"" + element.getTitulo().getNome() + "\";\""
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Par\";\""
+							+ detalheMetaCalculada.getCurso() + "\";\""
+							+ detalheMetaCalculada.getDisciplina() + "\";\""
+							+ detalheMetaCalculada.getTipoBibliografia()
+							+ "\";\""
+							+ df.format(detalheMetaCalculada.getCalculo())
+							+ "\"";
+
+					cria.escreveFile(str, linha);
+				}
+			}
+
+		}
+		cria.fechaFile(str);
+		return cria.getFile();
+	}
+
+	@RequestMapping(value = "/download")
+	public String downloadMetaDetalhada(ModelMap modelMap) {
+
+		modelMap.addAttribute("metas", metaService.find(Meta.class));
+		return "meta/download";
+	}
+
+	@RequestMapping(value = "/downloadMetaDetalhada/{meta}", method = RequestMethod.GET)
+	public void downloadMetaDetalhada(ModelMap modelMap,
+			HttpServletResponse response, HttpSession session,
+			@PathVariable("meta") String meta) {
+		String csvFileName = "metaDetalhada.csv";
+		InputStream is = null;
+		File file = criaRelatorioMetaDetalhado(meta);
+		try {
+
+			is = new FileInputStream(file);
+			response.setContentType("text/csv");
+			String headerKey = "Content-Disposition";
+			String headerValue = String.format("attachment; filename=\"%s\"",
+					csvFileName);
+			response.setHeader(headerKey, headerValue);
+			IOUtils.copy(is, response.getOutputStream());
+			response.flushBuffer();
+		} catch (FileNotFoundException e1) {
+
+			e1.printStackTrace();
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+				file.delete();
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public List<ResultadoCalculo> downloadMetaDetalhadaByMeta(String nomeMeta) {
+		List<ResultadoCalculo> resultados = new ArrayList<ResultadoCalculo>();
+
+		for (ResultadoCalculo resultadoCalculo : calculo.gerarCalculo()) {
+
+			for (MetaCalculada metaCalculada : resultadoCalculo
+					.getMetasCalculadas()) {
+				if (metaCalculada.getNome().trim().equals(nomeMeta)) {
+
+					resultados.add(new ResultadoCalculo(resultadoCalculo
+							.getTitulo(), metaCalculada));
+					break;
+				}
+
+			}
+		}
+		return resultados;
+
+	}
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {

@@ -9,4 +9,5 @@ import br.ufc.npi.gal.service.MetaService;
 public class MetaServiceImpl extends GenericServiceImpl<Meta> implements
 		MetaService {
 
+	
 }
