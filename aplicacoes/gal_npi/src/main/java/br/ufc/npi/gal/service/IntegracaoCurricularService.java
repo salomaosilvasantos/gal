@@ -4,5 +4,5 @@ import br.ufc.npi.gal.model.IntegracaoCurricular;
 
 public interface IntegracaoCurricularService extends GenericService<IntegracaoCurricular> {
 
-	IntegracaoCurricular getIntegracaoByDoisIds(Integer idDisciplina, Integer idCurriculo);
+	IntegracaoCurricular getIntegracaoByIdDisciplinaIdCurriculo(Integer idDisciplina, Integer idCurriculo);
 }

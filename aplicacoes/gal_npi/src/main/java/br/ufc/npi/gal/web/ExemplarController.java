@@ -51,7 +51,6 @@ public class ExemplarController {
 			return "exemplar/adicionar";
 		}
 		
-		exemplar.setId(null);
 		exemplar.setTitulo(titulo);	
 		exemplarService.save(exemplar);
 		redirectAttributes.addFlashAttribute("info", "Exemplar adicionado com sucesso.");
