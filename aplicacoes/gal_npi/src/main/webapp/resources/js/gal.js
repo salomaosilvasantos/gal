@@ -44,7 +44,11 @@ $( document ).ready(function() {
 	$('div:has(span.error)').find('span.error').css('color', '#a94442');
 	$('div:has(span.error)').find('span.error').parent().parent().addClass('has-error has-feedback');
 	
+	
+	
+
 	$('#txtBusca').fastLiveFilter("#acervo");
+	
 	
 	function getItems(exampleNr) {
 		var columns = [];

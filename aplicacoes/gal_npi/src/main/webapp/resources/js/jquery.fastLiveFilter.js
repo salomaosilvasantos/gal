@@ -12,7 +12,7 @@ jQuery.fn.fastLiveFilter = function(list, options) {
 	list = jQuery(list);
 	var input = this;
 	var lastFilter = '';
-	var timeout = options.timeout || 0;
+	var timeout = options.timeout || 1;
 	var callback = options.callback || function() {};
 	var keyTimeout;
 	
