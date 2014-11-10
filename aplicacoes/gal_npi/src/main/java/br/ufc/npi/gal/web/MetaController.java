@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,9 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import br.ufc.npi.gal.model.Curso;
+import br.ufc.npi.gal.model.DetalheMetaCalculada;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculoMetaService;
-import br.ufc.npi.gal.service.DetalheMetaCalculada;
+import br.ufc.npi.gal.service.CursoService;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
 
@@ -37,7 +40,13 @@ public class MetaController {
 	@Inject
 	private TituloService tituloService;
 
-	private List<ResultadoCalculo> resultados;
+	@Inject
+	private CursoService cursoService;
+
+	public MetaController() {
+		super();
+
+	}
 
 	public File criaRelatorioMetaDetalhado() {
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
@@ -47,6 +56,7 @@ public class MetaController {
 		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;Meta";
 		cria.escreveFile(str, linha);
 		List<DetalheMetaCalculada> metacalculada;
+		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
 		for (ResultadoCalculo element : resultados) {
 			metacalculada = null;
 			metacalculada = element.getMetaCalculada().getDetalheImpar();
@@ -122,22 +132,76 @@ public class MetaController {
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
-		resultados = calculo.gerarCalculo();
+		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
+		List<Curso> cursos = cursoService.find(Curso.class);
 		modelMap.addAttribute("resultados", resultados);
+		modelMap.addAttribute("cursos", cursos);
+		modelMap.addAttribute("idCurso", -1);
 		return "meta/listar";
+	}
+
+	@RequestMapping(value = "/{id}/listar", method = RequestMethod.GET)
+	public String listarByCurso(@PathVariable("id") Integer id,
+			ModelMap modelMap, RedirectAttributes redirectAttributes) {
+
+		List<Curso> cursos = cursoService.find(Curso.class);
+		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
+		Curso curso = cursoService.find(Curso.class, id);
+
+		List<ResultadoCalculo> resultadosCurso = new ArrayList<ResultadoCalculo>();
+
+		for (ResultadoCalculo resultadoCalculo : resultados) {
+			boolean flag = false;
+
+			for (DetalheMetaCalculada detalhePar : resultadoCalculo
+					.getMetaCalculada().getDetalhePar()) {
+
+				if (detalhePar.getCurso().equals(curso.getNome())) {
+					flag = true;
+					break;
+
+				}
+
+			}
+			for (DetalheMetaCalculada detalheImpar : resultadoCalculo
+					.getMetaCalculada().getDetalheImpar()) {
+
+				if (detalheImpar.getCurso().equals(curso.getNome())) {
+					flag = true;
+					break;
+
+				}
+
+			}
+			if (flag) {
+
+				resultadosCurso.add(new ResultadoCalculo(resultadoCalculo
+						.getTitulo(), resultadoCalculo.getMetaCalculada()));
+				flag = false;
+
+			}
+		}
+		modelMap.addAttribute("idCurso", curso.getId());
+		modelMap.addAttribute("cursos", cursos);
+		modelMap.addAttribute("resultados", resultadosCurso);
+
+		return "meta/listar";
+
 	}
 
 	@RequestMapping(value = "/{id}/detalhe", method = RequestMethod.GET)
 	public String tituloByDetalhe(@PathVariable("id") Integer id,
 			ModelMap modelMap, RedirectAttributes redirectAttributes) {
 		Titulo titulo;
+		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
 		for (ResultadoCalculo resultadoCalculo : resultados) {
 
 			if (resultadoCalculo.getTitulo().getId().equals(id)) {
 				if (resultadoCalculo.getMetaCalculada().getCalculo() > 0.1) {
 					titulo = this.tituloService.find(Titulo.class, id);
 					modelMap.addAttribute("titulo", titulo);
-					modelMap.addAttribute("metaCalculada", resultadoCalculo.getMetaCalculada());
+					modelMap.addAttribute("metaCalculada",
+							resultadoCalculo.getMetaCalculada());
 
 					return "meta/detalhe";
 				}
@@ -157,14 +221,6 @@ public class MetaController {
 
 	public void setCalculo(CalculoMetaService calculo) {
 		this.calculo = calculo;
-	}
-
-	public List<ResultadoCalculo> getResultados() {
-		return resultados;
-	}
-
-	public void setResultados(List<ResultadoCalculo> resultados) {
-		this.resultados = resultados;
 	}
 
 }
