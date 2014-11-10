@@ -202,9 +202,7 @@ public class DisciplinaController {
 	
 	@RequestMapping(value = "/vincular")
 	public String vincular(@RequestParam("basica") String basica, @RequestParam("complementar") String complementar, @RequestParam("idDiciplina") Integer idDiciplina) {
-		System.out.println(basica);
-		System.out.println("Complementar"+complementar);
-		
+
 		String[] basicaArray = basica.split(",");
 		
 		String[] complementarArray = complementar.split(",");

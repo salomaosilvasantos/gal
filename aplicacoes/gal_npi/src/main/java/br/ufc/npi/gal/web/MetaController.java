@@ -30,10 +30,14 @@ import br.ufc.npi.gal.service.CursoService;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Controller
 @RequestMapping("meta")
 public class MetaController {
-
+	private final static Logger LOGGER = Logger.getLogger(MetaController.class.getName());
+	
 	@Inject
 	private CalculoMetaService calculo;
 
@@ -49,11 +53,12 @@ public class MetaController {
 	}
 
 	public File criaRelatorioMetaDetalhado() {
+		String under = "\";\"";
+
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
 		BufferedWriter str = cria.abreFile("metaDetalhada.csv");
 		DecimalFormat df = new DecimalFormat("#,###.0");
-		String linha = new String();
-		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;Meta";
+		String linha =  "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;Meta";
 		cria.escreveFile(str, linha);
 		List<DetalheMetaCalculada> metacalculada;
 		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
@@ -62,12 +67,13 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalheImpar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() + "\";\""
-							+ element.getTitulo().getIsbn() + "\";\"Meta Impar\";\""
-							+ detalheMetaCalculada.getCurso() + "\";\""
-							+ detalheMetaCalculada.getDisciplina() + "\";\""
+					linha = "\"" + element.getTitulo().getNome() +under
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Impar\";\""
+							+ detalheMetaCalculada.getCurso() +under
+							+ detalheMetaCalculada.getDisciplina() +under
 							+ detalheMetaCalculada.getTipoBibliografia()
-							+ "\";\""
+							+under
 							+ df.format(detalheMetaCalculada.getCalculo())
 							+ "\"";
 					cria.escreveFile(str, linha);
@@ -78,12 +84,13 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalhePar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() + "\";\""
-							+ element.getTitulo().getIsbn() + "\";\"Meta Par\";\""
-							+ detalheMetaCalculada.getCurso() + "\";\""
-							+ detalheMetaCalculada.getDisciplina() + "\";\""
+					linha = "\"" + element.getTitulo().getNome() +under
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Par\";\""
+							+ detalheMetaCalculada.getCurso() +under
+							+ detalheMetaCalculada.getDisciplina() +under
 							+ detalheMetaCalculada.getTipoBibliografia()
-							+ "\";\""
+							+under
 							+ df.format(detalheMetaCalculada.getCalculo())
 							+ "\"";
 
@@ -114,17 +121,20 @@ public class MetaController {
 			response.flushBuffer();
 		} catch (FileNotFoundException e1) {
 
-			e1.printStackTrace();
+			LOGGER.setLevel(Level.INFO);
+			LOGGER.severe(e1.getMessage());
 		} catch (IOException e) {
 
-			e.printStackTrace();
+			LOGGER.setLevel(Level.INFO);
+			LOGGER.severe(e.getMessage());
 		} finally {
 			try {
 				is.close();
 				file.delete();
 			} catch (IOException e) {
 
-				e.printStackTrace();
+				LOGGER.setLevel(Level.INFO);
+				LOGGER.severe(e.getMessage());
 			}
 		}
 

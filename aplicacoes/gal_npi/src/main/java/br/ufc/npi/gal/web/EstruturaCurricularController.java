@@ -41,6 +41,7 @@ public class EstruturaCurricularController {
 		}
 		modelMap.addAttribute("curso", estruturaCurricular.getCurso());
 		modelMap.addAttribute("estruturaCurricular", estruturaCurricular);
+
 		return "estrutura/editar";
 	}
 	
@@ -105,8 +106,6 @@ public class EstruturaCurricularController {
 			result.rejectValue("anoSemestre", "Repeat.estruturas.anoSemestre","Ano e Semestre já existe para curso");
 			return "estrutura/adicionar";
 		}
-		
-
 		
 		estruturaCurricular.setCurso(curso);
 			
