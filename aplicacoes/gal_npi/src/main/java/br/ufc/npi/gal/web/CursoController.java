@@ -40,7 +40,6 @@ public class CursoController {
 		return "curso/listar";
 	}
 	
-	
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, Model model) {
 		Curso curso = this.cursoService.find(Curso.class, id);
