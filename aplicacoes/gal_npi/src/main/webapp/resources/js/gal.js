@@ -1,5 +1,6 @@
 $( document ).ready(function() {
 
+	
 	$('table').dataTable(
 		{
 			iDisplayLength: 25,
@@ -84,10 +85,55 @@ $( document ).ready(function() {
 	$('#drag-and-drop .sortable-list').sortable({
 		connectWith : '#drag-and-drop .sortable-list'
 	});
+	
+	
+	
+	
 
-		 	
+	$("select#seleciona").change(function() { 
+		var option = $("#seleciona").val();
+		var url = location.pathname; // pega endereço que esta no
+		// navegador
+		url = url.split("/"); // quebra o endeço de acordo com a / (barra)
+		if(option==-1){
+			newUrl = "/"+url[1]+"/meta/listar";
+		}else{
+			newUrl = "/"+url[1]+"/meta/"+(option)+"/listar";
+		}
+
+		
+		$(location).attr("href", newUrl);
+		
+		
+	});
+	
+	$("#seleciona").val($("#idCurso").val());
+
+	$(document).on("click", ".open-AddBookDialog",
+			function() {
+		var id = $(this).data('id');
+		$(".modal-body #id").val(id);
+	});
+	 	
 });
+
 
 function goBack() {
 	window.history.back()
 }
+
+function mascara(o,f){
+    v_obj=o
+    v_fun=f
+    setTimeout("execmascara()",1)
+}
+	
+function execmascara(){
+    v_obj.value=v_fun(v_obj.value)
+}
+
+function soNumeros(v){
+    return v.replace(/\D/g,"")
+}
+
+

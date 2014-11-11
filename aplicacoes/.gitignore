@@ -1,0 +1,15 @@
+importaXlsParaGal/.metadata
+importaXlsParaGal/.settings
+importaXlsParaGal/.classpath
+importaXlsParaGal/.project
+importaXlsParaGal/target
+gal_npi/.metadata
+gal_npi/.settings
+gal_npi/.classpath
+gal_npi/.project
+gal_npi/target
+*.class
+*.jar
+*.war
+*.ear
+*.log
