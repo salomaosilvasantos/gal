@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +68,8 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/{id}/listar", method = RequestMethod.GET)
-	public String listarByCurso(@PathVariable("id") Integer id, ModelMap modelMap, RedirectAttributes redirectAttributes) {
+	public String listarByCurso(@PathVariable("id") Integer id,
+			ModelMap modelMap, RedirectAttributes redirectAttributes) {
 
 		List<Curso> cursos = cursoService.find(Curso.class);
 		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
@@ -81,9 +81,11 @@ public class MetaController {
 		for (ResultadoCalculo resultadoCalculo : resultados) {
 			metasCalculadas = new ArrayList<MetaCalculada>();
 
-			for (MetaCalculada metaCalculada : resultadoCalculo.getMetasCalculadas()) {
+			for (MetaCalculada metaCalculada : resultadoCalculo
+					.getMetasCalculadas()) {
 				boolean flag = false;
-				for (DetalheMetaCalculada detalhePar : metaCalculada.getDetalhePar()) {
+				for (DetalheMetaCalculada detalhePar : metaCalculada
+						.getDetalhePar()) {
 
 					if (detalhePar.getCurso().equals(curso.getNome())) {
 						flag = true;
@@ -92,7 +94,8 @@ public class MetaController {
 					}
 
 				}
-				for (DetalheMetaCalculada detalheImpar : metaCalculada.getDetalheImpar()) {
+				for (DetalheMetaCalculada detalheImpar : metaCalculada
+						.getDetalheImpar()) {
 
 					if (detalheImpar.getCurso().equals(curso.getNome())) {
 						flag = true;
@@ -109,7 +112,8 @@ public class MetaController {
 				}
 			}
 			if (!metasCalculadas.isEmpty()) {
-				resultadosCurso.add(new ResultadoCalculo(resultadoCalculo.getTitulo(), metasCalculadas));
+				resultadosCurso.add(new ResultadoCalculo(resultadoCalculo
+						.getTitulo(), metasCalculadas));
 			}
 
 		}
@@ -123,7 +127,8 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/{id}/detalhe/{meta}", method = RequestMethod.GET)
-	public String tituloByDetalhe(@PathVariable("id") Integer id, @PathVariable("meta") String meta, ModelMap modelMap,
+	public String tituloByDetalhe(@PathVariable("id") Integer id,
+			@PathVariable("meta") String meta, ModelMap modelMap,
 			RedirectAttributes redirectAttributes) {
 		Titulo titulo;
 		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
@@ -131,9 +136,11 @@ public class MetaController {
 
 			if (resultadoCalculo.getTitulo().getId().equals(id)) {
 
-				for (MetaCalculada metaCalculada : resultadoCalculo.getMetasCalculadas()) {
+				for (MetaCalculada metaCalculada : resultadoCalculo
+						.getMetasCalculadas()) {
 
-					if (metaCalculada.getNome().trim().equals(meta) && metaCalculada.getCalculo() > 0.1) {
+					if (metaCalculada.getNome().trim().equals(meta)
+							&& metaCalculada.getCalculo() > 0.1) {
 						titulo = this.tituloService.find(Titulo.class, id);
 						modelMap.addAttribute("titulo", titulo);
 						modelMap.addAttribute("metaCalculada", metaCalculada);
@@ -147,7 +154,8 @@ public class MetaController {
 			}
 
 		}
-		redirectAttributes.addFlashAttribute("info", "Esse titulo não possui meta.");
+		redirectAttributes.addFlashAttribute("info",
+				"Esse titulo não possui meta.");
 
 		return "redirect:/meta/listar";
 
@@ -161,8 +169,8 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/configurar", method = RequestMethod.POST)
-	public String configurar(@Valid MetaForm metaForm, BindingResult result, ModelMap modelMap,
-			RedirectAttributes redirectAttributes) {
+	public String configurar(@Valid MetaForm metaForm, BindingResult result,
+			ModelMap modelMap, RedirectAttributes redirectAttributes) {
 
 		if (result.hasErrors()) {
 			return "meta/configurar";
@@ -173,13 +181,15 @@ public class MetaController {
 			} catch (Exception e) {
 				modelMap.addAttribute("metas", metaForm.getMetas());
 				redirectAttributes
-						.addFlashAttribute("error", "Já existe uma meta com esse nome. Meta não configurada.");
+						.addFlashAttribute("error",
+								"Já existe uma meta com esse nome. Meta não configurada.");
 				return "redirect:/meta/configurar";
 
 			}
 
 		}
-		redirectAttributes.addFlashAttribute("info", "Meta configurada com sucesso.");
+		redirectAttributes.addFlashAttribute("info",
+				"Meta configurada com sucesso.");
 		return "redirect:/meta/listar";
 	}
 
@@ -191,50 +201,69 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/downloadMetaDetalhada/{meta}", method = RequestMethod.GET)
-	public void downloadMetaDetalhada(ModelMap modelMap, HttpServletResponse response, HttpSession session,
-			@PathVariable("meta") String meta) {
-		String csvFileName = "metaDetalhada.csv";
+	public String downloadMetaDetalhada(ModelMap modelMap,
+			RedirectAttributes redirectAttribute, HttpServletResponse response,
+			HttpSession session, @PathVariable("meta") String meta) {
+		String csvFileName = "metaDetalhada_"+meta+".csv";
 		InputStream is = null;
 		File file = null;
 		try {
 			file = criaRelatorioMetaDetalhado(meta);
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			modelMap.addAttribute("metas", metaService.find(Meta.class));
+			redirectAttribute.addFlashAttribute("error",
+					"Erro ao realizar Download. "+ e2.getMessage());
+			return "redirect:/meta/downloadMetaDetalhada";
+			
 		}
 		try {
 
 			is = new FileInputStream(file);
 			response.setContentType("text/csv");
 			String headerKey = "Content-Disposition";
-			String headerValue = String.format("attachment; filename=\"%s\"", csvFileName);
+			String headerValue = String.format("attachment; filename=\"%s\"",
+					csvFileName);
 			response.setHeader(headerKey, headerValue);
 			IOUtils.copy(is, response.getOutputStream());
 			response.flushBuffer();
 		} catch (FileNotFoundException e1) {
-
-			e1.printStackTrace();
+			modelMap.addAttribute("metas", metaService.find(Meta.class));
+			redirectAttribute.addFlashAttribute("error",
+					"Erro ao realizar Download. "+ e1.getMessage());
+			return "redirect:/meta/downloadMetaDetalhada";
+			
 		} catch (IOException e) {
-
-			e.printStackTrace();
+			modelMap.addAttribute("metas", metaService.find(Meta.class));
+			redirectAttribute.addFlashAttribute("error",
+					"Erro ao realizar Download. "+ e.getMessage());
+			return "redirect:/meta/downloadMetaDetalhada";
+			
 		} finally {
 			try {
 				is.close();
 				file.delete();
 			} catch (IOException e) {
-
-				e.printStackTrace();
+				modelMap.addAttribute("metas", metaService.find(Meta.class));
+				redirectAttribute.addFlashAttribute("error",
+						"Erro ao realizar Download. "+ e.getMessage());
+				return "redirect:/meta/downloadMetaDetalhada";
+				
 			}
 		}
+		redirectAttribute.addFlashAttribute("info",
+				"Download efetuado com sucesso.");
+		modelMap.addAttribute("metas", metaService.find(Meta.class));
+		return "meta/downloadMetaDetalhada";
 
 	}
 
 	public File criaRelatorioMetaDetalhado(String meta) throws IOException {
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
-		BufferedWriter str = cria.abreFile("metaDetalhada_"+meta+".csv");
+		BufferedWriter str = cria.abreFile("metaDetalhada_" + meta + ".csv");
 		DecimalFormat df = new DecimalFormat("#,###.0");
 		String linha = new String();
-		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;" + meta;
+		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;"
+				+ meta;
 		cria.escreveFile(str, linha);
 		List<DetalheMetaCalculada> metacalculada;
 		List<ResultadoCalculo> resultados = downloadMetaDetalhadaByMeta(meta);
@@ -243,11 +272,15 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalheImpar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() + "\";\"" + element.getTitulo().getIsbn()
-							+ "\";\"Meta Impar\";\"" + detalheMetaCalculada.getCurso() + "\";\""
+					linha = "\"" + element.getTitulo().getNome() + "\";\""
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Impar\";\""
+							+ detalheMetaCalculada.getCurso() + "\";\""
 							+ detalheMetaCalculada.getDisciplina() + "\";\""
-							+ detalheMetaCalculada.getTipoBibliografia() + "\";\""
-							+ df.format(detalheMetaCalculada.getCalculo()) + "\"";
+							+ detalheMetaCalculada.getTipoBibliografia()
+							+ "\";\""
+							+ df.format(detalheMetaCalculada.getCalculo())
+							+ "\"";
 					cria.escreveFile(str, linha);
 				}
 			}
@@ -256,11 +289,15 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalhePar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() + "\";\"" + element.getTitulo().getIsbn()
-							+ "\";\"Meta Par\";\"" + detalheMetaCalculada.getCurso() + "\";\""
+					linha = "\"" + element.getTitulo().getNome() + "\";\""
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Par\";\""
+							+ detalheMetaCalculada.getCurso() + "\";\""
 							+ detalheMetaCalculada.getDisciplina() + "\";\""
-							+ detalheMetaCalculada.getTipoBibliografia() + "\";\""
-							+ df.format(detalheMetaCalculada.getCalculo()) + "\"";
+							+ detalheMetaCalculada.getTipoBibliografia()
+							+ "\";\""
+							+ df.format(detalheMetaCalculada.getCalculo())
+							+ "\"";
 
 					cria.escreveFile(str, linha);
 				}
@@ -276,10 +313,12 @@ public class MetaController {
 
 		for (ResultadoCalculo resultadoCalculo : calculo.gerarCalculo()) {
 
-			for (MetaCalculada metaCalculada : resultadoCalculo.getMetasCalculadas()) {
+			for (MetaCalculada metaCalculada : resultadoCalculo
+					.getMetasCalculadas()) {
 				if (metaCalculada.getNome().trim().equals(nomeMeta)) {
 
-					resultados.add(new ResultadoCalculo(resultadoCalculo.getTitulo(), metaCalculada));
+					resultados.add(new ResultadoCalculo(resultadoCalculo
+							.getTitulo(), metaCalculada));
 					break;
 				}
 
