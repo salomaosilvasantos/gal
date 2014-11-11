@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,7 +202,7 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/downloadMetaDetalhada/{meta}", method = RequestMethod.GET)
-	public String downloadMetaDetalhada(ModelMap modelMap,
+	public void downloadMetaDetalhada(ModelMap modelMap,
 			RedirectAttributes redirectAttribute, HttpServletResponse response,
 			HttpSession session, @PathVariable("meta") String meta) {
 		String csvFileName = "metaDetalhada_"+meta+".csv";
@@ -210,10 +211,8 @@ public class MetaController {
 		try {
 			file = criaRelatorioMetaDetalhado(meta);
 		} catch (IOException e2) {
-			modelMap.addAttribute("metas", metaService.find(Meta.class));
-			redirectAttribute.addFlashAttribute("error",
-					"Erro ao realizar Download. "+ e2.getMessage());
-			return "redirect:/meta/downloadMetaDetalhada";
+								
+			 e2.printStackTrace();
 			
 		}
 		try {
@@ -224,36 +223,27 @@ public class MetaController {
 			String headerValue = String.format("attachment; filename=\"%s\"",
 					csvFileName);
 			response.setHeader(headerKey, headerValue);
-			IOUtils.copy(is, response.getOutputStream());
-			response.flushBuffer();
+			OutputStream out = response.getOutputStream();
+			IOUtils.copy(is, out);
+			out.flush();;
+			out.close();
 		} catch (FileNotFoundException e1) {
-			modelMap.addAttribute("metas", metaService.find(Meta.class));
-			redirectAttribute.addFlashAttribute("error",
-					"Erro ao realizar Download. "+ e1.getMessage());
-			return "redirect:/meta/downloadMetaDetalhada";
+			e1.printStackTrace();
 			
 		} catch (IOException e) {
-			modelMap.addAttribute("metas", metaService.find(Meta.class));
-			redirectAttribute.addFlashAttribute("error",
-					"Erro ao realizar Download. "+ e.getMessage());
-			return "redirect:/meta/downloadMetaDetalhada";
+			e.printStackTrace();
 			
 		} finally {
 			try {
 				is.close();
 				file.delete();
 			} catch (IOException e) {
-				modelMap.addAttribute("metas", metaService.find(Meta.class));
-				redirectAttribute.addFlashAttribute("error",
-						"Erro ao realizar Download. "+ e.getMessage());
-				return "redirect:/meta/downloadMetaDetalhada";
+				e.printStackTrace();
 				
 			}
 		}
-		redirectAttribute.addFlashAttribute("info",
-				"Download efetuado com sucesso.");
-		modelMap.addAttribute("metas", metaService.find(Meta.class));
-		return "meta/downloadMetaDetalhada";
+		
+		
 
 	}
 
