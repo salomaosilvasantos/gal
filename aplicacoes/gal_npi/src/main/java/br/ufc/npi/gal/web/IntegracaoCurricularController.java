@@ -53,20 +53,16 @@ public class IntegracaoCurricularController {
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
 	public String adicionar(String disciplina, Integer quantidadeAlunos, Integer semestreOferta, Integer estruturaCurricular, final RedirectAttributes redirectAttributes) {
 		
+		Disciplina disciplinaBD = disciplinaService.getDisciplinaByCodigo(disciplina);
+		EstruturaCurricular estruturaBD = estruturaService.find(EstruturaCurricular.class, estruturaCurricular);
+		List<IntegracaoCurricular> integracaoList = estruturaBD.getCurriculos();
+		
+		
 		if(semestreOferta == null || semestreOferta <= 0 || semestreOferta > 10){
 			redirectAttributes.addFlashAttribute("error",
 					"Semestre de oferta inválido");
 			return "redirect:/curso/listar";
 		}
-		
-		
-		IntegracaoCurricular integracao =  new IntegracaoCurricular();
-		Disciplina disciplinaBD;
-		EstruturaCurricular estruturaBD;
-		disciplinaBD = disciplinaService.getDisciplinaByCodigo(disciplina);
-		estruturaBD = estruturaService.find(EstruturaCurricular.class, estruturaCurricular);
-		List<IntegracaoCurricular> integracaoList = estruturaBD.getCurriculos();
-		
 		
 		if(disciplinaBD == null){
 			redirectAttributes.addFlashAttribute("error",
@@ -82,6 +78,7 @@ public class IntegracaoCurricularController {
 			}
 		}		
 		
+		IntegracaoCurricular integracao = new IntegracaoCurricular();
 		integracao.setDisciplina(disciplinaBD);
 		integracao.setEstruturaCurricular(estruturaBD);
 		
