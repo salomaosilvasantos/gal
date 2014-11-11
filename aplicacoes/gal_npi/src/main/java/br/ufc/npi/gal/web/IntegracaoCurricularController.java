@@ -61,10 +61,9 @@ public class IntegracaoCurricularController {
 		
 		
 		IntegracaoCurricular integracao =  new IntegracaoCurricular();
-		Disciplina disciplinaBD;
-		EstruturaCurricular estruturaBD;
-		disciplinaBD = disciplinaService.getDisciplinaByCodigo(disciplina);
-		estruturaBD = estruturaService.find(EstruturaCurricular.class, estruturaCurricular);
+		
+		Disciplina disciplinaBD = disciplinaService.getDisciplinaByCodigo(disciplina);
+		EstruturaCurricular estruturaBD = estruturaService.find(EstruturaCurricular.class, estruturaCurricular);
 		List<IntegracaoCurricular> integracaoList = estruturaBD.getCurriculos();
 		
 		

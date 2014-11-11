@@ -53,10 +53,6 @@ public class MetaController {
 	@Inject
 	private MetaService metaService;
 
-	public MetaController() {
-		super();
-
-	}
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
@@ -131,7 +127,7 @@ public class MetaController {
 	public String tituloByDetalhe(@PathVariable("id") Integer id,
 			@PathVariable("meta") String meta, ModelMap modelMap,
 			RedirectAttributes redirectAttributes) {
-		Titulo titulo;
+		
 		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
 		for (ResultadoCalculo resultadoCalculo : resultados) {
 
@@ -142,8 +138,8 @@ public class MetaController {
 
 					if (metaCalculada.getNome().trim().equals(meta)
 							&& metaCalculada.getCalculo() > 0.1) {
-						titulo = this.tituloService.find(Titulo.class, id);
-						modelMap.addAttribute("titulo", titulo);
+						
+						modelMap.addAttribute("titulo", this.tituloService.find(Titulo.class, id));
 						modelMap.addAttribute("metaCalculada", metaCalculada);
 
 						return "meta/detalhe";
@@ -251,7 +247,7 @@ public class MetaController {
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
 		BufferedWriter str = cria.abreFile("metaDetalhada_" + meta + ".csv");
 		DecimalFormat df = new DecimalFormat("#,###.0");
-		String linha = new String();
+		String linha;
 		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;"
 				+ meta;
 		cria.escreveFile(str, linha);

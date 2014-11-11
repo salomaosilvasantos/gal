@@ -38,14 +38,15 @@ public class CalculadorMeta {
 						detalheMeta.setCurriculo(integracaoCurricular.getEstruturaCurricular().getAnoSemestre());
 						detalheMeta.setCurso(integracaoCurricular.getEstruturaCurricular().getCurso().getNome());
 
-						double calculo;
+						
 						if (BIBLIOGRAFIA_TIPO_COMPLEMENTAR.equals(bibliografia.getTipoBibliografia())) {
-							calculo = meta.getIndiceCalculoComplementar();
+							detalheMeta.setCalculo(meta.getIndiceCalculoComplementar());
+							
 						} else {
-							calculo = (integracaoCurricular.getQuantidadeAlunos() / meta.getIndiceCalculoBasica());
+							detalheMeta.setCalculo(integracaoCurricular.getQuantidadeAlunos() / meta.getIndiceCalculoBasica());
 						}
 
-						detalheMeta.setCalculo(calculo);
+						
 
 						if (integracaoCurricular.getSemestreOferta() % 2 == 0) {
 
