@@ -69,25 +69,8 @@ public class LerXls {
 		isbn = isbn.replaceAll("(v1)", "");
 		isbn = isbn.replaceAll("(v2)", "");
 		isbn = isbn.replaceAll("\\s+", "");
-//		if (isbn.length()>13){
-//			System.out.println(isbn.length()+" : "+isbn);
-//			for (int i = 0; i < isbn.length(); i++) {
-//				
-//				if (isbn.charAt(0) != '9') {
-////					System.out.println(isbn.length()+" : "+isbn);
-//					isbn = isbn.substring(1);
-//					//System.out.println(isbn.length()+" : "+isbn);
-//				}
-//				else {
-//					int tamanhosPassando= isbn.length()-13;
-//					isbn = isbn.substring(0,isbn.length()-tamanhosPassando);
-//					break;
-//					
-//				}
-//				
-//			}
-//		}
-		System.out.println(isbn.length()+" : "+isbn);
+		isbn = isbn.replaceAll(" ", "");
+		//System.out.println(isbn.length()+" : "+isbn);
 		
 		return isbn;
 	}

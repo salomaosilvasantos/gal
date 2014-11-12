@@ -88,30 +88,30 @@ public class CadastroExemplarTituloNoBanco {
 	 */
 	public static String cadastraTituloBanco(TituloExemplarParaCadastroNoBanco novo){
 		
-		
-		Connection connection;
-		
-		String sql = "INSERT INTO titulos (isbn, nome_titulo, tipo_titulo) VALUES (?, ?, ?);";
-		int id_t = retornaIdTituloBanco(novo.isbn);
-		if(id_t<0){
-			//try {
+		if (!novo.isbn.isEmpty()){
+			Connection connection;
+			String sql = "INSERT INTO titulos (isbn, nome_titulo, tipo_titulo) VALUES (?, ?, ?);";
+			int id_t = retornaIdTituloBanco(novo.isbn);
+			if(id_t<0){
 				try {
-					connection = ConexaoBanco.AbrirConexao();
-					PreparedStatement pstm = connection.prepareStatement(sql);
-					pstm.setString(1, novo.isbn);
-					pstm.setString(2, novo.nomeTitulo);
-					pstm.setString(3, "Físico");
-					pstm.executeUpdate();
-					pstm.close();
-					connection.close();
-				} catch (SQLException e) {
-				return "Isbn "+novo.isbn+" não cadastrado: "+e.getMessage();
-				} catch (Exception e) {
+						connection = ConexaoBanco.AbrirConexao();
+						PreparedStatement pstm = connection.prepareStatement(sql);
+						pstm.setString(1, novo.isbn);
+						pstm.setString(2, novo.nomeTitulo);
+						pstm.setString(3, "Físico");
+						pstm.executeUpdate();
+						pstm.close();
+						connection.close();
+					} catch (SQLException e) {
 					return "Isbn "+novo.isbn+" não cadastrado: "+e.getMessage();
-				}
-				return "Isbn "+novo.isbn+" cadastrado com sucesso.";
-		}
-		return "Isbn "+novo.isbn+" já cadastrado";
+					} catch (Exception e) {
+						return "Isbn "+novo.isbn+" não cadastrado: "+e.getMessage();
+					}
+					return "Isbn "+novo.isbn+" cadastrado com sucesso.";
+			}
+			return "Isbn "+novo.isbn+" já cadastrado";
+		} else return "ISBN em branco";
+		
 		
 	}
 	
@@ -171,6 +171,12 @@ public class CadastroExemplarTituloNoBanco {
 	
 					String linha = cadastraExemplaresBanco(id_t,tituloExemplaParaCadastro.get(i).codExemplares.get(j));
 					arquivo.escreveCsvFile(Str, (j+1)+": "+tituloExemplaParaCadastro.get(i).codExemplares.get(j)+": "+linha);
+				}
+			}
+			else {
+				arquivo.escreveCsvFile(Str, "Exemplares não cadastrado do isbn: "+tituloExemplaParaCadastro.get(i).isbn);
+				for (int j = 0; j < tituloExemplaParaCadastro.get(i).codExemplares.size(); j++) {
+					arquivo.escreveCsvFile(Str, (j+1)+": "+tituloExemplaParaCadastro.get(i).codExemplares.get(j)+": exemplar não cadatrado");
 				}
 			}
 			
