@@ -26,27 +26,27 @@ public class CriaArquivoCsvETxt {
 
 	public BufferedWriter abreFile(String nomeArquivo) throws UnsupportedEncodingException, FileNotFoundException {
 		// Criação de um buffer para a escrita em uma stream
-		BufferedWriter StrW = null;
+		BufferedWriter bufferWrite = null;
 	
 			file = new File(nomeArquivo);
-			StrW = new BufferedWriter(new OutputStreamWriter(
+			bufferWrite = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream(file), "Unicode"));
 
-			return StrW;
+			return bufferWrite;
 
 	}
 
-	public void fechaFile(BufferedWriter bufferFile) throws IOException {
+	public void fechaFile(BufferedWriter bufferWrite) throws IOException {
 		// Fechamos o buffer
 		
-			bufferFile.close();
+			bufferWrite.close();
 		
 
 	}
 
-	public void escreveFile(BufferedWriter bufferFile, String linha) throws IOException {
+	public void escreveFile(BufferedWriter bufferWrite, String linha) throws IOException {
 		// Escrita dos dados da tabela
 		
-			bufferFile.write(linha + "\n");
+			bufferWrite.write(linha + "\n");
 	}
 }

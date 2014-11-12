@@ -12,7 +12,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
@@ -198,15 +197,12 @@ public class MetaController {
 
 	@RequestMapping(value = "/downloadMetaDetalhada/{meta}", method = RequestMethod.GET)
 	public String downloadMetaDetalhada(ModelMap modelMap,
-			RedirectAttributes redirectAttribute, HttpServletResponse response,
-			HttpSession session, @PathVariable("meta") String meta) {
+			RedirectAttributes redirectAttribute, HttpServletResponse response, @PathVariable("meta") String meta) {
 		String csvFileName = "metaDetalhada_" + meta + ".csv";
 		InputStream is = null;
 		File file = null;
 		try {
 			file = criaRelatorioMetaDetalhado(meta);
-
-			// copia
 
 			is = new FileInputStream(file);
 			response.setContentType("text/csv");
@@ -224,8 +220,7 @@ public class MetaController {
 			file.delete();
 		} catch (Exception e) {
 
-			redirectAttribute.addFlashAttribute("error",
-					"Já existe uma meta com esse nome. Meta não configurada.");
+			redirectAttribute.addFlashAttribute("error", "Problemas ao realizar download. Erro: "+ e.getMessage());
 			modelMap.addAttribute("metas", metaService.find(Meta.class));
 			return "redirect:/meta/downloadMetaDetalhada";
 		}
@@ -239,9 +234,7 @@ public class MetaController {
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
 		BufferedWriter str = cria.abreFile("metaDetalhada_" + meta + ".csv");
 		DecimalFormat df = new DecimalFormat("#,###.0");
-		String linha;
-		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;"
-				+ meta;
+		String linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;"+ meta;
 		cria.escreveFile(str, linha);
 		List<DetalheMetaCalculada> metacalculada;
 		List<ResultadoCalculo> resultados = downloadMetaDetalhadaByMeta(meta);

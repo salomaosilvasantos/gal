@@ -17,30 +17,33 @@ import br.ufc.npi.gal.service.TituloService;
 @Controller
 @RequestMapping("titulo")
 public class TituloController {
-	
+
 	@Inject
 	private TituloService tituloService;
-	
+
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
 		modelMap.addAttribute("titulos", this.tituloService.find(Titulo.class));
 		return "titulo/listar";
+
 	}
-	
+
 	@RequestMapping(value = "/adicionar", method = RequestMethod.GET)
-	public String adicionar(ModelMap modelMap){
+	public String adicionar(ModelMap modelMap) {
 		modelMap.addAttribute("titulo", new Titulo());
 		return "titulo/adicionar";
 	}
-	
-	@RequestMapping(value="/adicionar",method = RequestMethod.POST)
-	public String adicionar(@Valid Titulo titulo, BindingResult result, RedirectAttributes redirectAttributes) {
+
+	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
+	public String adicionar(@Valid Titulo titulo, BindingResult result,
+			RedirectAttributes redirectAttributes) {
 		if (result.hasErrors()) {
 			return "titulo/adicionar";
 		}
-		
-		if(tituloService.getTituloByIsbn(titulo.getIsbn()) != null) {
-			result.rejectValue("isbn", "Repeat.titulo.isbn", "Já existe um título com esse isbn");
+
+		if (tituloService.getTituloByIsbn(titulo.getIsbn()) != null) {
+			result.rejectValue("isbn", "Repeat.titulo.isbn",
+					"Já existe um título com esse isbn");
 			return "titulo/adicionar";
 		}
 		if (titulo.getNome().trim().isEmpty()) {
@@ -48,17 +51,19 @@ public class TituloController {
 					"Campo obrigatório.");
 			return "titulo/adicionar";
 		}
-		if(tituloService.getTituloByNome(titulo.getNome()) != null) {
-			result.rejectValue("nome", "Repeat.titulo.nome", "Já existe um título com esse nome");
+		if (tituloService.getTituloByNome(titulo.getNome()) != null) {
+			result.rejectValue("nome", "Repeat.titulo.nome",
+					"Já existe um título com esse nome");
 			return "titulo/adicionar";
 		}
-		
+
 		tituloService.save(titulo);
-		redirectAttributes.addFlashAttribute("info", "Título adicionado com sucesso.");
+		redirectAttributes.addFlashAttribute("info",
+				"Título adicionado com sucesso.");
 		return "redirect:/titulo/listar";
-		
+
 	}
-	
+
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
 		Titulo titulo = this.tituloService.find(Titulo.class, id);
@@ -70,35 +75,43 @@ public class TituloController {
 		modelMap.addAttribute("titulo", titulo);
 		return "titulo/editar";
 	}
-	
-	@RequestMapping(value = "/editar", method=RequestMethod.POST)
-	public String atualizar(@Valid Titulo titulo, BindingResult result, RedirectAttributes redirectAttributes){
-		
+
+	@RequestMapping(value = "/editar", method = RequestMethod.POST)
+	public String atualizar(@Valid Titulo titulo, BindingResult result,
+			RedirectAttributes redirectAttributes) {
+
 		if (result.hasErrors()) {
 			return "titulo/editar";
 		}
-		
-		if(tituloService.getOutroTituloByIsbn(titulo.getId(), titulo.getIsbn()) != null) {
-			result.rejectValue("isbn", "Repeat.titulo.isbn", "Já existe um título com esse isbn");
+
+		if (tituloService
+				.getOutroTituloByIsbn(titulo.getId(), titulo.getIsbn()) != null) {
+			result.rejectValue("isbn", "Repeat.titulo.isbn",
+					"Já existe um título com esse isbn");
 			return "titulo/editar";
 		}
-		if(tituloService.getOutroTituloByNome(titulo.getId(), titulo.getNome()) != null) {
-			result.rejectValue("nome", "Repeat.titulo.nome", "Já existe um título com esse nome");
+		if (tituloService
+				.getOutroTituloByNome(titulo.getId(), titulo.getNome()) != null) {
+			result.rejectValue("nome", "Repeat.titulo.nome",
+					"Já existe um título com esse nome");
 			return "titulo/editar";
 		}
-		
+
 		tituloService.update(titulo);
-		redirectAttributes.addFlashAttribute("info", "Título atualizado com sucesso.");
+		redirectAttributes.addFlashAttribute("info",
+				"Título atualizado com sucesso.");
 		return "redirect:/titulo/listar";
-		
+
 	}
-	
+
 	@RequestMapping(value = "/{id}/excluir", method = RequestMethod.GET)
-	public String excluir(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+	public String excluir(@PathVariable("id") Integer id,
+			RedirectAttributes redirectAttributes) {
 		Titulo titulo = tituloService.find(Titulo.class, id);
 		if (titulo != null) {
 			this.tituloService.delete(titulo);
-			redirectAttributes.addFlashAttribute("info", "Título removido com sucesso.");
+			redirectAttributes.addFlashAttribute("info",
+					"Título removido com sucesso.");
 		}
 		return "redirect:/titulo/listar";
 	}

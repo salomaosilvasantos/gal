@@ -1,7 +1,5 @@
 package br.ufc.npi.gal.model;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,25 +9,19 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "meta")
-public class Meta implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class Meta {
 
 	@Id
 	@Column(name = "id_mt")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(unique=true) 
+	@Column(unique = true)
 	private String nome;
 
 	private double indiceCalculoBasica;
 
 	private double indiceCalculoComplementar;
-
 
 	public Integer getId() {
 		return id;

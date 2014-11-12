@@ -199,12 +199,8 @@ public class CadastroExemplarTituloNoBanco {
             try {
             	cadastro.castrataExemplaresTitulos(x.leMatrizRetornaEstruturaTitulo(diretorio.getCanonicalPath()));
 				
-			} catch (HeadlessException e) {
-
-				e.printStackTrace();
-			} catch (IOException e) {
-
-				e.printStackTrace();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Erro ao preencher o banco. Erro: "+ e.getMessage());
 			}
         }
         else

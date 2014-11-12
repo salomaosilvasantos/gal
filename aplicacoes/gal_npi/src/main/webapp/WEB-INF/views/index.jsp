@@ -12,7 +12,7 @@
 	<div id="container">
 
 		<jsp:include page="fragments/header.jsp" />
-		<div style="margin-top: 100px; text-align: center; font-weight: bold;">
+		<div id="informacao">
 			<h3>Seja Bem-Vindo ao Sistema Gestão de Aquisição de Livros
 				(GAL).</h3>
 			<p>

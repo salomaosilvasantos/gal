@@ -1,6 +1,5 @@
 package br.ce.qxa.ufc;
 
-import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class LerXls {
 	public String[][] leXlsRetornaMatriz(String arquivoXls){
 		Workbook workbook;
 		xlsLido=null;
-		try {
+		try{
 			WorkbookSettings configuracao =new WorkbookSettings();
 			configuracao.setEncoding("Cp1252");
 			workbook = Workbook.getWorkbook(new File(arquivoXls),configuracao);
@@ -70,7 +69,7 @@ public class LerXls {
 		isbn = isbn.replaceAll("(v2)", "");
 		isbn = isbn.replaceAll("\\s+", "");
 		isbn = isbn.replaceAll(" ", "");
-		//System.out.println(isbn.length()+" : "+isbn);
+		
 		
 		return isbn;
 	}
@@ -121,16 +120,11 @@ public class LerXls {
             try {
         		x.leMatrizRetornaEstruturaTitulo(diretorio.getCanonicalPath());
 				JOptionPane.showMessageDialog(null, "Voce escolheu o diretório: " + diretorio.getCanonicalPath());
-			} catch (HeadlessException e) {
-			
-				e.printStackTrace();
-			} catch (IOException e) {
-			
-				e.printStackTrace();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Erro ao preencher o banco. Erro: "+ e.getMessage());
 			}
         }
-        else
-            JOptionPane.showMessageDialog(null, "Voce nao selecionou nenhum diretorio."); 
+        else JOptionPane.showMessageDialog(null, "Voce nao selecionou nenhum diretorio."); 
  
 
 

@@ -14,7 +14,7 @@
 	<div id="container" >
 		<jsp:include page="fragments/header.jsp" />
 
-		<div style="margin-top: 100px; text-align: center; font-weight: bold;">
+		<div id="informacao">
 			<p>Atendimento: Sala 1 - Segunda a Quinta - Manhã</p>
 			<p>Contatos:</p>
 			<p>André: andre.luisfs01@gmail.com</p>
