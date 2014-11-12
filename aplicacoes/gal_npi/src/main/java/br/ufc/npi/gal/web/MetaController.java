@@ -48,6 +48,7 @@ public class MetaController {
 	@Inject
 	private CursoService cursoService;
 
+	
 	@Inject
 	private MetaService metaService;
 
@@ -159,7 +160,7 @@ public class MetaController {
 	@RequestMapping(value = "/configurar")
 	public String configurar(ModelMap modelMap) {
 
-		modelMap.addAttribute("metas", metaService.find(Meta.class));
+		modelMap.addAttribute("metas", metaService.getMeta());
 		return "meta/configurar";
 	}
 
@@ -191,7 +192,7 @@ public class MetaController {
 	@RequestMapping(value = "/downloadMetaDetalhada")
 	public String downloadMetaDetalhada(ModelMap modelMap) {
 
-		modelMap.addAttribute("metas", metaService.find(Meta.class));
+		modelMap.addAttribute("metas", metaService.getMeta());
 		return "meta/downloadMetaDetalhada";
 	}
 
@@ -221,7 +222,7 @@ public class MetaController {
 		} catch (Exception e) {
 
 			redirectAttribute.addFlashAttribute("error", "Problemas ao realizar download. Erro: "+ e.getMessage());
-			modelMap.addAttribute("metas", metaService.find(Meta.class));
+			modelMap.addAttribute("metas", metaService.getMeta());
 			return "redirect:/meta/downloadMetaDetalhada";
 		}
 		
