@@ -44,11 +44,7 @@ $( document ).ready(function() {
 	$('div:has(span.error)').find('span.error').css('color', '#a94442');
 	$('div:has(span.error)').find('span.error').parent().parent().addClass('has-error has-feedback');
 	
-	
-	
-
 	$('#txtBusca').fastLiveFilter("#acervo");
-	
 	
 	function getItems(exampleNr) {
 		var columns = [];
@@ -83,17 +79,10 @@ $( document ).ready(function() {
 
 			});
 	
-	
-	
-	
-	$('#drag-and-drop .sortable-list').sortable({
-		connectWith : '#drag-and-drop .sortable-list'
-	});
-	
-	
-	
-	
-
+	 
+	 $('#drag-and-drop .sortable-list').sortable().sortable('option', 'connectWith', '#drag-and-drop .sortable-list');
+	 
+	 
 	$("select#seleciona").change(function() { 
 		var option = $("#seleciona").val();
 		var url = location.pathname; // pega endereço que esta no

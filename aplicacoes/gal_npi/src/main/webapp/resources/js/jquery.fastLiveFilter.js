@@ -52,8 +52,13 @@ jQuery.fn.fastLiveFilter = function(list, options) {
 		return false;
 	}).keydown(function() {
 		clearTimeout(keyTimeout);
-		lis = list.children();
-		len = lis.length;
+		if(lis != list.children()){
+			lis = list.children();
+		}
+		if(len != lis.length){
+			len = lis.length;
+		}
+		
 		keyTimeout = setTimeout(function() {
 			if( input.val() === lastFilter ) return;
 			lastFilter = input.val();
