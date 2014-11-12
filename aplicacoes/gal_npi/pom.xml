@@ -8,6 +8,7 @@
 	<name>gal_npi Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<properties>
+	
 		<!-- Bootbox -->
 		<bootbox.version>4.2.0</bootbox.version>
 
