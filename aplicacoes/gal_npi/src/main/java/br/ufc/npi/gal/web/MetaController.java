@@ -3,7 +3,6 @@ package br.ufc.npi.gal.web;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,7 +51,6 @@ public class MetaController {
 
 	@Inject
 	private MetaService metaService;
-
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)
 	public String listar(ModelMap modelMap) {
@@ -127,7 +125,7 @@ public class MetaController {
 	public String tituloByDetalhe(@PathVariable("id") Integer id,
 			@PathVariable("meta") String meta, ModelMap modelMap,
 			RedirectAttributes redirectAttributes) {
-		
+
 		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
 		for (ResultadoCalculo resultadoCalculo : resultados) {
 
@@ -138,8 +136,9 @@ public class MetaController {
 
 					if (metaCalculada.getNome().trim().equals(meta)
 							&& metaCalculada.getCalculo() > 0.1) {
-						
-						modelMap.addAttribute("titulo", this.tituloService.find(Titulo.class, id));
+
+						modelMap.addAttribute("titulo",
+								this.tituloService.find(Titulo.class, id));
 						modelMap.addAttribute("metaCalculada", metaCalculada);
 
 						return "meta/detalhe";
@@ -198,20 +197,16 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/downloadMetaDetalhada/{meta}", method = RequestMethod.GET)
-	public void downloadMetaDetalhada(ModelMap modelMap,
+	public String downloadMetaDetalhada(ModelMap modelMap,
 			RedirectAttributes redirectAttribute, HttpServletResponse response,
 			HttpSession session, @PathVariable("meta") String meta) {
-		String csvFileName = "metaDetalhada_"+meta+".csv";
+		String csvFileName = "metaDetalhada_" + meta + ".csv";
 		InputStream is = null;
 		File file = null;
 		try {
 			file = criaRelatorioMetaDetalhado(meta);
-		} catch (IOException e2) {
-								
-			 e2.printStackTrace();
-			
-		}
-		try {
+
+			// copia
 
 			is = new FileInputStream(file);
 			response.setContentType("text/csv");
@@ -219,31 +214,28 @@ public class MetaController {
 			String headerValue = String.format("attachment; filename=\"%s\"",
 					csvFileName);
 			response.setHeader(headerKey, headerValue);
+			
 			OutputStream out = response.getOutputStream();
 			IOUtils.copy(is, out);
-			out.flush();;
+			out.flush();
+
 			out.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			
-		} finally {
-			try {
-				is.close();
-				file.delete();
-			} catch (IOException e) {
-				e.printStackTrace();
-				
-			}
+			is.close();
+			file.delete();
+		} catch (Exception e) {
+
+			redirectAttribute.addFlashAttribute("error",
+					"Já existe uma meta com esse nome. Meta não configurada.");
+			modelMap.addAttribute("metas", metaService.find(Meta.class));
+			return "redirect:/meta/downloadMetaDetalhada";
 		}
 		
-		
+		return null;
 
 	}
 
 	public File criaRelatorioMetaDetalhado(String meta) throws IOException {
+	
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
 		BufferedWriter str = cria.abreFile("metaDetalhada_" + meta + ".csv");
 		DecimalFormat df = new DecimalFormat("#,###.0");
