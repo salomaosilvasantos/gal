@@ -22,23 +22,23 @@ public class CriaArquivoCsvETxt {
 
 	public BufferedWriter abreFile(String nomeArquivo) {
 		// Criação de um buffer para a escrita em uma stream
-		BufferedWriter StrW = null;
+		BufferedWriter bufferStream = null;
 		try {
 			file = new File(nomeArquivo);
-			StrW = new BufferedWriter(new OutputStreamWriter(
+			bufferStream = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream(file), "Unicode"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return StrW;
+		return bufferStream;
 
 	}
 
-	public void fechaFile(BufferedWriter bufferFile) {
+	public void fechaFile(BufferedWriter nomeArquivo) {
 		// Fechamos o buffer
 		try {
-			bufferFile.close();
+			nomeArquivo.close();
 		} catch (IOException e) {
 		
 			e.printStackTrace();
@@ -46,10 +46,10 @@ public class CriaArquivoCsvETxt {
 
 	}
 
-	public void escreveFile(BufferedWriter bufferFile, String linha) {
+	public void escreveFile(BufferedWriter nomeArquivo, String linha) {
 		// Escrita dos dados da tabela
 		try {
-			bufferFile.write(linha + "\n");
+			nomeArquivo.write(linha + "\n");
 		} catch (IOException e) {
 
 			e.printStackTrace();

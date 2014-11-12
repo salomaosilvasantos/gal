@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,7 +34,9 @@ import br.ufc.npi.gal.service.TituloService;
 @Controller
 @RequestMapping("meta")
 public class MetaController {
-
+	
+	private static final String SLASH = "\";\"";
+	
 	@Inject
 	private CalculoMetaService calculo;
 
@@ -42,18 +45,18 @@ public class MetaController {
 
 	@Inject
 	private CursoService cursoService;
-
+	
 	public MetaController() {
 		super();
 
 	}
 
 	public File criaRelatorioMetaDetalhado() {
+
 		CriaArquivoCsvETxt cria = new CriaArquivoCsvETxt();
 		BufferedWriter str = cria.abreFile("metaDetalhada.csv");
 		DecimalFormat df = new DecimalFormat("#,###.0");
-		String linha = new String();
-		linha = "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;Meta";
+		String linha =  "Nome do Titulo; Isbn;Semestre;Curso;Disciplina;Tipo de Bibliografia;Meta";
 		cria.escreveFile(str, linha);
 		List<DetalheMetaCalculada> metacalculada;
 		List<ResultadoCalculo> resultados = calculo.gerarCalculo();
@@ -62,12 +65,13 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalheImpar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() + "\";\""
-							+ element.getTitulo().getIsbn() + "\";\"Meta Impar\";\""
-							+ detalheMetaCalculada.getCurso() + "\";\""
-							+ detalheMetaCalculada.getDisciplina() + "\";\""
+					linha = "\"" + element.getTitulo().getNome() +SLASH
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Impar\";\""
+							+ detalheMetaCalculada.getCurso() +SLASH
+							+ detalheMetaCalculada.getDisciplina() +SLASH
 							+ detalheMetaCalculada.getTipoBibliografia()
-							+ "\";\""
+							+SLASH
 							+ df.format(detalheMetaCalculada.getCalculo())
 							+ "\"";
 					cria.escreveFile(str, linha);
@@ -78,12 +82,13 @@ public class MetaController {
 			metacalculada = element.getMetaCalculada().getDetalhePar();
 			if (!metacalculada.isEmpty()) {
 				for (DetalheMetaCalculada detalheMetaCalculada : metacalculada) {
-					linha = "\"" + element.getTitulo().getNome() + "\";\""
-							+ element.getTitulo().getIsbn() + "\";\"Meta Par\";\""
-							+ detalheMetaCalculada.getCurso() + "\";\""
-							+ detalheMetaCalculada.getDisciplina() + "\";\""
+					linha = "\"" + element.getTitulo().getNome() +SLASH
+							+ element.getTitulo().getIsbn()
+							+ "\";\"Meta Par\";\""
+							+ detalheMetaCalculada.getCurso() +SLASH
+							+ detalheMetaCalculada.getDisciplina() +SLASH
 							+ detalheMetaCalculada.getTipoBibliografia()
-							+ "\";\""
+							+SLASH
 							+ df.format(detalheMetaCalculada.getCalculo())
 							+ "\"";
 
@@ -127,7 +132,6 @@ public class MetaController {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	@RequestMapping(value = "/listar", method = RequestMethod.GET)

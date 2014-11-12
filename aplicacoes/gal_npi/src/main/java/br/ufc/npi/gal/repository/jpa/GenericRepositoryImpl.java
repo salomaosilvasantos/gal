@@ -40,9 +40,8 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T>{
 
 	@Override
 	public T find(Class<T> entityClass, Object id) {
-		T result = null;
-		result = em.find(entityClass, id);
-		return result;
+		
+		return em.find(entityClass, id);
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public class IntegracaoCurricularController {
 	
 	@RequestMapping(value = "/{idDisciplina}/{idCurriculo}/excluir", method = RequestMethod.GET)
 	public String excluir(RedirectAttributes redirectAttributes,@PathVariable("idDisciplina") Integer idDisciplina, @PathVariable("idCurriculo") Integer idCurriculo) {
-		IntegracaoCurricular integracao = integracaoService.getIntegracaoByDoisIds(idDisciplina, idCurriculo);
+		IntegracaoCurricular integracao = integracaoService.getIntegracaoByIdDisciplinaIdCurriculo(idDisciplina, idCurriculo);
 		if (integracao != null) {
 			this.integracaoService.delete(integracao);
 			redirectAttributes.addFlashAttribute("info",
@@ -52,7 +52,9 @@ public class IntegracaoCurricularController {
 	
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
 	public String adicionar(String disciplina, Integer quantidadeAlunos, Integer semestreOferta, Integer estruturaCurricular, final RedirectAttributes redirectAttributes) {
-	
+
+		
+
 		Disciplina disciplinaBD = disciplinaService.getDisciplinaByCodigo(disciplina);
 		EstruturaCurricular estruturaBD = estruturaService.find(EstruturaCurricular.class, estruturaCurricular);
 		List<IntegracaoCurricular> integracaoList = estruturaBD.getCurriculos();
@@ -108,7 +110,7 @@ public class IntegracaoCurricularController {
 	@RequestMapping(value = "/{idDisciplina}/{idCurriculo}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("idDisciplina") Integer idDisciplina,@PathVariable("idCurriculo") Integer idCurriculo, ModelMap modelMap) {
 
-		IntegracaoCurricular integracao = this.integracaoService.getIntegracaoByDoisIds(idDisciplina, idCurriculo);
+		IntegracaoCurricular integracao = this.integracaoService.getIntegracaoByIdDisciplinaIdCurriculo(idDisciplina, idCurriculo);
 
 		if (integracao == null) {
 			return "redirect:/curso/listar";
