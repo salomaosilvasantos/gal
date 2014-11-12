@@ -166,7 +166,7 @@ public class DisciplinaController {
 	}
 
 
-	public List<Bibliografia> atualizaOuCriaBibligrafia (String[] listaIdTitulo, List<Bibliografia> bibliografiasAseremModificadas, Disciplina disciplina, String TipoBibliografia){
+	public List<Bibliografia> atualizaOuCriaBibligrafia (String[] listaIdTitulo, List<Bibliografia> bibliografiasAseremModificadas, Disciplina disciplina, String tipoBibliografia){
 		int id_titulo;
 		
 		if(!listaIdTitulo[0].isEmpty()){
@@ -174,8 +174,8 @@ public class DisciplinaController {
 			id_titulo = Integer.parseInt(listaIdTitulo[i]);
 			for (int j = 0; j < bibliografiasAseremModificadas.size(); j++) {
 				if (bibliografiasAseremModificadas.get(j).getTitulo().getId() == id_titulo) {
-					if (!bibliografiasAseremModificadas.get(j).getTipoBibliografia().equals(TipoBibliografia)) {
-						bibliografiasAseremModificadas.get(j).setTipoBibliografia(TipoBibliografia);
+					if (!bibliografiasAseremModificadas.get(j).getTipoBibliografia().equals(tipoBibliografia)) {
+						bibliografiasAseremModificadas.get(j).setTipoBibliografia(tipoBibliografia);
 						bibliografiaService.update(bibliografiasAseremModificadas.get(j));
 						bibliografiasAseremModificadas.remove(bibliografiasAseremModificadas.get(j));
 						listaIdTitulo[i]=null;
@@ -192,7 +192,7 @@ public class DisciplinaController {
 				Bibliografia biblio = new Bibliografia();
 				biblio.setDisciplina(disciplina);
 				biblio.setTitulo(tituloService.find(Titulo.class, id_titulo));
-				biblio.setTipoBibliografia(TipoBibliografia);
+				biblio.setTipoBibliografia(tipoBibliografia);
 				bibliografiaService.save(biblio);
 			}
 		}
@@ -202,9 +202,7 @@ public class DisciplinaController {
 	
 	@RequestMapping(value = "/vincular")
 	public String vincular(@RequestParam("basica") String basica, @RequestParam("complementar") String complementar, @RequestParam("idDiciplina") Integer idDiciplina) {
-		System.out.println(basica);
-		System.out.println("Complementar"+complementar);
-		
+
 		String[] basicaArray = basica.split(",");
 		
 		String[] complementarArray = complementar.split(",");

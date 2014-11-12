@@ -12,7 +12,7 @@
 </head>
 
 <body>
-	<div id="container" style="width: 1000px; margin: 0 auto;">
+	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
 
 		<form:form modelAttribute="disciplina" id="reg" servletRelativeAction="/disciplina/editar" method="post" role="form" class="form-horizontal">

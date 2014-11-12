@@ -5,9 +5,11 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import br.ufc.npi.gal.model.Meta;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculadorMeta;
 import br.ufc.npi.gal.service.CalculoMetaService;
+import br.ufc.npi.gal.service.MetaService;
 import br.ufc.npi.gal.service.ResultadoCalculo;
 import br.ufc.npi.gal.service.TituloService;
 
@@ -19,11 +21,11 @@ public class CalculoMetaServiceImpl implements CalculoMetaService {
 	@Inject
 	private CalculadorMeta calculadorMeta;
 
+	@Inject
+	private MetaService metaService;
+
 	public List<ResultadoCalculo> gerarCalculo() {
-
-		return calculadorMeta.calcular(tituloService.find(Titulo.class));
-
+		return calculadorMeta.calcular(tituloService.find(Titulo.class),metaService.getMeta());
 	}
-	
 
 }
