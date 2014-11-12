@@ -62,14 +62,9 @@
         <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
 
     </beans>
-
+	
     <beans profile="jpa">
-        <!--
-            Loads JPA beans
-            Will automatically be transactional due to @Transactional.
-            EntityManager will be auto-injected due to @PersistenceContext.
-            PersistenceExceptions will be auto-translated due to @Repository.
-        -->
+        
         <context:component-scan base-package="br.ufc.npi.gal.repository.jpa"/>
     </beans>
 

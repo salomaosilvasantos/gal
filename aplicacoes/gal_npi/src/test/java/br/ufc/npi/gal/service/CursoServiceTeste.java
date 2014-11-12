@@ -1,15 +1,17 @@
 package br.ufc.npi.gal.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.ufc.npi.gal.model.Curso;
 
@@ -23,6 +25,7 @@ public class CursoServiceTeste {
 
 	@Test
 	public void buscarCursoPorId() {
+
 		Curso curso = cursoService.find(Curso.class, 1);
 		assertEquals("Sistemas de Informação", curso.getNome());
 		assertEquals("SI", curso.getSigla());
@@ -35,10 +38,10 @@ public class CursoServiceTeste {
 		curso.setNome("Design Digital");
 		curso.setSigla("DD");
 		cursoService.save(curso);
+
 		assertTrue(cursoService.find(Curso.class).contains(curso));
 		cursoService.delete(curso);
 	}
-	
 
 	@Test
 	@Transactional
@@ -46,10 +49,10 @@ public class CursoServiceTeste {
 		Curso curso = cursoService.find(Curso.class, 1);
 		String old = curso.getNome();
 		curso.setNome(old + "2");
-		cursoService.update(curso);		
-		
-		curso = cursoService.find(Curso.class, 1);		
-		assertEquals(curso.getNome(),"Sistemas de Informação2");
+		cursoService.update(curso);
+
+		curso = cursoService.find(Curso.class, 1);
+		assertEquals(curso.getNome(), "Sistemas de Informação2");
 
 		curso.setNome(old);
 		cursoService.update(curso);
