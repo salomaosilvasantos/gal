@@ -36,6 +36,23 @@ public class CursoTeste {
 		Assert.assertEquals(violacao.getMessage(), "Campo obrigatório");
 		Assert.assertEquals(violacao.getPropertyPath().toString(), "codigo");
 	}
+	
+	@Test
+	public void testeCodigoNegativo() {
+		Curso curso = new Curso();
+		curso.setCodigo(-1);
+		curso.setNome("Eng de Software");
+		curso.setSigla("ES");
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Curso>> constraintViolations = validator
+				.validate(curso);
+
+		Assert.assertEquals(1, constraintViolations.size());
+		ConstraintViolation<Curso> violacao = constraintViolations.iterator()
+				.next();
+		
+		Assert.assertEquals(violacao.getPropertyPath().toString(), "codigo");
+	}	
 
 	@Test
 	public void testeNomeVazio() {
@@ -56,7 +73,25 @@ public class CursoTeste {
 		Assert.assertEquals(violacao.getPropertyPath().toString(), "nome");
 
 	}
-	
+	@Test
+	public void testeNomeNulo() {
+		Curso curso = new Curso();
+		curso.setCodigo(1234);
+		curso.setNome(null);
+		curso.setSigla("SIS");
+
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Curso>> constraintViolations = validator
+				.validate(curso);
+
+		Assert.assertEquals(1, constraintViolations.size());
+		ConstraintViolation<Curso> violacao = constraintViolations.iterator()
+				.next();
+
+		Assert.assertEquals(violacao.getMessage(), "Campo obrigatório");
+		Assert.assertEquals(violacao.getPropertyPath().toString(), "nome");
+
+	}
 	@Test
 	public void testeNomeComEspacos() {
 		Curso curso = new Curso();
@@ -161,7 +196,25 @@ public class CursoTeste {
 
 	}
 
-	
+	@Test
+	public void testeSiglaComValorNulo() {
+		Curso curso = new Curso();
+		curso.setCodigo(403);
+		curso.setNome("Eng de software");
+		curso.setSigla(null);
+
+		Validator validator = createValidator();
+
+		Set<ConstraintViolation<Curso>> constraintViolations = validator
+				.validate(curso);
+
+		Assert.assertEquals(1, constraintViolations.size());
+		ConstraintViolation<Curso> violacao = constraintViolations.iterator()
+				.next();
+		
+		Assert.assertEquals(violacao.getPropertyPath().toString(), "sigla");
+
+	}
 
 	@Test
 	public void testeSiglaCom_4_Caracteres() {

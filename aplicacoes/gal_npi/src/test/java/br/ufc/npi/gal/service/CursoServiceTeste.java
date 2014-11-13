@@ -27,12 +27,21 @@ public class CursoServiceTeste {
 	public void buscarCursoPorId() {
 
 		Curso curso = cursoService.find(Curso.class, 1);
+		
 		assertEquals("Sistemas de Informação", curso.getNome());
 		assertEquals("SI", curso.getSigla());
 	}
+	
+	@Test(expected=NullPointerException.class)
+	public void buscarCursoPorIdNaoExistente() {
+
+		Curso curso = cursoService.find(Curso.class, 6);
+		assertEquals("Sistemas de Informação", curso.getNome());
+		
+	}
 
 	@Test
-	public void inserirCurso() {
+	public void inserirNovoCurso() {
 		Curso curso = new Curso();
 		curso.setCodigo(406);
 		curso.setNome("Design Digital");
@@ -43,6 +52,7 @@ public class CursoServiceTeste {
 		cursoService.delete(curso);
 	}
 
+	
 	@Test
 	@Transactional
 	public void atualizaCurso() {
@@ -69,5 +79,6 @@ public class CursoServiceTeste {
 		cursoService.delete(curso);
 		assertFalse(cursoService.find(Curso.class).contains(curso));
 	}
+	
 
 }

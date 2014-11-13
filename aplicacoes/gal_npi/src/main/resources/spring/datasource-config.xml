@@ -32,6 +32,7 @@
 
     
     <!-- Utilar apenas na primeira vez, para criar banco de teste -->
+    
     <!-- <jdbc:initialize-database data-source="dataSource">
         <jdbc:script location="${jdbc.initLocation}"/>
         <jdbc:script location="${jdbc.dataLocation}"/>

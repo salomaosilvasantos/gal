@@ -36,6 +36,41 @@ public class TituloTeste {
 		Assert.assertEquals(violacao.getMessage(), "Campo obrigatório");
 		Assert.assertEquals(violacao.getPropertyPath().toString(), "nome");
 	}
+	
+	@Test
+	public void testeNomeNulo() {
+		Titulo titulo = new Titulo();
+		titulo.setNome(null);
+		titulo.setIsbn("1234567890");
+		titulo.setTipo("TIPO");
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Titulo>> constraintViolations = validator
+				.validate(titulo);
+
+		Assert.assertEquals(1, constraintViolations.size());
+		ConstraintViolation<Titulo> violacao = constraintViolations.iterator()
+				.next();
+		
+		Assert.assertEquals(violacao.getPropertyPath().toString(), "nome");
+	}
+		
+	@Test
+	public void testeISBNNulo() {
+		Titulo titulo = new Titulo();
+		titulo.setNome("Nome");
+		titulo.setIsbn(null);
+		titulo.setTipo("TIPO");
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Titulo>> constraintViolations = validator
+				.validate(titulo);
+
+		Assert.assertEquals(1, constraintViolations.size());
+
+		ConstraintViolation<Titulo> violacao = constraintViolations.iterator()
+				.next();
+
+		Assert.assertEquals(violacao.getPropertyPath().toString(), "isbn");
+	}
 
 	@Test
 	public void testeISBN10CaracteresComEspaco() {
@@ -243,6 +278,23 @@ public class TituloTeste {
 				.next();
 
 		Assert.assertEquals(violacao.getMessage(), "Campo obrigatório");
+		Assert.assertEquals(violacao.getPropertyPath().toString(), "tipo");
+	}
+	
+	@Test
+	public void testeTipoNulo() {
+		Titulo titulo = new Titulo();
+		titulo.setNome("Nome");
+		titulo.setIsbn("1234567890");
+		titulo.setTipo(null);
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Titulo>> constraintViolations = validator
+				.validate(titulo);
+
+		Assert.assertEquals(1, constraintViolations.size());
+		ConstraintViolation<Titulo> violacao = constraintViolations.iterator()
+				.next();
+		
 		Assert.assertEquals(violacao.getPropertyPath().toString(), "tipo");
 	}
 

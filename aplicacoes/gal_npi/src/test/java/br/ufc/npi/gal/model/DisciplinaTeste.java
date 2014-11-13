@@ -37,6 +37,24 @@ public class DisciplinaTeste {
 		Assert.assertEquals(violacao.getPropertyPath().toString(), "nome");
 	
 	}
+	
+	@Test
+	public void testeNomeNulo() {
+		Disciplina disciplina = new Disciplina();
+		disciplina.setNome(null);
+		disciplina.setCodigo("QXD002");
+		
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Disciplina>> constraintViolations = validator
+				.validate(disciplina);
+		
+		Assert.assertEquals(1, constraintViolations.size());
+		ConstraintViolation<Disciplina> violacao = constraintViolations.iterator()
+				.next();
+		
+		Assert.assertEquals(violacao.getPropertyPath().toString(), "nome");
+	
+	}
 		
 	@Test
 	public void testeNomeComSeisEspacosNaoDeveriaPassar() {
@@ -129,6 +147,20 @@ public class DisciplinaTeste {
 		Disciplina disciplina = new Disciplina();
 		disciplina.setNome("Gerencia");
 		disciplina.setCodigo("      ");
+		
+		Validator validator = createValidator();
+		Set<ConstraintViolation<Disciplina>> constraintViolations = validator
+				.validate(disciplina);
+		
+		Assert.assertEquals(1, constraintViolations.size());
+		
+	}
+	
+	@Test
+	public void testeCodigoNulo() {
+		Disciplina disciplina = new Disciplina();
+		disciplina.setNome("Gerencia");
+		disciplina.setCodigo(null);
 		
 		Validator validator = createValidator();
 		Set<ConstraintViolation<Disciplina>> constraintViolations = validator

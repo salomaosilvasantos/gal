@@ -29,7 +29,7 @@ public class CalculoMetaServiceTeste {
 	private TituloService tituloService;
 
 	@Test
-	public void testeUmaComplementarESeisBasicas100Alunos() {
+	public void testeUmaBiliografiaComplementarESeisBasicasCom100Alunos() {
 
 		Titulo titulo = tituloService.find(Titulo.class, 1);
 
@@ -42,7 +42,7 @@ public class CalculoMetaServiceTeste {
 	}
 
 	@Test
-	public void testeComplementarUmaDisciplina() {
+	public void testeBibliografiaComplementarComUmaDisciplina() {
 
 		Titulo titulo = tituloService.find(Titulo.class, 3);
 
@@ -55,7 +55,7 @@ public class CalculoMetaServiceTeste {
 	}
 
 	@Test
-	public void testeBasicaCincoDisciplinas100Alunos() {
+	public void testeBibliografiaBasicaComCincoDisciplinasE100Alunos() {
 
 		Titulo titulo = tituloService.find(Titulo.class, 2);
 
@@ -68,7 +68,7 @@ public class CalculoMetaServiceTeste {
 	}
 
 	@Test
-	public void testeComplementarDuasDisciplinas() {
+	public void testeBibliografiaComplementarComDuasDisciplinas() {
 
 		Titulo titulo = tituloService.find(Titulo.class, 8);
 
@@ -94,7 +94,7 @@ public class CalculoMetaServiceTeste {
 	}
 
 	@Test
-	public void testeComplementaresSemExemplarDoisSemestresParesEImpares() {
+	public void testeBibliografiasComplementaresSemExemplaresComDoisSemestresParesEImpares() {
 
 		Titulo titulo = tituloService.find(Titulo.class, 689);
 
@@ -107,7 +107,7 @@ public class CalculoMetaServiceTeste {
 	}
 
 	@Test
-	public void testeBasicaSemExemplarCom20Alunos() {
+	public void testeBibliografiaBasicaSemExemplarCom20Alunos() {
 
 		Titulo titulo = tituloService.find(Titulo.class, 588);
 
