@@ -68,7 +68,10 @@ public class LerXls {
 		isbn = isbn.replaceAll("(v1)", "");
 		isbn = isbn.replaceAll("(v2)", "");
 		isbn = isbn.replaceAll("\\s+", "");
+		isbn = isbn.replaceAll("-", "");
+		isbn = isbn.replaceAll("\\[.+", "");
 		isbn = isbn.replaceAll(" ", "");
+		
 		
 		
 		return isbn;
@@ -77,7 +80,8 @@ public class LerXls {
 	/*
 	 * Le a matriz e a transforma em uma estrutura com nome do titulo, isbn e uma lista de codigos de exemplares
 	 * Os numeros que aparecem como o 45 é considerando que o isbn encontra-se na coluna 45, 2 é considerendo que 
-	 * o codigo de exemplares estão na coluna 2, e os numeros de 36 a 43 são as colunas necessarias para formar o titulo. 
+	 * o codigo de exemplares estão na coluna 2, e os numeros de 36 a 43 são as colunas necessarias para formar o titulo.
+	 * O número 26 é da coluna que informa sobre se o código de exemplar é referente a um CDROM ou DVD, folhetos, para nesse caso serem descatados 
 	 * 
 	 */
 	public  List <TituloExemplarParaCadastroNoBanco> leMatrizRetornaEstruturaTitulo(String arquivo) {
@@ -85,6 +89,8 @@ public class LerXls {
 		List <TituloExemplarParaCadastroNoBanco> novo = new ArrayList<TituloExemplarParaCadastroNoBanco>();
 		String[][] teste = this.leXlsRetornaMatriz(arquivo);
 		for(int i = 1; i < this.linhas; i++){
+			
+			if(teste[26][i].equals("0")){
 				Boolean isbnConhecido=false;
 				String isbn = new String(this.formataIsbn(teste[45][i]));
 				for (int j2 = 0; j2 < novo.size(); j2++) {
@@ -103,6 +109,8 @@ public class LerXls {
 					outro.nomeTitulo=new String(teste[36][i]+teste[37][i]+teste[38][i]+teste[39][i]+teste[40][i]+teste[41][i]+teste[42][i]+teste[43][i]);
 					novo.add(outro);
 				}
+			}
+			
 
 		}
 		return novo;
@@ -127,7 +135,8 @@ public class LerXls {
         else JOptionPane.showMessageDialog(null, "Voce nao selecionou nenhum diretorio."); 
  
 
-
+	JOptionPane.showMessageDialog(null, "Operação concluída.");
 	}
+
 
 }
