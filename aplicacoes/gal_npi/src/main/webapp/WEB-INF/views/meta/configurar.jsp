@@ -43,10 +43,9 @@
 				</tr>
 				<c:forEach items="${metas}" var="meta" varStatus="status">
 					<tr>
-						<input type="hidden" name="metas[${status.index}].id"
-							value="${meta.id}" />
+						<input type="hidden" name="metas[${status.index}].id" value="${meta.id}" />
 						<td><input name="metas[${status.index}].nome"
-							value="${meta.nome}" /></td>
+							value="${meta.nome}" required="required"/></td>
 						<td><input name="metas[${status.index}].indiceCalculoBasica"
 							value="${meta.indiceCalculoBasica}" type="number" min="1" required="required" pattern="[1-9]+([\.|,][0-9]{2})?" step="0.01"
             title="Este número pode ser um inteiro ou um decimal com 2 casas."/></td>
