@@ -44,13 +44,15 @@ public class EstruturaCurricularController {
 	}
 	
 	@RequestMapping(value="/{id}/editar", method=RequestMethod.POST)
-	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id){
+	public String atualizar(@Valid EstruturaCurricular estrutura,BindingResult result, RedirectAttributes redirectAttributes,@PathVariable("id") Integer id, ModelMap modelMap){
+		Curso curso = cursoService.find(Curso.class, id);
+		modelMap.addAttribute("curso", curso);
 		
 		if(result.hasErrors()){
 			return "estrutura/editar";
 		}
 		
-		Curso curso = cursoService.find(Curso.class, id);
+		
 		estrutura.setCurso(curso);
 		
 		estruturaCurricularService.update(estrutura);
@@ -82,7 +84,8 @@ public class EstruturaCurricularController {
 	@RequestMapping(value="/{id}/adicionar", method = RequestMethod.POST)
 	public String adicionar(@Valid EstruturaCurricular estruturaCurricular, BindingResult result, @PathVariable("id") Integer id,
 			RedirectAttributes redirectAttributes, ModelMap modelMap) {
-		
+		Curso curso = this.cursoService.find(Curso.class, id);
+		modelMap.addAttribute("curso",curso);
 		if (result.hasErrors()) {
 			return "estrutura/adicionar";
 		}
@@ -99,8 +102,7 @@ public class EstruturaCurricularController {
 			return "estrutura/adicionar";
 		}
 		
-		Curso curso = this.cursoService.find(Curso.class, id);
-		modelMap.addAttribute("curso",curso);
+		
 		
 		estruturaCurricular.setCurso(curso);
 		estruturaCurricular.setId(null);
