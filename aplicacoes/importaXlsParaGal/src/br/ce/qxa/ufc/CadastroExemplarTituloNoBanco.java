@@ -1,6 +1,9 @@
 package br.ce.qxa.ufc;
 
+import java.awt.HeadlessException;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +11,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import br.ce.ufc.gal.conexao.ConexaoBanco;
 /*
@@ -82,30 +88,30 @@ public class CadastroExemplarTituloNoBanco {
 	 */
 	public static String cadastraTituloBanco(TituloExemplarParaCadastroNoBanco novo){
 		
-		
-		Connection connection;
-		
-		String sql = "INSERT INTO titulos (isbn, nome_titulo, tipo_titulo) VALUES (?, ?, ?);";
-		int id_t = retornaIdTituloBanco(novo.isbn);
-		if(id_t<0){
-			//try {
+		if (!novo.isbn.isEmpty()){
+			Connection connection;
+			String sql = "INSERT INTO titulos (isbn, nome_titulo, tipo_titulo) VALUES (?, ?, ?);";
+			int id_t = retornaIdTituloBanco(novo.isbn);
+			if(id_t<0){
 				try {
-					connection = ConexaoBanco.AbrirConexao();
-					PreparedStatement pstm = connection.prepareStatement(sql);
-					pstm.setString(1, novo.isbn);
-					pstm.setString(2, novo.nomeTitulo);
-					pstm.setString(3, "Físico");
-					pstm.executeUpdate();
-					pstm.close();
-					connection.close();
-				} catch (SQLException e) {
-				return "Isbn "+novo.isbn+" não cadastrado: "+e.getMessage();
-				} catch (Exception e) {
+						connection = ConexaoBanco.AbrirConexao();
+						PreparedStatement pstm = connection.prepareStatement(sql);
+						pstm.setString(1, novo.isbn);
+						pstm.setString(2, novo.nomeTitulo);
+						pstm.setString(3, "Físico");
+						pstm.executeUpdate();
+						pstm.close();
+						connection.close();
+					} catch (SQLException e) {
 					return "Isbn "+novo.isbn+" não cadastrado: "+e.getMessage();
-				}
-				return "Isbn "+novo.isbn+" cadastrado com sucesso.";
-		}
-		return "Isbn "+novo.isbn+" já cadastrado";
+					} catch (Exception e) {
+						return "Isbn "+novo.isbn+" não cadastrado: "+e.getMessage();
+					}
+					return "Isbn "+novo.isbn+" cadastrado com sucesso.";
+			}
+			return "Isbn "+novo.isbn+" já cadastrado";
+		} else return "ISBN em branco";
+		
 		
 	}
 	
@@ -162,9 +168,15 @@ public class CadastroExemplarTituloNoBanco {
 			if(id_t>0){
 				arquivo.escreveCsvFile(Str, "Cadastro dos exemplares do isbn: "+tituloExemplaParaCadastro.get(i).isbn);
 				for (int j = 0; j < tituloExemplaParaCadastro.get(i).codExemplares.size(); j++) {
-					//System.out.println(tituloExemplaParaCadastro.get(i).codExemplares.get(j));
+	
 					String linha = cadastraExemplaresBanco(id_t,tituloExemplaParaCadastro.get(i).codExemplares.get(j));
 					arquivo.escreveCsvFile(Str, (j+1)+": "+tituloExemplaParaCadastro.get(i).codExemplares.get(j)+": "+linha);
+				}
+			}
+			else {
+				arquivo.escreveCsvFile(Str, "Exemplares não cadastrado do isbn: "+tituloExemplaParaCadastro.get(i).isbn);
+				for (int j = 0; j < tituloExemplaParaCadastro.get(i).codExemplares.size(); j++) {
+					arquivo.escreveCsvFile(Str, (j+1)+": "+tituloExemplaParaCadastro.get(i).codExemplares.get(j)+": exemplar não cadatrado");
 				}
 			}
 			
@@ -176,7 +188,25 @@ public class CadastroExemplarTituloNoBanco {
 	public static void main(String[] args) {
 		LerXls x=new LerXls();
 		CadastroExemplarTituloNoBanco cadastro =new CadastroExemplarTituloNoBanco();
-		cadastro.castrataExemplaresTitulos(x.leMatrizRetornaEstruturaTitulo("Relatório exemplares jul 2014.xls"));
+		
+		JFileChooser janela = new JFileChooser();
+        janela.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        JOptionPane.showMessageDialog(null, "Selecione o arquivo para atualiza o banco."); 
+        int res = janela.showOpenDialog(null);
+        
+        if(res == JFileChooser.APPROVE_OPTION){
+            File diretorio = janela.getSelectedFile();
+            try {
+            	cadastro.castrataExemplaresTitulos(x.leMatrizRetornaEstruturaTitulo(diretorio.getCanonicalPath()));
+				
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Erro ao preencher o banco. Erro: "+ e.getMessage());
+			}
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Voce nao selecionou nenhum diretorio.");
+        
+        JOptionPane.showMessageDialog(null, "Operação realizada!");
 		
 	}
 

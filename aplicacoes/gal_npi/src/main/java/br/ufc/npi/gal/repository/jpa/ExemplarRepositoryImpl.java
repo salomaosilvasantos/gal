@@ -14,10 +14,10 @@ import br.ufc.npi.gal.repository.ExemplarRepository;
 public class ExemplarRepositoryImpl extends GenericRepositoryImpl<Exemplar> implements ExemplarRepository{
 
 	@Override
-	public Exemplar getExemplarByCod(String codExemplar) {
+	public Exemplar getExemplarByCodigo(String codigoExemplar) {
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("cod_e", codExemplar);
-		List<Exemplar> result = find(QueryType.JPQL, "from Exemplar where cod_e = :cod_e", params);
+		params.put("codigo", codigoExemplar);
+		List<Exemplar> result = find(QueryType.JPQL, "from Exemplar where cod_e = :codigo", params);
 		if(result != null && !result.isEmpty()) {
 			return result.get(0);
 		}

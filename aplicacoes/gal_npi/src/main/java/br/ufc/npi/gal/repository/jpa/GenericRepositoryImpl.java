@@ -40,9 +40,9 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T>{
 
 	@Override
 	public T find(Class<T> entityClass, Object id) {
-		T result = null;
-		result = em.find(entityClass, id);
-		return result;
+		
+		
+		return em.find(entityClass, id);
 	}
 
 	@Override
@@ -54,14 +54,14 @@ public class GenericRepositoryImpl<T> implements GenericRepository<T>{
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> find(Class<T> entityClass, int firstResult, int maxResults) {
-		List<T> result = null;
+		
 		Query q = em.createQuery("select obj from "
 				+ entityClass.getSimpleName() + " obj");
 		if (firstResult >= 0 && maxResults >= 0) {
 			q = q.setFirstResult(firstResult).setMaxResults(maxResults);
 		}
-		result = q.getResultList();
-		return result;
+		
+		return q.getResultList();
 	}
 
 	@Override

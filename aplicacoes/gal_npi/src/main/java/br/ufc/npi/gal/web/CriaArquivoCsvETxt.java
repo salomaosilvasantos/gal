@@ -2,12 +2,16 @@ package br.ufc.npi.gal.web;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+
 
 public class CriaArquivoCsvETxt {
-
+	
+	
 	// Para a execução das duas classes abaixo é importar algumas classes do
 	// Java.
 	private File file;
@@ -20,39 +24,29 @@ public class CriaArquivoCsvETxt {
 		this.file = file;
 	}
 
-	public BufferedWriter abreFile(String nomeArquivo) {
+	public BufferedWriter abreFile(String nomeArquivo) throws UnsupportedEncodingException, FileNotFoundException {
 		// Criação de um buffer para a escrita em uma stream
-		BufferedWriter StrW = null;
-		try {
+		BufferedWriter bufferWrite = null;
+	
 			file = new File(nomeArquivo);
-			StrW = new BufferedWriter(new OutputStreamWriter(
+			bufferWrite = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream(file), "Unicode"));
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return StrW;
+			return bufferWrite;
 
 	}
 
-	public void fechaFile(BufferedWriter StrW) {
+	public void fechaFile(BufferedWriter bufferWrite) throws IOException {
 		// Fechamos o buffer
-		try {
-			StrW.close();
-		} catch (IOException e) {
 		
-			e.printStackTrace();
-		}
+			bufferWrite.close();
+		
 
 	}
 
-	public void escreveFile(BufferedWriter StrW, String linha) {
+	public void escreveFile(BufferedWriter bufferWrite, String linha) throws IOException {
 		// Escrita dos dados da tabela
-		try {
-			StrW.write(linha + "\n");
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
+		
+			bufferWrite.write(linha + "\n");
 	}
 }

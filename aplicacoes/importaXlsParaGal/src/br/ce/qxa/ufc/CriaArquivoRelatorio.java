@@ -2,10 +2,8 @@ package br.ce.qxa.ufc;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 
 
 public class CriaArquivoRelatorio {	
@@ -22,7 +20,7 @@ public class CriaArquivoRelatorio {
 				StrW = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(nomeArquivo),"Unicode"));
 				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 			return StrW;
@@ -33,7 +31,7 @@ public class CriaArquivoRelatorio {
 		try {
 			StrW.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	
@@ -43,7 +41,7 @@ public class CriaArquivoRelatorio {
 		try {
 			StrW.write(linha +"\n");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}

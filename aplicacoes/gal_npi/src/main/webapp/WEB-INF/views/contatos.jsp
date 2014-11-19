@@ -7,22 +7,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Contatos</title>
-	<jsp:include page="fragments/htmlHead.jsp" />
+<title>Contatos</title>
+<jsp:include page="fragments/htmlHead.jsp" />
 </head>
 <body>
-	<div id="container" style="width: 1000px; margin: 0 auto;">
+	<div id="container" >
 		<jsp:include page="fragments/header.jsp" />
-		
-	<div style="margin-top: 100px; text-align: center; font-weight: bold;">
-    <p>Atendimento: Sala 1 - Segunda a Quinta - Manhã</p>
-    <p>Contatos:</p>
-    <p>André: andre.luisfs01@gmail.com</p>
-    <p>Vieira: vieirajf@gmail.com</p>
-    <p>Prof. Camilo: camilo@es.ufc.br</p>
-  </div>
-		
-		
+
+		<div id="informacao">
+			<p>Atendimento: Sala 1 - Segunda a Quinta - Manhã</p>
+			<p>Contatos:</p>
+			<p>André: andre.luisfs01@gmail.com</p>
+			<p>Vieira: vieirajf@gmail.com</p>
+			<p>Prof. Camilo: camilo@es.ufc.br</p>
+
+
+		</div>
+
 		<jsp:include page="fragments/footer.jsp" />
 	</div>
 

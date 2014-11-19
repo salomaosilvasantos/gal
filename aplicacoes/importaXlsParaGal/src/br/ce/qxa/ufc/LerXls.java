@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jxl.Cell;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -22,7 +24,7 @@ public class LerXls {
 	public String[][] leXlsRetornaMatriz(String arquivoXls){
 		Workbook workbook;
 		xlsLido=null;
-		try {
+		try{
 			WorkbookSettings configuracao =new WorkbookSettings();
 			configuracao.setEncoding("Cp1252");
 			workbook = Workbook.getWorkbook(new File(arquivoXls),configuracao);
@@ -34,16 +36,16 @@ public class LerXls {
 			for(int i = 0; i < linhas; i++){
 				for (int j = 0; j < colunas; j++) {
 					xlsLido[j][i]=sheet.getCell(j, i).getContents();
-					//System.out.println("cel"+i+":"+j+": "+sheet.getCell(j, i).getContents());
+
 					
 				}
 			}
 		workbook.close();	
 		} catch (BiffException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return xlsLido;
@@ -52,21 +54,43 @@ public class LerXls {
 	
 	/*
 	 * Formata uma string retirando dela tudo que for diferente de numero
+	 * \\. retira todos os pontos
+	 * ISBN retira o nome isbn que vem na celula
+	 * \\(.+ retira tudo que vem depois que um parentese é aberto.
+	 * (v1) retura todos os v1 que encontra
+	 * \\s retira espaços
 	 */
 	public String formataIsbn(String isbn) {
-		String isbnFormatada = isbn.replaceAll("\\D", "");
-		return isbnFormatada;
+		
+		isbn = isbn.replaceAll("\\.", "");
+		isbn = isbn.replaceAll("ISBN", "");
+		isbn = isbn.replaceAll("\\(.+", "");
+		isbn = isbn.replaceAll("(v1)", "");
+		isbn = isbn.replaceAll("(v2)", "");
+		isbn = isbn.replaceAll("\\s+", "");
+		isbn = isbn.replaceAll("-", "");
+		isbn = isbn.replaceAll("\\[.+", "");
+		isbn = isbn.replaceAll(" ", "");
+		
+		
+		
+		return isbn;
 	}
 	
 	/*
 	 * Le a matriz e a transforma em uma estrutura com nome do titulo, isbn e uma lista de codigos de exemplares
+	 * Os numeros que aparecem como o 45 é considerando que o isbn encontra-se na coluna 45, 2 é considerendo que 
+	 * o codigo de exemplares estão na coluna 2, e os numeros de 36 a 43 são as colunas necessarias para formar o titulo.
+	 * O número 26 é da coluna que informa sobre se o código de exemplar é referente a um CDROM ou DVD, folhetos, para nesse caso serem descatados 
+	 * 
 	 */
 	public  List <TituloExemplarParaCadastroNoBanco> leMatrizRetornaEstruturaTitulo(String arquivo) {
 		
 		List <TituloExemplarParaCadastroNoBanco> novo = new ArrayList<TituloExemplarParaCadastroNoBanco>();
 		String[][] teste = this.leXlsRetornaMatriz(arquivo);
 		for(int i = 1; i < this.linhas; i++){
-			//for (int j = 0; j < this.colunas; j++) {
+			
+			if(teste[26][i].equals("0")){
 				Boolean isbnConhecido=false;
 				String isbn = new String(this.formataIsbn(teste[45][i]));
 				for (int j2 = 0; j2 < novo.size(); j2++) {
@@ -84,20 +108,35 @@ public class LerXls {
 					outro.codExemplares.add(teste[2][i]);
 					outro.nomeTitulo=new String(teste[36][i]+teste[37][i]+teste[38][i]+teste[39][i]+teste[40][i]+teste[41][i]+teste[42][i]+teste[43][i]);
 					novo.add(outro);
-//					System.out.println(novo.size()+": "+ outro.nomeTitulo);
-//					System.out.println("ISBN: "+outro.isbn);
-//					System.out.println("COD_EXEMPLAR: "+teste[2][i]);
 				}
-				//System.out.println("cel"+i+":"+j+": "+sheet.getCell(j, i).getContents());
-				
-		//	}
+			}
+			
+
 		}
 		return novo;
 	}
 	
 	public static void main(String[] args) {
 		LerXls x=new LerXls();
-		x.leMatrizRetornaEstruturaTitulo("Relatório exemplares jul 2014.xls");
+		JFileChooser janela = new JFileChooser();
+        janela.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        JOptionPane.showMessageDialog(null, "Selecione o arquivo para atualiza o banco."); 
+        int res = janela.showOpenDialog(null);
+        
+        if(res == JFileChooser.APPROVE_OPTION){
+            File diretorio = janela.getSelectedFile();
+            try {
+        		x.leMatrizRetornaEstruturaTitulo(diretorio.getCanonicalPath());
+				JOptionPane.showMessageDialog(null, "Voce escolheu o diretório: " + diretorio.getCanonicalPath());
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Erro ao preencher o banco. Erro: "+ e.getMessage());
+			}
+        }
+        else JOptionPane.showMessageDialog(null, "Voce nao selecionou nenhum diretorio."); 
+ 
+
+	JOptionPane.showMessageDialog(null, "Operação concluída.");
 	}
+
 
 }

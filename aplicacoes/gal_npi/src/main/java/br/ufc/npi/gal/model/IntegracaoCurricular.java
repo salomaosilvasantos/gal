@@ -6,7 +6,6 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 @Entity
@@ -18,6 +17,7 @@ public class IntegracaoCurricular {
 	@ManyToOne
 	@JoinColumn(name = "id_curriculo")
 	private EstruturaCurricular estruturaCurricular;
+	
 	@Id
 	@ManyToOne
 	@JoinColumn(name = "id_disciplina")
