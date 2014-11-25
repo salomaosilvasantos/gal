@@ -1,3 +1,17 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.3.5
+-- Dumped by pg_dump version 9.3.5
+-- Started on 2014-11-17 09:13:40 BRT
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
 
 DROP VIEW IF EXISTS quantidade_exemplares_view;
 DROP TABLE IF EXISTS exemplares;
@@ -10,8 +24,10 @@ DROP TABLE IF EXISTS disciplinas;
 DROP TABLE IF EXISTS papel_usuario;
 DROP TABLE IF EXISTS papel;
 DROP TABLE IF EXISTS usuario;
+DROP TABLE IF EXISTS meta;
+
 --
--- TOC entry 188 (class 3079 OID 11791)
+-- TOC entry 190 (class 3079 OID 11791)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -19,8 +35,8 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 2099 (class 0 OID 0)
--- Dependencies: 188
+-- TOC entry 2112 (class 0 OID 0)
+-- Dependencies: 190
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -34,7 +50,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 170 (class 1259 OID 18330)
+-- TOC entry 170 (class 1259 OID 34260)
 -- Name: bibliografias; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -48,7 +64,7 @@ CREATE TABLE bibliografias (
 ALTER TABLE public.bibliografias OWNER TO postgres;
 
 --
--- TOC entry 171 (class 1259 OID 18336)
+-- TOC entry 171 (class 1259 OID 34266)
 -- Name: curriculo; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -62,7 +78,7 @@ CREATE TABLE curriculo (
 ALTER TABLE public.curriculo OWNER TO postgres;
 
 --
--- TOC entry 172 (class 1259 OID 18342)
+-- TOC entry 172 (class 1259 OID 34272)
 -- Name: curso; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -77,7 +93,7 @@ CREATE TABLE curso (
 ALTER TABLE public.curso OWNER TO postgres;
 
 --
--- TOC entry 173 (class 1259 OID 18348)
+-- TOC entry 173 (class 1259 OID 34278)
 -- Name: disciplinas; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -91,7 +107,7 @@ CREATE TABLE disciplinas (
 ALTER TABLE public.disciplinas OWNER TO postgres;
 
 --
--- TOC entry 174 (class 1259 OID 18354)
+-- TOC entry 174 (class 1259 OID 34284)
 -- Name: exemplares; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -105,7 +121,7 @@ CREATE TABLE exemplares (
 ALTER TABLE public.exemplares OWNER TO postgres;
 
 --
--- TOC entry 175 (class 1259 OID 18360)
+-- TOC entry 175 (class 1259 OID 34290)
 -- Name: integracao_curricular; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -122,7 +138,46 @@ CREATE TABLE integracao_curricular (
 ALTER TABLE public.integracao_curricular OWNER TO postgres;
 
 --
--- TOC entry 176 (class 1259 OID 18365)
+-- TOC entry 188 (class 1259 OID 34331)
+-- Name: meta; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE meta (
+    id_mt integer NOT NULL,
+    indicecalculobasica double precision NOT NULL,
+    indicecalculocomplementar double precision NOT NULL,
+    nome character varying(255)
+);
+
+
+ALTER TABLE public.meta OWNER TO postgres;
+
+--
+-- TOC entry 187 (class 1259 OID 34329)
+-- Name: meta_id_mt_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE meta_id_mt_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.meta_id_mt_seq OWNER TO postgres;
+
+--
+-- TOC entry 2113 (class 0 OID 0)
+-- Dependencies: 187
+-- Name: meta_id_mt_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE meta_id_mt_seq OWNED BY meta.id_mt;
+
+
+--
+-- TOC entry 176 (class 1259 OID 34295)
 -- Name: papel; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -135,7 +190,7 @@ CREATE TABLE papel (
 ALTER TABLE public.papel OWNER TO postgres;
 
 --
--- TOC entry 177 (class 1259 OID 18368)
+-- TOC entry 177 (class 1259 OID 34298)
 -- Name: papel_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -150,7 +205,7 @@ CREATE SEQUENCE papel_id_seq
 ALTER TABLE public.papel_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2100 (class 0 OID 0)
+-- TOC entry 2114 (class 0 OID 0)
 -- Dependencies: 177
 -- Name: papel_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -159,7 +214,7 @@ ALTER SEQUENCE papel_id_seq OWNED BY papel.id;
 
 
 --
--- TOC entry 178 (class 1259 OID 18370)
+-- TOC entry 178 (class 1259 OID 34300)
 -- Name: papel_usuario; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -172,7 +227,7 @@ CREATE TABLE papel_usuario (
 ALTER TABLE public.papel_usuario OWNER TO postgres;
 
 --
--- TOC entry 179 (class 1259 OID 18373)
+-- TOC entry 179 (class 1259 OID 34303)
 -- Name: titulos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -187,7 +242,7 @@ CREATE TABLE titulos (
 ALTER TABLE public.titulos OWNER TO postgres;
 
 --
--- TOC entry 180 (class 1259 OID 18379)
+-- TOC entry 180 (class 1259 OID 34309)
 -- Name: quantidade_exemplares_view; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -195,7 +250,7 @@ CREATE VIEW quantidade_exemplares_view AS
  SELECT titulos.id_t AS id_titulo,
     count(exemplares.id_titulo) AS quant_exemplares
    FROM (titulos
-   LEFT JOIN exemplares ON ((titulos.id_t = exemplares.id_titulo)))
+     LEFT JOIN exemplares ON ((titulos.id_t = exemplares.id_titulo)))
   GROUP BY titulos.id_t
  HAVING (count(exemplares.id_titulo) >= 0)
   ORDER BY titulos.id_t;
@@ -204,7 +259,7 @@ CREATE VIEW quantidade_exemplares_view AS
 ALTER TABLE public.quantidade_exemplares_view OWNER TO postgres;
 
 --
--- TOC entry 181 (class 1259 OID 18383)
+-- TOC entry 181 (class 1259 OID 34313)
 -- Name: seq_id_curriculo; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -219,7 +274,7 @@ CREATE SEQUENCE seq_id_curriculo
 ALTER TABLE public.seq_id_curriculo OWNER TO postgres;
 
 --
--- TOC entry 2101 (class 0 OID 0)
+-- TOC entry 2115 (class 0 OID 0)
 -- Dependencies: 181
 -- Name: seq_id_curriculo; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -228,7 +283,7 @@ ALTER SEQUENCE seq_id_curriculo OWNED BY curriculo.id_c;
 
 
 --
--- TOC entry 182 (class 1259 OID 18385)
+-- TOC entry 182 (class 1259 OID 34315)
 -- Name: seq_id_curso; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -243,7 +298,7 @@ CREATE SEQUENCE seq_id_curso
 ALTER TABLE public.seq_id_curso OWNER TO postgres;
 
 --
--- TOC entry 2102 (class 0 OID 0)
+-- TOC entry 2116 (class 0 OID 0)
 -- Dependencies: 182
 -- Name: seq_id_curso; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -252,7 +307,7 @@ ALTER SEQUENCE seq_id_curso OWNED BY curso.id_crs;
 
 
 --
--- TOC entry 183 (class 1259 OID 18387)
+-- TOC entry 183 (class 1259 OID 34317)
 -- Name: seq_id_disciplina; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -267,7 +322,7 @@ CREATE SEQUENCE seq_id_disciplina
 ALTER TABLE public.seq_id_disciplina OWNER TO postgres;
 
 --
--- TOC entry 2103 (class 0 OID 0)
+-- TOC entry 2117 (class 0 OID 0)
 -- Dependencies: 183
 -- Name: seq_id_disciplina; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -276,7 +331,7 @@ ALTER SEQUENCE seq_id_disciplina OWNED BY disciplinas.id_d;
 
 
 --
--- TOC entry 184 (class 1259 OID 18389)
+-- TOC entry 184 (class 1259 OID 34319)
 -- Name: seq_id_exemplar; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -291,7 +346,7 @@ CREATE SEQUENCE seq_id_exemplar
 ALTER TABLE public.seq_id_exemplar OWNER TO postgres;
 
 --
--- TOC entry 2104 (class 0 OID 0)
+-- TOC entry 2118 (class 0 OID 0)
 -- Dependencies: 184
 -- Name: seq_id_exemplar; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -300,7 +355,7 @@ ALTER SEQUENCE seq_id_exemplar OWNED BY exemplares.id_e;
 
 
 --
--- TOC entry 185 (class 1259 OID 18391)
+-- TOC entry 185 (class 1259 OID 34321)
 -- Name: seq_id_titulo; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -315,7 +370,7 @@ CREATE SEQUENCE seq_id_titulo
 ALTER TABLE public.seq_id_titulo OWNER TO postgres;
 
 --
--- TOC entry 2105 (class 0 OID 0)
+-- TOC entry 2119 (class 0 OID 0)
 -- Dependencies: 185
 -- Name: seq_id_titulo; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -324,7 +379,7 @@ ALTER SEQUENCE seq_id_titulo OWNED BY titulos.id_t;
 
 
 --
--- TOC entry 186 (class 1259 OID 18393)
+-- TOC entry 186 (class 1259 OID 34323)
 -- Name: usuario; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -339,7 +394,7 @@ CREATE TABLE usuario (
 ALTER TABLE public.usuario OWNER TO postgres;
 
 --
--- TOC entry 187 (class 1259 OID 18399)
+-- TOC entry 189 (class 1259 OID 34339)
 -- Name: usuario_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -354,8 +409,8 @@ CREATE SEQUENCE usuario_id_seq
 ALTER TABLE public.usuario_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2106 (class 0 OID 0)
--- Dependencies: 187
+-- TOC entry 2120 (class 0 OID 0)
+-- Dependencies: 189
 -- Name: usuario_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -363,7 +418,7 @@ ALTER SEQUENCE usuario_id_seq OWNED BY usuario.id;
 
 
 --
--- TOC entry 1922 (class 2604 OID 18401)
+-- TOC entry 1928 (class 2604 OID 34341)
 -- Name: id_c; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -371,7 +426,7 @@ ALTER TABLE ONLY curriculo ALTER COLUMN id_c SET DEFAULT nextval('seq_id_curricu
 
 
 --
--- TOC entry 1923 (class 2604 OID 18402)
+-- TOC entry 1929 (class 2604 OID 34342)
 -- Name: id_crs; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -379,7 +434,7 @@ ALTER TABLE ONLY curso ALTER COLUMN id_crs SET DEFAULT nextval('seq_id_curso'::r
 
 
 --
--- TOC entry 1924 (class 2604 OID 18403)
+-- TOC entry 1930 (class 2604 OID 34343)
 -- Name: id_d; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -387,7 +442,7 @@ ALTER TABLE ONLY disciplinas ALTER COLUMN id_d SET DEFAULT nextval('seq_id_disci
 
 
 --
--- TOC entry 1925 (class 2604 OID 18404)
+-- TOC entry 1931 (class 2604 OID 34344)
 -- Name: id_e; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -395,7 +450,15 @@ ALTER TABLE ONLY exemplares ALTER COLUMN id_e SET DEFAULT nextval('seq_id_exempl
 
 
 --
--- TOC entry 1928 (class 2604 OID 18405)
+-- TOC entry 1937 (class 2604 OID 34334)
+-- Name: id_mt; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY meta ALTER COLUMN id_mt SET DEFAULT nextval('meta_id_mt_seq'::regclass);
+
+
+--
+-- TOC entry 1934 (class 2604 OID 34345)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -403,7 +466,7 @@ ALTER TABLE ONLY papel ALTER COLUMN id SET DEFAULT nextval('papel_id_seq'::regcl
 
 
 --
--- TOC entry 1929 (class 2604 OID 18406)
+-- TOC entry 1935 (class 2604 OID 34346)
 -- Name: id_t; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -411,7 +474,7 @@ ALTER TABLE ONLY titulos ALTER COLUMN id_t SET DEFAULT nextval('seq_id_titulo'::
 
 
 --
--- TOC entry 1930 (class 2604 OID 18407)
+-- TOC entry 1936 (class 2604 OID 34347)
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
