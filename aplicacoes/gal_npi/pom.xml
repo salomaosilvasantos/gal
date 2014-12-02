@@ -8,7 +8,6 @@
 	<name>gal_npi Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-	
 		<!-- Bootbox -->
 		<bootbox.version>4.2.0</bootbox.version>
 
@@ -30,10 +29,11 @@
 
 		<!-- Hibernate / JPA -->
 		<hibernate.version>4.3.1.Final</hibernate.version>
-		<hibernate.validation.version>5.1.0.Final</hibernate.validation.version>
+		<hibernate.validation.version>4.3.1.Final</hibernate.validation.version>
 
 		<!-- Database access -->
 		<postgresql.version>9.1-901.jdbc4</postgresql.version>
+		<tomcat-jdbc.version>7.0.42</tomcat-jdbc.version>
 
 		<!-- Spring Security -->
 		<spring.security.version>3.2.1.RELEASE</spring.security.version>
@@ -54,7 +54,7 @@
 	</properties>
 
 	<dependencies>
-	
+
 		<!-- JSP API -->
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
@@ -95,12 +95,14 @@
 			<artifactId>javax.inject</artifactId>
 			<version>${javax.inject.version}</version>
 		</dependency>
-		<dependency>
+		
+		<!--Dependencia 
+			<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 			<version>${java.validation.version}</version>
-		</dependency>
-
+			</dependency>
+		-->
 
 		<!-- SPRING -->
 		<dependency>
@@ -159,6 +161,14 @@
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.version}</version>
+		</dependency>
+		
+		<!-- Tomcat para testes -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jdbc</artifactId>
+			<version>${tomcat-jdbc.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!-- Logging with SLF4J & LogBack -->
