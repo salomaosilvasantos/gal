@@ -55,7 +55,6 @@
 					<!-- antiga validação de campo: [1-9]+([\.|,][0-9]{2})?   -->
 					<!-- Nova validação : [1-9]([0-9]+)?(.[0-9]([0-9])?)?  -->
 					
-
 					</tr>
 				</c:forEach>
 			</table>
