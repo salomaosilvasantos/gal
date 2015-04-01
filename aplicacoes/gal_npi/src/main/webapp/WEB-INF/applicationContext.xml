@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans          
            http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -10,25 +9,30 @@
 		   http://www.springframework.org/schema/tx
 		   http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+	<bean id="emf"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceUnitName" value="gal" />
-		<property name="dataSource" ref="galnpi"/>
+		<property name="dataSource" ref="galnpi" />
 	</bean>
 	<bean id="galnpi" class="org.springframework.jndi.JndiObjectFactoryBean">
-		<property name="jndiName" value="java:comp/env/galnpi"/>
+		<property name="jndiName" value="java:comp/env/galnpi" />
 	</bean>
 	<bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="emf" />
 	</bean>
-	
+
 	<bean id="messageSource"
-	class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basename" value="/WEB-INF/messages" />
-   </bean>
-	
-	<tx:annotation-driven transaction-manager="txManager" proxy-target-class="true" />
- 
+	</bean>
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="1000000" />
+	</bean>
+	<tx:annotation-driven transaction-manager="txManager"
+		proxy-target-class="true" />
+
 	<context:component-scan base-package="br.ufc.npi.gal.repository" />
-    <context:component-scan base-package="br.ufc.npi.gal.service" />
-    <context:component-scan base-package="br.ufc.npi.gal.web" />
+	<context:component-scan base-package="br.ufc.npi.gal.service" />
+	<context:component-scan base-package="br.ufc.npi.gal.web" />
 </beans>
