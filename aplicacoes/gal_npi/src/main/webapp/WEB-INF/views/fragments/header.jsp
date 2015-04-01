@@ -41,6 +41,8 @@
 						<li><a href="<c:url value='/titulo/adicionar'/>">Adicionar</a></li>
 						<li class="divider"></li>
 						<li><a href="<c:url value='/titulo/listar'/>">Listar</a></li>
+						<li class="divider"></li>
+						<li><a href="<c:url value='/acervo/atualizar_acervo'/>">Atualizar Acervo</a></li>
 					</ul></li>
 				<li class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown">Meta<b class="caret"></b></a>
