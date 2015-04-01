@@ -47,12 +47,14 @@
 						<td><input name="metas[${status.index}].nome"
 							value="${meta.nome}" required="required"/></td>
 						<td><input name="metas[${status.index}].indiceCalculoBasica"
-							value="${meta.indiceCalculoBasica}" type="number" min="1" required="required" pattern="[1-9]+([\.|,][0-9]{2})?" step="0.01"
+							value="${meta.indiceCalculoBasica}" type="number" min="1" required="required" pattern="[1-9]([0-9]+)?(.[0-9]([0-9])?)?" step= "0.01"
             title="Este número pode ser um inteiro ou um decimal com 2 casas."/></td>
 						<td><input name="metas[${status.index}].indiceCalculoComplementar"
-							value="${meta.indiceCalculoComplementar}" type="number" min="0" required="required" pattern="[0-9]+([\.|,][0-9]{2})?" step="0.01"
+							value="${meta.indiceCalculoComplementar}" type="number" min="0" required="required" pattern="[0-9]+(.[0-9]([0-9])?)?" step= "0.01"
             title="Este número pode ser um inteiro ou um decimal com 2 casas."/></td>
-
+					<!-- antiga validação de campo: [1-9]+([\.|,][0-9]{2})?   -->
+					<!-- Nova validação : [1-9]([0-9]+)?(.[0-9]([0-9])?)?  -->
+					
 
 					</tr>
 				</c:forEach>
