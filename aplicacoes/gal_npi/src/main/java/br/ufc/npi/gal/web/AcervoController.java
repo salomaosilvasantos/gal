@@ -28,9 +28,15 @@ public class AcervoController {
 
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	public String uploadDoArquivoXls(HttpServletRequest request) {
-		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-		MultipartFile multipartFile = multipartRequest.getFile("file");
-		acervoService.analisarArquivo(multipartFile);
+		//validar se foi enviado o arquivo
+		if(request != null){
+			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+			MultipartFile multipartFile = multipartRequest.getFile("file");
+			String contentType = multipartFile.getContentType();  
+			acervoService.processarArquivo(multipartFile);
+		}else{
+			//msg de erro, sem arquivo
+		}
 		return null;
 
 	}
