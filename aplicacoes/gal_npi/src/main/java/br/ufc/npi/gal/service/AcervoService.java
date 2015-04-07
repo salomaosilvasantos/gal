@@ -1,6 +1,6 @@
 package br.ufc.npi.gal.service;
 
-import javax.inject.Named;
+import java.io.File;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,6 +9,8 @@ public interface AcervoService {
 	
 	public abstract boolean atulizarAcervo();
 
-	public abstract void analisarArquivo(MultipartFile multipartFile);
+	public abstract void arquivoParaLista(File planilha);
+
+	public abstract void processarArquivo(MultipartFile multipartFile);
 	
 }
