@@ -41,8 +41,6 @@
 						<li><a href="<c:url value='/titulo/adicionar'/>">Adicionar</a></li>
 						<li class="divider"></li>
 						<li><a href="<c:url value='/titulo/listar'/>">Listar</a></li>
-						<li class="divider"></li>
-						<li><a href="<c:url value='/acervo/atualizar_acervo'/>">Atualizar Acervo</a></li>
 					</ul></li>
 				<li class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown">Meta<b class="caret"></b></a>
@@ -51,8 +49,14 @@
 						<li><a href="<c:url value='/meta/listar'/>">Listar</a></li>
 						<li class="divider"></li>
 						<li><a href="<c:url value='/meta/downloadMetaDetalhada'/>">Download</a></li>
-
-						
+					</ul></li>
+				<li>
+				<li class="dropdown"><a href="#" class="dropdown-toggle"
+					data-toggle="dropdown">Acervo<b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li><a href="<c:url value='/acervo/atualizar_acervo'/>">Atualizar acervo</a></li>
+						<li class="divider"></li>
+						<li><a href="<c:url value='/acervo/resolver_conflitos'/>">Resolver Conflitos</a></li>
 					</ul></li>
 				<li><a href="<c:url value='/contatos'/>">Contatos</a>
 			</ul>
