@@ -25,14 +25,6 @@ function checkfile(sender) {
 <jsp:include page="../fragments/htmlHead.jsp" />
 </head>
 <body>
-	<form action="/acervo/upload" method="post"
-		enctype="multipart/form-data">
-		<p>
-			<label for="file">Arquivo para fazer upload</label> 
-			 <input type="file" id="file" onchange="checkfile(this);" />
-			<input type="submit" name="submit" value="Upload" />
-		</p>
-	</form>
 	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
 	
