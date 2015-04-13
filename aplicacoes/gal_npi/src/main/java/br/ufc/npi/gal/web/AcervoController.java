@@ -40,7 +40,7 @@ public class AcervoController {
 		return "acervo/conflitos";
 	}
 
-	@RequestMapping(value = "upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public String uploadDoArquivoXls(HttpServletRequest request) {
 		//validar se foi enviado o arquivo
 		if(request != null){
@@ -51,7 +51,7 @@ public class AcervoController {
 		}else{
 			//msg de erro, sem arquivo
 		}
-		return null;
+		return "acervo/conflitos";
 
 	}
 }

@@ -43,7 +43,7 @@ public class AcervoServiceImpl implements AcervoService {
 	@Override
 	public void processarArquivo(MultipartFile multipartFile) {
 		try {
-			File arquivo = new File("/docs/atualizacoes_de_acervo");
+			File arquivo = new File("temp.txt");
 			multipartFile.transferTo(arquivo);
 			realizarAtualização(arquivoParaLista(arquivo));
 		} catch (IllegalStateException e) {
@@ -58,15 +58,16 @@ public class AcervoServiceImpl implements AcervoService {
 		
 		//se ISBN ja existe no banco cadastra apenas o exemplar
 		
+		
 		//se não, cadastrar titulo primeiro e o exemplar dps
 	}
 
 	@Override
 	public List<Exemplar> arquivoParaLista(File planilha) {
-		// TODO Auto-generated method stub
 		Workbook workbook;
 		List<Exemplar> relatorioDeExemplares = new ArrayList<>();
 		try{
+			
 			WorkbookSettings configuracao =new WorkbookSettings();
 			configuracao.setEncoding("Cp1252");
 			workbook = Workbook.getWorkbook(planilha,configuracao);
@@ -75,8 +76,8 @@ public class AcervoServiceImpl implements AcervoService {
 			int colunas = sheet.getColumns();
 			int linhas = sheet.getRows();
 			Exemplar exemplar = new Exemplar();
-			for (int i = 0; i < linhas; i++) {
-				if(sheet.getCell(TIPO,i).equals("0")){
+			for (int i = 1; i < linhas; i++) {
+				if(sheet.getCell(TIPO,i).getContents().equals("0")){
 					Boolean isbnConhecido=false;
 					Titulo titulo = new Titulo();
 					titulo.setIsbn(new String(this.formataIsbn(sheet.getCell(COLUNA_ISBN, i))));
@@ -85,6 +86,7 @@ public class AcervoServiceImpl implements AcervoService {
 					
 					exemplar.setTitulo(titulo);
 					exemplar.setCodigoExemplar(sheet.getCell(COLUNA_COD_EXEMPLAR, i).getContents());
+					System.out.println(exemplar.toString());
 				}
 				
 			}
@@ -99,14 +101,25 @@ public class AcervoServiceImpl implements AcervoService {
 		return relatorioDeExemplares;
 	}
 
-	private String formataIsbn(Cell cell) {
-		// TODO Auto-generated method stub
-		return null;
+	private String formataIsbn(Cell isbnForaDeFormato) {
+		String isbn = isbnForaDeFormato.getContents();
+		isbn = isbn.replaceAll("\\.", "");
+		isbn = isbn.replaceAll("ISBN", "");
+		isbn = isbn.replaceAll("\\(.+", "");
+		isbn = isbn.replaceAll("(v1)", "");
+		isbn = isbn.replaceAll("(v2)", "");
+		isbn = isbn.replaceAll("\\s+", "");
+		isbn = isbn.replaceAll("-", "");
+		isbn = isbn.replaceAll("\\[.+", "");
+		isbn = isbn.replaceAll(" ", "");
+		return isbn;
 	}
 
 	private String formatarNome(Sheet sheet, int i) {
-		// TERMINAR
-		return sheet.getCell(COLUNA_AUTOR, i).getContents() + sheet.getCell(COLUNA_TITULO, i) + sheet.getCell(COLUNA_TITULO_N, i);
+		// concatena os campos que compoem o titulo
+		return sheet.getCell(COLUNA_AUTOR, i).getContents() + " "+sheet.getCell(COLUNA_TITULO, i)+" "+ sheet.getCell(COLUNA_TITULO_N, i)+" "
+				+sheet.getCell(COLUNA_SUB_TITULO,i) +" "+sheet.getCell(COLUNA_TITULO_REVISTA, i)+" "+sheet.getCell(COLUNA_PAGINA,i)
+				+" "+sheet.getCell(COLUNA_REF_ARTIGO,i)+" "+sheet.getCell(COLUNA_EDICAO,i)+" "+sheet.getCell(COLUNA_PUBLICADOR,i);
 	}
 	
 }

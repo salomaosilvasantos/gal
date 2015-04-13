@@ -28,14 +28,13 @@ function checkfile(sender) {
 	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
 	
-		<form action="/acervo/upload" method="post"
-			enctype="multipart/form-data">
+		<form:form action="../acervo/upload" method="post" enctype="multipart/form-data" servletRelativeAction="../acervo/upload">
 			<p>
 				<label for="file">Arquivo para fazer upload</label> 
-				<input type="file" name="file" /> 
+				<input type="file" name="file" multiple="multiple"/> 
 				<input type="submit" name="submit" value="Upload" />
 			</p>
-		</form>
+		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
 </body>
