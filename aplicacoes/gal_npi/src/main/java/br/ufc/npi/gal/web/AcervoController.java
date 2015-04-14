@@ -7,12 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import br.ufc.npi.gal.model.Exemplar;
+import br.ufc.npi.gal.model.ExemplarConflitante;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.AcervoService;
 
@@ -33,7 +35,7 @@ public class AcervoController {
 		Exemplar e = new Exemplar();
 		Exemplar e1 = new Exemplar();
 		e.setId(1);
-		e.setTitulo(new Titulo("titulo", "sdfasdfas", "fisico"));
+		e.setTitulo(new Titulo("cvjkkjcvxxcvxcvcxvcvxcxvcvxcxvcvxcvnjcvxcvkcvxcvkjxcxcvxxxxcvjjkck", "sdfasdfas", "fisico"));
 		e.setCodigoExemplar("lalala");
 		ArrayList<Exemplar> aux = new ArrayList<Exemplar>();
 		aux.add(e);
@@ -58,5 +60,13 @@ public class AcervoController {
 		}
 		return "acervo/conflitos";
 
+	}
+	
+	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
+	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
+		
+		
+		
+		return "acervo/editar";
 	}
 }

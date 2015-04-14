@@ -28,29 +28,16 @@
 		
 		<datatables:table id="exemplar" data="${exemplares}" cdn="true"
 					row="exemplar" theme="bootstrap2" cssClass="table table-striped">
-					<datatables:column title="ISBN">
-						<input id="isbn${exemplar.id}" value="${exemplar.id}" disabled></input>
-					</datatables:column>
 				
 					<datatables:column title="Titulo">
-						<input id="titulo${exemplar.id}" value="${exemplar.titulo.nome} " disabled></input>
-					</datatables:column>
-		
-					<datatables:column title="Codigo">
-						<input id="codigo${exemplar.id}" value="${exemplar.codigoExemplar}" disabled></input>
+						<c:out value="${exemplar.titulo.nome} "></c:out>
 					</datatables:column>
 					
-					<datatables:column title="Tipo">
-						<input id="tipo${exemplar.id}" value="${exemplar.titulo.tipo}" disabled></input>
-					</datatables:column>
-					
-					<datatables:column title="Salvar">
-						<a class="btn btn-success" ><span class="glyphicon glyphicon-link"></span></a>
-					</datatables:column>
-					<!-- href="<c:url value="/acervo/${exemplar.id }/salvar" ></c:url>" /////////////// href="<c:url value="/acervo/${exemplar.id }/editar" ></c:url>"-->
 					<datatables:column title="Editar">
-						<a class="btn btn-primary" ><span class="glyphicon glyphicon-edit" onclick="abrirEdicao('${exemplar.id}')"></span></a>
+						<a class="btn btn-primary" href="<c:url value="/acervo/${exemplar.id }/editar" ></c:url>"><span class="glyphicon glyphicon-edit"></span></a>
 					</datatables:column>
+					
+					<!-- href="<c:url value="/acervo/${exemplar.id }/salvar" ></c:url>" /////////////// href="<c:url value="/acervo/${exemplar.id }/editar" ></c:url>"-->
 			</datatables:table>
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>
