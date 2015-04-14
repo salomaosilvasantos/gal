@@ -50,15 +50,15 @@ public class ExemplarConflitante {
 	private String publicador;
 	
 	@Column(name = "discricao_erro")
-	private String discricaoErro;
+	private String descricaoErro;
 	
 	
-	public String getDiscricaoErro() {
-		return discricaoErro;
+	public String getDescricaoErro() {
+		return descricaoErro;
 	}
 
-	public void setDiscricaoErro(String discricaoErro) {
-		this.discricaoErro = discricaoErro;
+	public void setDescricaoErro(String descricaoErro) {
+		this.descricaoErro = descricaoErro;
 	}
 
 	public Integer getId() {
