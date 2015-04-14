@@ -1,11 +1,14 @@
 package br.ufc.npi.gal.model;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-
+@Entity
+@Table(name = "exemplarConflitante")
 public class ExemplarConflitante {
 	//campos da tabela
 	@Id
