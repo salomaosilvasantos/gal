@@ -43,6 +43,7 @@ public class AcervoController {
 		e1.setTitulo(new Titulo("titulo", "adfasdfas", "fisico"));
 		e1.setCodigoExemplar("lululu");
 		aux.add(e1);
+		acervoService.find(ExemplarConflitante.class);
 		modelMap.addAttribute("exemplares", aux);
 		return "acervo/conflitos";
 	}
@@ -65,8 +66,12 @@ public class AcervoController {
 	@RequestMapping(value = "/{id}/editar", method = RequestMethod.GET)
 	public String editar(@PathVariable("id") Integer id, ModelMap modelMap) {
 		
+		ExemplarConflitante exemplar = this.acervoService.find(ExemplarConflitante.class,id);
 		
-		
+		if(exemplar == null) {
+			return "redirect:/acervo/conflitos";
+		}
+		modelMap.addAttribute("exemplar", exemplar);
 		return "acervo/editar";
 	}
 }

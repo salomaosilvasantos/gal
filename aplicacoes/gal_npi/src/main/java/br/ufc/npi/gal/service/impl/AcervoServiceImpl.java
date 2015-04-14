@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import jxl.Sheet;
@@ -14,12 +15,15 @@ import jxl.read.biff.BiffException;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.model.Exemplar;
 import br.ufc.npi.gal.model.ExemplarConflitante;
 import br.ufc.npi.gal.model.Titulo;
+import br.ufc.npi.gal.repository.ExemplarConflitanteRepository;
 import br.ufc.npi.gal.service.AcervoService;
+import br.ufc.npi.gal.web.AcervoController;
 @Named
-public class AcervoServiceImpl implements AcervoService {
+public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> implements AcervoService {
 	private static final int COLUNA_ISBN = 45;
 	private static final int COLUNA_COD_EXEMPLAR = 2;
 	private static final int TIPO = 26;  //0 tipo = fisico - 1 midia digital
@@ -33,6 +37,9 @@ public class AcervoServiceImpl implements AcervoService {
 	private static final int COLUNA_REF_ARTIGO = 42;
 	private static final int COLUNA_EDICAO = 43;
 	private static final int COLUNA_PUBLICADOR = 46;
+	
+	@Inject
+	private ExemplarConflitanteRepository exemplarConflitanteReposiroty;
 	
 	@Override
 	public boolean atulizarAcervo() {
