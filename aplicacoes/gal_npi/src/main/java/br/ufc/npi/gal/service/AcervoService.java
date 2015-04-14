@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.model.Exemplar;
+import br.ufc.npi.gal.model.ExemplarConflitante;
 
 
-public interface AcervoService {
+public interface AcervoService extends GenericService<ExemplarConflitante> {
 	
 	public abstract boolean atulizarAcervo();
 
