@@ -15,13 +15,14 @@ import jxl.read.biff.BiffException;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.model.Exemplar;
 import br.ufc.npi.gal.model.ExemplarConflitante;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.repository.ExemplarConflitanteRepository;
+import br.ufc.npi.gal.repository.ExemplarRepository;
+import br.ufc.npi.gal.repository.TituloRespository;
 import br.ufc.npi.gal.service.AcervoService;
-import br.ufc.npi.gal.web.AcervoController;
+
 @Named
 public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> implements AcervoService {
 	private static final int COLUNA_ISBN = 45;
@@ -40,13 +41,12 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 	
 	@Inject
 	private ExemplarConflitanteRepository exemplarConflitanteReposiroty;
+	@Inject
+	private TituloRespository tituloRepository;
+	@Inject
+	private ExemplarRepository exemplarRepository;
 	
-	@Override
-	public boolean atulizarAcervo() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
+	
 	@Override
 	public void processarArquivo(MultipartFile multipartFile) {
 		try {
@@ -61,7 +61,6 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 		
 	}
 
-	@Override
 	public List<Exemplar> arquivoParaLista(File planilha) {
 		Workbook workbook;
 		List<Exemplar> relatorioDeExemplares = new ArrayList<>();
@@ -74,10 +73,13 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 			Sheet sheet = workbook.getSheet(0);
 			int linhas = sheet.getRows();
 			ExemplarConflitante exemplarConflitante = new ExemplarConflitante();
-			for (int i = 1; i < linhas; i++) {
+			for (int i = 1; i < linhas-1; i++) {
+				
 				exemplarConflitante = validarLinha(sheet,i);
-				if(exemplarConflitante.getDescricaoErro().isEmpty()){
+				
+				if(exemplarConflitante.getDescricaoErro() != null || exemplarConflitante.getDescricaoErro().isEmpty() ){
 					relatorioDeExemplares.add(formatarExemplar(sheet,i));
+					
 				}else{
 					adicionarConflito(exemplarConflitante);
 				}
@@ -94,33 +96,44 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 	}
 	
 	private void realizarAtualização(List<Exemplar> listaDeExemplares) {
-		//se ISBN ja existe no banco cadastra apenas o exemplar
-		
-		
-		//se não, cadastrar titulo primeiro e o exemplar dps	
-	
+		for (Exemplar exemplar : listaDeExemplares) {
+			//se ISBN ja existe no banco cadastra apenas o exemplar
+			if(tituloRepository.getTituloByIsbn(exemplar.getTitulo().getIsbn()) != null){
+				if (exemplarRepository.getExemplarByCodigo(exemplar.getCodigoExemplar()) == null) {
+					exemplar.setTitulo(tituloRepository.getTituloByIsbn(exemplar.getTitulo().getIsbn()));
+					exemplarRepository.save(exemplar);
+				}
+				
+			}
+			//se não, cadastrar titulo primeiro e o exemplar dps
+			else{
+				tituloRepository.save(exemplar.getTitulo());
+				exemplarRepository.save(exemplar);
+			}
+		}
 	}
 	
 	private void adicionarConflito(ExemplarConflitante conflito) {
-		
+		exemplarConflitanteReposiroty.save(conflito);
 	}
 
 	private ExemplarConflitante validarLinha(Sheet sheet, int i) {
 		ExemplarConflitante exemplarConflitante = new ExemplarConflitante();
+		String erros = new String();
 		
 		String validadorTipo = validacaoDeTipo(sheet.getCell(TIPO,i).getContents());
 		if(validadorTipo.equals("valido")){
 			exemplarConflitante.setTipo(sheet.getCell(TIPO,i).getContents());
 		}else{
 			exemplarConflitante.setTipo(sheet.getCell(TIPO,i).getContents());
-			exemplarConflitante.setDescricaoErro(validadorTipo);
+			erros = validadorTipo;
 		}
 				
 		if(!formatarNomeTitulo(sheet,i).isEmpty()){
 			exemplarConflitante = preencherCamposNomeTitulo(sheet,i,exemplarConflitante);
 		}else {
 			exemplarConflitante = preencherCamposNomeTitulo(sheet,i,exemplarConflitante);
-			exemplarConflitante.setDescricaoErro(exemplarConflitante.getDescricaoErro()+" Nome do título não especificado");
+			erros +=" Nome do título não especificado";
 		}
 		
 		String validadorCodExemplar = formatarCodigoExemplar(sheet.getCell(COLUNA_COD_EXEMPLAR,i).getContents());
@@ -128,7 +141,7 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 			exemplarConflitante.setCodigoExemplar(sheet.getCell(COLUNA_COD_EXEMPLAR,i).getContents());
 		}else{
 			exemplarConflitante.setCodigoExemplar(sheet.getCell(COLUNA_COD_EXEMPLAR,i).getContents());
-			exemplarConflitante.setDescricaoErro(exemplarConflitante.getDescricaoErro()+" "+validadorCodExemplar);
+			erros+= " "+validadorCodExemplar;
 		}
 		
 		String isbn = extrairIsbnDaCelula(sheet.getCell(COLUNA_ISBN,i).getContents());
@@ -137,9 +150,9 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 			exemplarConflitante.setIsbn(isbn);
 		}else{
 			exemplarConflitante.setIsbn(isbn);
-			exemplarConflitante.setDescricaoErro(exemplarConflitante.getDescricaoErro()+" "+validadorIsbn);
+			erros+=" "+validadorIsbn;
 		}
-		
+		exemplarConflitante.setDescricaoErro(erros);
 		return exemplarConflitante;
 		
 	}
@@ -161,8 +174,17 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 	}
 
 	private String extrairIsbnDaCelula(String isbnForaDeFormato) {
-		String[] trechos = isbnForaDeFormato.split(" ");
-		return trechos[1];
+		isbnForaDeFormato = isbnForaDeFormato.replaceAll("\\.", "");
+		isbnForaDeFormato = isbnForaDeFormato.replaceAll("ISBN", "");
+		isbnForaDeFormato = isbnForaDeFormato.replaceAll("\\(.+", "");
+		isbnForaDeFormato = isbnForaDeFormato.replaceAll("(v1)", "");
+		isbnForaDeFormato = isbnForaDeFormato.replaceAll("(v2)", "");
+		isbnForaDeFormato = isbnForaDeFormato.replaceAll("\\s+", "");
+		isbnForaDeFormato = isbnForaDeFormato.replaceAll("-", "");
+		isbnForaDeFormato = isbnForaDeFormato.replaceAll("\\[.+", "");
+		isbnForaDeFormato = isbnForaDeFormato.replaceAll(" ", "");
+		return isbnForaDeFormato;
+	
 	}
 
 	private String formatarNomeTitulo(Sheet sheet, int i) {
@@ -175,6 +197,7 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 	private Exemplar formatarExemplar(Sheet sheet, int i) {
 		Titulo titulo = new Titulo();
 		titulo.setIsbn(extrairIsbnDaCelula(sheet.getCell(COLUNA_ISBN, i).getContents()));
+		System.out.println("isbn do titulo:" +titulo.getIsbn());
 		titulo.setNome(formatarNomeTitulo(sheet,i));
 		titulo.setTipo("Físico");
 		Exemplar exemplar = new Exemplar();

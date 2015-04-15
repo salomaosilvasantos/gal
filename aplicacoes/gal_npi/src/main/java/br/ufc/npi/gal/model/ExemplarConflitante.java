@@ -6,17 +6,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
+
 @Table(name = "exemplarConflitante")
 public class ExemplarConflitante {
-	//campos da tabela
 	@Id
 	@Column(name = "id_ef")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "cod_ef")	
+	
+	@Column(unique = true ,name = "cod_ef")	
 	private String codigoExemplar;
 	
 	@Column(name = "tipo")
