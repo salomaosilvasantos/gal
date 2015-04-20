@@ -23,6 +23,38 @@
 			<form:input path="id" type="hidden" />
 			
 			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">Título</label>
+			    <div class="col-sm-8">
+			    	<form:input id="titulo" class="form-control" placeholder="Título" path="titulo"/>
+			    	<form:errors path="titulo" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="nome" class="col-sm-1 control-label">tipo</label>
+			    <div class="col-sm-8">
+			    	<form:input id="tipo" class="form-control" placeholder="tipo" path="tipo"/>
+			    	<form:errors path="tipo" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">isbn</label>
+			    <div class="col-sm-8">
+			    	<form:input id="isbn" class="form-control" placeholder="isbn" path="isbn"/>
+			    	<form:errors path="isbn" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">autor</label>
+			    <div class="col-sm-8">
+			    	<form:input id="autor" class="form-control" placeholder="Código" path="autor"/>
+			    	<form:errors path="autor" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">Código</label>
 			    <div class="col-sm-8">
 			    	<form:input id="codigo" class="form-control" placeholder="Código" path="codigo"/>
@@ -31,10 +63,66 @@
 			</div>
 			
 			<div class="form-group">
-			    <label for="nome" class="col-sm-1 control-label">Nome</label>
+			    <label for="codigo" class="col-sm-1 control-label">titulo_n</label>
 			    <div class="col-sm-8">
-			    	<form:input id="nome" class="form-control" placeholder="Nome" path="nome"/>
-			    	<form:errors path="nome" cssClass="error" />
+			    	<form:input id="titulo_n" class="form-control" placeholder="titulo_n" path="titulo_n"/>
+			    	<form:errors path="titulo_n" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">sub_titulo</label>
+			    <div class="col-sm-8">
+			    	<form:input id="sub_titulo" class="form-control" placeholder="sub_titulo" path="sub_titulo"/>
+			    	<form:errors path="sub_titulo" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">titulo_revista</label>
+			    <div class="col-sm-8">
+			    	<form:input id="titulo_revista" class="form-control" placeholder="titulo_revista" path="titulo_revista"/>
+			    	<form:errors path="titulo_revista" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">pagina</label>
+			    <div class="col-sm-8">
+			    	<form:input id="pagina" class="form-control" placeholder="pagina" path="pagina"/>
+			    	<form:errors path="pagina" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">publicador</label>
+			    <div class="col-sm-8">
+			    	<form:input id="publicador" class="form-control" placeholder="publicador" path="publicador"/>
+			    	<form:errors path="publicador" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">ref_artigo</label>
+			    <div class="col-sm-8">
+			    	<form:input id="ref_artigo" class="form-control" placeholder="ref_artigo" path="ref_artigo"/>
+			    	<form:errors path="ref_artigo" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">edicao</label>
+			    <div class="col-sm-8">
+			    	<form:input id="edicao" class="form-control" placeholder="edicao" path="edicao"/>
+			    	<form:errors path="edicao" cssClass="error" />
+			    </div>
+			</div>
+			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">publicador</label>
+			    <div class="col-sm-8">
+			    	<form:input id="publicador" class="form-control" placeholder="publicador" path="publicador"/>
+			    	<form:errors path="publicador" cssClass="error" />
 			    </div>
 			</div>
 			

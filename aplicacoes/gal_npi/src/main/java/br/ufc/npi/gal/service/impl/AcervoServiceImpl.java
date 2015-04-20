@@ -15,9 +15,11 @@ import jxl.read.biff.BiffException;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import br.ufc.npi.gal.model.AcervoDocumento;
 import br.ufc.npi.gal.model.Exemplar;
 import br.ufc.npi.gal.model.ExemplarConflitante;
 import br.ufc.npi.gal.model.Titulo;
+import br.ufc.npi.gal.repository.AcervoDocumentoRepository;
 import br.ufc.npi.gal.repository.ExemplarConflitanteRepository;
 import br.ufc.npi.gal.repository.ExemplarRepository;
 import br.ufc.npi.gal.repository.TituloRespository;
@@ -38,6 +40,9 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 	private static final int COLUNA_REF_ARTIGO = 42;
 	private static final int COLUNA_EDICAO = 43;
 	private static final int COLUNA_PUBLICADOR = 46;
+	
+	@Inject
+	private AcervoDocumentoRepository acervoDocumentoRepository;
 	
 	@Inject
 	private ExemplarConflitanteRepository exemplarConflitanteReposiroty;

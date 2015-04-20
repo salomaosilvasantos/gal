@@ -21,6 +21,9 @@ public class ExemplarConflitante {
 	@Column(unique = true ,name = "cod_ef")	
 	private String codigoExemplar;
 	
+	@Column(name = "linhaErro")
+	private int linha;
+	
 	@Column(name = "tipo")
 	private String tipo;
 	
@@ -96,6 +99,14 @@ public class ExemplarConflitante {
 
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
+	}
+	
+	public int getLinha() {
+		return linha;
+	}
+
+	public void setLinha(int linha) {
+		this.linha = linha;
 	}
 
 	public String getAutor() {

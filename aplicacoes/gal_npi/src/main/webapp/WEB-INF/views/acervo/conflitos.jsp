@@ -34,7 +34,7 @@
 					</datatables:column>
 					
 					<datatables:column title="Editar">
-						<a class="btn btn-primary" href="<c:url value="/acervo/${exemplar.id }/editar" ></c:url>"><span class="glyphicon glyphicon-edit"></span></a>
+						<a class="btn btn-primary" href="<c:url value="../acervo/${exemplar.id }/editar" ></c:url>"><span class="glyphicon glyphicon-edit"></span></a>
 					</datatables:column>
 					
 					<!-- href="<c:url value="/acervo/${exemplar.id }/salvar" ></c:url>" /////////////// href="<c:url value="/acervo/${exemplar.id }/editar" ></c:url>"-->
