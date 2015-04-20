@@ -15,6 +15,9 @@
 		   http://www.springframework.org/schema/jee 
            http://www.springframework.org/schema/jee/spring-jee-3.2.xsd">
 
+
+	<context:property-placeholder location="classpath:email.properties"/>
+
 	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceUnitName" value="gal" />
 		<property name="dataSource" ref="galnpi"/>

@@ -1,6 +1,7 @@
 package br.ufc.npi.gal.service;
 
 import br.ufc.npi.gal.model.Disciplina;
+import br.ufc.quixada.npi.service.GenericService;
 
 public interface DisciplinaService extends GenericService<Disciplina> {
     

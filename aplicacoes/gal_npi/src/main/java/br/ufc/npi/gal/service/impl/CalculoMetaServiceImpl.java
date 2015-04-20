@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import br.ufc.npi.gal.model.Meta;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.CalculadorMeta;
 import br.ufc.npi.gal.service.CalculoMetaService;
