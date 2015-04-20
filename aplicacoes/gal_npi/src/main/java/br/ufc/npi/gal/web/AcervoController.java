@@ -69,7 +69,7 @@ public class AcervoController {
 		ExemplarConflitante exemplar = this.acervoService.find(ExemplarConflitante.class,id);
 		
 		if(exemplar == null) {
-			return "redirect:/acervo/conflitos";
+			return "/acervo/conflitos";
 		}
 		modelMap.addAttribute("exemplar", exemplar);
 		return "acervo/editar";
