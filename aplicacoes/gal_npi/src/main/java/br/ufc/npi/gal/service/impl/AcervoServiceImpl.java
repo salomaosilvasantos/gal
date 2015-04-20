@@ -77,7 +77,7 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 				
 				exemplarConflitante = validarLinha(sheet,i);
 				
-				if(exemplarConflitante.getDescricaoErro() != null || exemplarConflitante.getDescricaoErro().isEmpty() ){
+				if(exemplarConflitante.getDescricaoErro().isEmpty() ){
 					relatorioDeExemplares.add(formatarExemplar(sheet,i));
 					
 				}else{
@@ -108,13 +108,21 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 			//se não, cadastrar titulo primeiro e o exemplar dps
 			else{
 				tituloRepository.save(exemplar.getTitulo());
-				exemplarRepository.save(exemplar);
+				try{
+					exemplarRepository.save(exemplar);
+				}catch(Exception e){
+					System.err.println("Exemplar ja existente! Código do exemplar: " +exemplar.getCodigoExemplar());
+				}
 			}
 		}
 	}
 	
 	private void adicionarConflito(ExemplarConflitante conflito) {
-		exemplarConflitanteReposiroty.save(conflito);
+		try{
+			exemplarConflitanteReposiroty.save(conflito);
+		}catch(Exception e){
+			System.err.println("Exemplar ja existente! Código do exemplar: " +conflito.getCodigoExemplar());
+		}
 	}
 
 	private ExemplarConflitante validarLinha(Sheet sheet, int i) {
