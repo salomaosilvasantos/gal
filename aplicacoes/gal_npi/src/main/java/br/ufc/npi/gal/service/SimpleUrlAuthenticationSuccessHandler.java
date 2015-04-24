@@ -18,13 +18,14 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 import br.ufc.npi.gal.model.Usuario;
 import br.ufc.quixada.npi.ldap.model.Constants;
+import br.ufc.quixada.npi.ldap.service.UsuarioService;
 
 public class SimpleUrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 	
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 	
 	@Inject
-	private UsuarioGalService usuarioService;
+	private UsuarioService usuarioService; 
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -45,8 +46,15 @@ public class SimpleUrlAuthenticationSuccessHandler implements AuthenticationSucc
 	
 	private Usuario getUsuarioLogado(HttpSession session) {
 		if (session.getAttribute("usuario") == null) {
-			Usuario pessoa = usuarioService.getByCpf(SecurityContextHolder.getContext().getAuthentication().getName());
-			session.setAttribute("usuario", pessoa);
+			br.ufc.quixada.npi.ldap.model.Usuario user = usuarioService.getByCpf(SecurityContextHolder.getContext().getAuthentication().getName().toString());
+
+			Usuario usuario = new Usuario();
+			usuario.setCpf(user.getCpf());
+			usuario.setEmail(user.getEmail());
+			usuario.setNome(user.getNome());
+			usuario.setSiape(user.getSiape());
+
+			session.setAttribute("usuario", usuario);
 		}
 		return (Usuario) session.getAttribute("usuario");
 	}

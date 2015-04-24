@@ -20,7 +20,6 @@ public class UsuarioEntityListener {
 		user.setEmail(usuario.getEmail());
 		user.setNome(usuario.getNome());
 		user.setSiape(usuario.getSiape());
-
 	}
 
 }
