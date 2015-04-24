@@ -19,9 +19,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import br.ufc.npi.gal.model.Bibliografia;
 import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.model.Titulo;
-import br.ufc.npi.gal.service.BibliografiaService;
 import br.ufc.npi.gal.service.DisciplinaService;
 import br.ufc.npi.gal.service.TituloService;
+import br.ufc.quixada.npi.service.GenericService;
 
 @Controller
 @RequestMapping("/disciplina")
@@ -29,14 +29,15 @@ public class DisciplinaController {
 
 	@Inject
 	private DisciplinaService disciplinaService;
+	
 	@Inject
 	private TituloService tituloService;
+
 	@Inject
-	private BibliografiaService bibliografiaService;
+	private GenericService<Bibliografia> bibliografiaService;
 	
 	private static final String COMPLEMENTAR = "Complementar";
 	private static final String BASICA = "Básica";
-	
 	
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap, HttpSession session) {
