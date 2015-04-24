@@ -3,7 +3,6 @@ package br.ufc.npi.gal.model;
 import javax.persistence.PostLoad;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import br.ufc.quixada.npi.ldap.model.Usuario;
@@ -12,7 +11,6 @@ import br.ufc.quixada.npi.ldap.service.UsuarioService;
 public class UsuarioEntityListener {
 	
 	@PostLoad
-	@Cacheable("loadProfessor")
 	public void loadUsuario(br.ufc.npi.gal.model.Usuario user) {
 		@SuppressWarnings("resource")
 		BeanFactory context = new ClassPathXmlApplicationContext("applicationContext.xml");

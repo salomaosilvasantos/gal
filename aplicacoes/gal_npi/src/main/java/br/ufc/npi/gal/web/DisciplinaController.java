@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -18,9 +20,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import br.ufc.npi.gal.model.Bibliografia;
 import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.model.Titulo;
+import br.ufc.npi.gal.model.Usuario;
 import br.ufc.npi.gal.service.BibliografiaService;
 import br.ufc.npi.gal.service.DisciplinaService;
 import br.ufc.npi.gal.service.TituloService;
+import br.ufc.npi.gal.service.UsuarioGalService;
 
 @Controller
 @RequestMapping("/disciplina")
@@ -32,14 +36,17 @@ public class DisciplinaController {
 	private TituloService tituloService;
 	@Inject
 	private BibliografiaService bibliografiaService;
+	
+	@Inject
+	private UsuarioGalService usuarioService;
+	
 	private static final String COMPLEMENTAR = "Complementar";
 	private static final String BASICA = "Básica";
 	
 	
 	@RequestMapping(value = "/listar")
-	public String listar(ModelMap modelMap) {
-		modelMap.addAttribute("disciplinas",
-				this.disciplinaService.find(Disciplina.class));
+	public String listar(ModelMap modelMap, HttpSession session) {
+		modelMap.addAttribute("disciplinas", this.disciplinaService.find(Disciplina.class));
 		return "disciplina/listar";
 	}
 

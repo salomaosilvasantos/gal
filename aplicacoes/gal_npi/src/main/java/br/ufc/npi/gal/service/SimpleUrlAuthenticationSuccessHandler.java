@@ -3,21 +3,28 @@ package br.ufc.npi.gal.service;
 import java.io.IOException;
 import java.util.Collection;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import br.ufc.npi.gal.model.Usuario;
 import br.ufc.quixada.npi.ldap.model.Constants;
 
 public class SimpleUrlAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 	
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+	
+	@Inject
+	private UsuarioGalService usuarioService;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -32,7 +39,17 @@ public class SimpleUrlAuthenticationSuccessHandler implements AuthenticationSucc
         if(!usuarioValido) {
         	redirectStrategy.sendRedirect(request, response, "/loginfailed");
         }
+        getUsuarioLogado(request.getSession());
         redirectStrategy.sendRedirect(request, response, "/");
 	}
+	
+	private Usuario getUsuarioLogado(HttpSession session) {
+		if (session.getAttribute("usuario") == null) {
+			Usuario pessoa = usuarioService.getByCpf(SecurityContextHolder.getContext().getAuthentication().getName());
+			session.setAttribute("usuario", pessoa);
+		}
+		return (Usuario) session.getAttribute("usuario");
+	}
+	
 
 }
