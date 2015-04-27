@@ -20,7 +20,8 @@ function checkfile(sender) {
 }
 </script>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 
+ <script type="text/javascript" src="assets/js/jquery-1.7.1.js"></script>
 <title>Insert title here</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
 </head>
@@ -28,11 +29,13 @@ function checkfile(sender) {
 	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
 	
-		<form:form action="../acervo/upload" method="post" enctype="multipart/form-data" servletRelativeAction="../acervo/upload">
+		<form:form action="../acervo/upload" method="post" servletRelativeAction="../acervo/upload">
 			<p>
 				<label for="file">Arquivo para fazer upload</label> 
 				<input type="file" name="file" multiple="multiple"/> 
+				</script> 
 				<input type="submit" name="submit" value="Upload" />
+				
 			</p>
 		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />

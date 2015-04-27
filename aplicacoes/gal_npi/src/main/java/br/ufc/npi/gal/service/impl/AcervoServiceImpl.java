@@ -206,6 +206,12 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 				+sheet.getCell(COLUNA_SUB_TITULO,i) +" "+sheet.getCell(COLUNA_TITULO_REVISTA, i)+" "+sheet.getCell(COLUNA_PAGINA,i)
 				+" "+sheet.getCell(COLUNA_REF_ARTIGO,i)+" "+sheet.getCell(COLUNA_EDICAO,i)+" "+sheet.getCell(COLUNA_PUBLICADOR,i);
 	}
+	
+	private String formatarNomeTitulo(ExemplarConflitante exemplar) {
+		return exemplar.getAutor() + " " + exemplar.getTitulo() + " " + exemplar.getTitulo_n() + " " +
+				exemplar.getSubTitulo() + " " + exemplar.getTituloRevista() + " " + exemplar.getPagina() + " " +
+				exemplar.getRefArtigo() + " " + exemplar.getEdicao() + " " + exemplar.getPublicador();
+	}
 
 	private Exemplar formatarExemplar(Sheet sheet, int i) {
 		Titulo titulo = new Titulo();
@@ -216,6 +222,17 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 		Exemplar exemplar = new Exemplar();
 		exemplar.setTitulo(titulo);
 		exemplar.setCodigoExemplar(sheet.getCell(COLUNA_COD_EXEMPLAR, i).getContents());
+		return exemplar;
+	}
+	
+	private Exemplar formatarExemplar(ExemplarConflitante exemplarConflitante) {
+		Exemplar exemplar = new Exemplar();
+		Titulo titulo = new Titulo();
+		titulo.setIsbn(exemplarConflitante.getIsbn());
+		titulo.setNome(formatarNomeTitulo(exemplarConflitante));
+		titulo.setTipo("Físico");
+		exemplar.setTitulo(titulo);
+		exemplar.setCodigoExemplar(exemplarConflitante.getCodigoExemplar());
 		return exemplar;
 	}
 	
@@ -240,5 +257,38 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 			return "Código do exemplar inválido";
 		}else
 			return "valido";
+	}
+	
+	public boolean submeterExemplarConflitante(ExemplarConflitante exemplarConflitante) {
+		exemplarConflitante.setDescricaoErro("");
+		String erros = new String();
+		
+		String validadorTipo = validacaoDeTipo(exemplarConflitante.getTipo());
+		if(!validadorTipo.equals("valido")){
+			erros = validadorTipo;
+		}
+		
+		String validadorCodExemplar = formatarCodigoExemplar(exemplarConflitante.getCodigoExemplar());
+		if(!validadorCodExemplar.equals("valido")){
+			erros+= " "+validadorCodExemplar;
+		}
+		
+		String isbn = extrairIsbnDaCelula(exemplarConflitante.getIsbn());
+		String validadorIsbn = formatarIsbn(isbn);
+		if(!validadorIsbn.equals("valido")){
+			erros+=" "+validadorIsbn;
+		}
+		
+		exemplarConflitante.setDescricaoErro(erros);
+		if(exemplarConflitante.getDescricaoErro().equals("")) {
+			Exemplar exemplar = formatarExemplar(exemplarConflitante);
+			exemplarRepository.save(exemplar);
+			return true;
+		} else {
+			exemplarConflitanteReposiroty.update(exemplarConflitante);
+			return false;
+		}
+		
+
 	}
 }
