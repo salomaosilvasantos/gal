@@ -30,7 +30,7 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 	private static final int COLUNA_ISBN = 45;
 	private static final int COLUNA_COD_EXEMPLAR = 2;
 	private static final int TIPO = 26;  //0 tipo = fisico - 1 midia digital
-	//CAMPOS DO TITULO
+	//CAMPOS DO NOME TITULO
 	private static final int COLUNA_AUTOR = 36;
 	private static final int COLUNA_TITULO = 37;
 	private static final int COLUNA_TITULO_N = 38;
@@ -81,7 +81,7 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 			for (int i = 1; i < linhas-1; i++) {
 				
 				exemplarConflitante = validarLinha(sheet,i);
-				
+				exemplarConflitante.setLinha(i);
 				if(exemplarConflitante.getDescricaoErro().isEmpty() ){
 					relatorioDeExemplares.add(formatarExemplar(sheet,i));
 					

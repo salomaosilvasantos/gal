@@ -13,76 +13,66 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
-
 @Entity
-
 @Table(name = "AcervoDocumento")
 public class AcervoDocumento {
-	
+
 	@Id
-	@Column(name = "id_ef")
+	@Column(name = "id_ad")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
 	@Temporal(TemporalType.DATE)
-	private Date dataEntrada;
-	
+	private Date inicioPeridoDelta;
+
 	@Temporal(TemporalType.DATE)
-	private Date dataValidade;
-	
-	@Type(type="org.hibernate.type.BinaryType")
+	private Date finalPeridoDelta;
+
+	@Type(type = "org.hibernate.type.BinaryType")
 	private byte[] arquivo;
-	
+
 	public Integer getId() {
 		return id;
 	}
-
 
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
-
-	public Date getDataEntrada() {
-		return dataEntrada;
+	public Date getFinalPeridoDelta() {
+		return finalPeridoDelta;
 	}
 
-
-	public void setDataEntrada(Date dataEntrada) {
-		this.dataEntrada = dataEntrada;
+	public Date getInicioPeridoDelta() {
+		return inicioPeridoDelta;
 	}
 
-
-	public Date getDataValidade() {
-		return dataValidade;
+	public void setInicioPeridoDelta(Date inicioPeridoDelta) {
+		this.inicioPeridoDelta = inicioPeridoDelta;
 	}
 
-
-	public void setDataValidade(Date dataValidade) {
-		this.dataValidade = dataValidade;
+	public void setFinalPeridoDelta(Date finalPeridoDelta) {
+		this.finalPeridoDelta = finalPeridoDelta;
 	}
-
 
 	public byte[] getArquivo() {
 		return arquivo;
 	}
 
-
 	public void setArquivo(byte[] arquivo) {
 		this.arquivo = arquivo;
 	}
-	
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof AcervoDocumento) {
+		if (obj instanceof AcervoDocumento) {
 			AcervoDocumento other = (AcervoDocumento) obj;
-			if (other != null && other.getId() != null && this.id != null && other.getId().equals(this.id)) {
+			if (other != null && other.getId() != null && this.id != null
+					&& other.getId().equals(this.id)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
 
 }

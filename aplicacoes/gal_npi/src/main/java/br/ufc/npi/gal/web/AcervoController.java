@@ -32,19 +32,8 @@ public class AcervoController {
 	
 	@RequestMapping(value = "/resolver_conflitos", method = RequestMethod.GET)
 	public String resolverConflitos(ModelMap modelMap) {
-		Exemplar e = new Exemplar();
-		Exemplar e1 = new Exemplar();
-		e.setId(1);
-		e.setTitulo(new Titulo("cvjkkjcvxxcvxcvcxvcvxcxvcvxcxvcvxcvnjcvxcvkcvxcvkjxcxcvxxxxcvjjkck", "sdfasdfas", "fisico"));
-		e.setCodigoExemplar("lalala");
-		ArrayList<Exemplar> aux = new ArrayList<Exemplar>();
-		aux.add(e);
-		e1.setId(2);
-		e1.setTitulo(new Titulo("titulo", "adfasdfas", "fisico"));
-		e1.setCodigoExemplar("lululu");
-		aux.add(e1);
-		acervoService.find(ExemplarConflitante.class);
-		modelMap.addAttribute("exemplares", aux);
+		
+		modelMap.addAttribute("exemplares", acervoService.find(ExemplarConflitante.class));
 		return "acervo/conflitos";
 	}
 
