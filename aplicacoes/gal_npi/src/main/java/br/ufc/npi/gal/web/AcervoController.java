@@ -1,7 +1,5 @@
 package br.ufc.npi.gal.web;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -16,10 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import br.ufc.npi.gal.model.Disciplina;
-import br.ufc.npi.gal.model.Exemplar;
 import br.ufc.npi.gal.model.ExemplarConflitante;
-import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.service.AcervoService;
 
 @Controller
@@ -42,12 +37,11 @@ public class AcervoController {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public String uploadDoArquivoXls(HttpServletRequest request) {
+	public String uploadDoArquivoXls(MultipartHttpServletRequest request) {
 		//validar se foi enviado o arquivo
-		if(request != null){
+		if(request != null){	
 			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-			MultipartFile multipartFile = multipartRequest.getFile("file");
-			String contentType = multipartFile.getContentType();  
+			MultipartFile multipartFile = multipartRequest.getFile("file"); 
 			acervoService.processarArquivo(multipartFile);
 		}else{
 			//msg de erro, sem arquivo
