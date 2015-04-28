@@ -9,4 +9,6 @@ public interface AcervoService extends GenericService<ExemplarConflitante> {
 	
 	public abstract void processarArquivo(MultipartFile multipartFile);
 	
+	public boolean submeterExemplarConflitante(ExemplarConflitante exemplar);
+	
 }

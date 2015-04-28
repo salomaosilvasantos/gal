@@ -14,12 +14,7 @@
 <body>
 	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
-
-		<form:form action="../acervo/upload" method="post"
-			enctype="multipart/form-data"
-			servletRelativeAction="../acervo/upload">
-			
-			
+		<form:form>
 			<div  >
 				<div class="input-group date"> 
 					<input id="fim" class="data" />
@@ -33,10 +28,12 @@
 				
 			</div>
 
-			<p>
-				<label for="file">Arquivo para fazer upload</label> <input
-					type="file" name="file" required="required" /> <input
-					type="submit" name="submit" value="Upload" />
+			<p>			
+				<label for="file">Arquivo para fazer upload</label> 
+				<input type="file" name="file" multiple="multiple"/> 
+				</script> 
+				<input type="submit" name="submit" value="Upload" />
+
 			</p>
 		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />

@@ -4,15 +4,19 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.model.Exemplar;
 import br.ufc.npi.gal.model.ExemplarConflitante;
 import br.ufc.npi.gal.model.Titulo;
@@ -62,5 +66,16 @@ public class AcervoController {
 		}
 		modelMap.addAttribute("exemplar", exemplar);
 		return "acervo/editar";
+	}
+	
+	@RequestMapping(value = "/editar", method = RequestMethod.POST)
+	public String atualizar(@Valid ExemplarConflitante exemplar, BindingResult result,
+			RedirectAttributes redirectAttributes) {
+		if (acervoService.submeterExemplarConflitante(exemplar)) {
+			return "";
+		} else {
+		
+		}
+		return "";
 	}
 }
