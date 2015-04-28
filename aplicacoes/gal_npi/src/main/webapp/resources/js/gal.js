@@ -1,6 +1,7 @@
 $( document ).ready(function() {
-
 	
+	$('.data').datepicker();
+
 	$('table').dataTable(
 		{
 			iDisplayLength: 25,

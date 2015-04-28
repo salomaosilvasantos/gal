@@ -57,8 +57,8 @@
 			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">Código</label>
 			    <div class="col-sm-8">
-			    	<form:input id="codigo" class="form-control" placeholder="Código" path="codigo"/>
-			    	<form:errors path="codigo" cssClass="error" />
+			    	<form:input id="codigo" class="form-control" placeholder="Código" path="codigoExemplar"/>
+			    	<form:errors path="codigoExemplar" cssClass="error" />
 			    </div>
 			</div>
 			
@@ -73,16 +73,16 @@
 			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">sub_titulo</label>
 			    <div class="col-sm-8">
-			    	<form:input id="sub_titulo" class="form-control" placeholder="sub_titulo" path="sub_titulo"/>
-			    	<form:errors path="sub_titulo" cssClass="error" />
+			    	<form:input id="sub_titulo" class="form-control" placeholder="sub_titulo" path="subTitulo"/>
+			    	<form:errors path="subTitulo" cssClass="error" />
 			    </div>
 			</div>
 			
 			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">titulo_revista</label>
 			    <div class="col-sm-8">
-			    	<form:input id="titulo_revista" class="form-control" placeholder="titulo_revista" path="titulo_revista"/>
-			    	<form:errors path="titulo_revista" cssClass="error" />
+			    	<form:input id="titulo_revista" class="form-control" placeholder="titulo_revista" path="tituloRevista"/>
+			    	<form:errors path="tituloRevista" cssClass="error" />
 			    </div>
 			</div>
 			
@@ -105,8 +105,8 @@
 			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">ref_artigo</label>
 			    <div class="col-sm-8">
-			    	<form:input id="ref_artigo" class="form-control" placeholder="ref_artigo" path="ref_artigo"/>
-			    	<form:errors path="ref_artigo" cssClass="error" />
+			    	<form:input id="ref_artigo" class="form-control" placeholder="ref_artigo" path="refArtigo"/>
+			    	<form:errors path="refArtigo" cssClass="error" />
 			    </div>
 			</div>
 			

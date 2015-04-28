@@ -29,8 +29,8 @@
 		<datatables:table id="exemplar" data="${exemplares}" cdn="true"
 					row="exemplar" theme="bootstrap2" cssClass="table table-striped">
 				
-					<datatables:column title="Titulo">
-						<c:out value="${exemplar.titulo.nome} "></c:out>
+					<datatables:column title="Código do exemplar com conflito">
+						<c:out value="${exemplar.codigoExemplar} "></c:out>
 					</datatables:column>
 					
 					<datatables:column title="Editar">
