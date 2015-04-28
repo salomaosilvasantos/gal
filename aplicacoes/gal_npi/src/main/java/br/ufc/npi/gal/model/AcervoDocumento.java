@@ -12,6 +12,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "AcervoDocumento")
@@ -23,9 +24,11 @@ public class AcervoDocumento {
 	private Integer id;
 
 	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date inicioPeridoDelta;
 
 	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date finalPeridoDelta;
 
 	@Type(type = "org.hibernate.type.BinaryType")

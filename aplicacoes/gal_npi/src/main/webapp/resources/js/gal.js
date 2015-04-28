@@ -1,6 +1,10 @@
 $( document ).ready(function() {
 	
-	$('.data').datepicker();
+	$('.data').datepicker({
+		language: 'pt-BR',
+		autoclose: true,
+		format: "dd/mm/yyyy",
+	});
 
 	$('table').dataTable(
 		{
