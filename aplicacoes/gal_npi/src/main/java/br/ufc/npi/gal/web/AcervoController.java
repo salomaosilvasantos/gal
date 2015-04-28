@@ -46,7 +46,7 @@ public class AcervoController {
 		}else{
 			//msg de erro, sem arquivo
 		}
-		return "/resolver_conflitos";
+		return "redirect:/acervo/resolver_conflitos";
 
 	}
 	

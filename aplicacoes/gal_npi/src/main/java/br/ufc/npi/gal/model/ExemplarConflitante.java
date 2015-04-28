@@ -1,6 +1,7 @@
 package br.ufc.npi.gal.model;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,14 +11,16 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 
-@Table(name = "exemplarConflitante")
+@Table(name = "exemplarConflitante",
+uniqueConstraints={@UniqueConstraint(columnNames="cod_ef")})
+
 public class ExemplarConflitante {
+	
 	@Id
 	@Column(name = "id_ef")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	
 	@Column(unique = true ,name = "cod_ef")	
 	private String codigoExemplar;
 	
@@ -67,22 +70,6 @@ public class ExemplarConflitante {
 
 	public void setDescricaoErro(String descricaoErro) {
 		this.descricaoErro = descricaoErro;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getCodigoExemplar() {
-		return codigoExemplar;
-	}
-
-	public void setCodigoExemplar(String codigoExemplar) {
-		this.codigoExemplar = codigoExemplar;
 	}
 
 	public String getTipo() {
@@ -167,6 +154,22 @@ public class ExemplarConflitante {
 
 	public String getEdicao() {
 		return edicao;
+	}
+	
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getCodigoExemplar() {
+		return codigoExemplar;
+	}
+
+	public void setCodigoExemplar(String codigoExemplar) {
+		this.codigoExemplar = codigoExemplar;
 	}
 
 	public void setEdicao(String edicao) {
