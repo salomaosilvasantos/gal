@@ -14,22 +14,30 @@
 <body>
 	<div id="container">
 		<jsp:include page="../fragments/header.jsp" />
-		<form:form modelAttribute="acervoDocumento" servletRelativeAction="/acervo/upload" method="post" enctype="multipart/form-data">
-			<div  >
-				<div class="input-group date"> 
-					<input id="fim" class="data" />
-				</div>
-				<div class="input-group date">
-					<input id="fim" class="data" />
-				</div>
+		<div class="form-group" style="text-align: center;">
+			<label class="control-label" style="font-size: 20px;">Atualizar
+				Acervo</label>
+		</div>
+<form:form id="adicionarAcervoForm" role="form" modelAttribute="atualizacaoAcervo" servletRelativeAction="/acervo/upload" method="POST" cssClass="form-horizontal" enctype="multipart/form-data">
+			<div id="container">
+					<h3>Período do delta</h3>
+					<div >
+						<h4>Inicio do periodo</h4>
+						<form:input id="inicioPeridoDelta" path="inicioPeridoDelta" cssClass="data" />
+
+						<h4>Término do periodo</h4>
+						<form:input id="finalPeridoDelta" path="finalPeridoDelta" cssClass="data" />
+
+						<h4>Arquivo com o delta do novo acervo</h4>
+						<input type="file" name="file" id="arquivo"  /> <br>
+
+					</div><br>
+
+					
+					<input type="submit" name="submit" class="btn btn-primary" value="Atualizar" />
+					<a href="<c:url value="/index"></c:url>" class="btn btn-default">Cancelar</a>
+
 			</div>
-
-			<p>			
-				<label for="file">Arquivo para fazer upload</label> 
-				<input type="file" name="file" multiple="multiple"/> 
-				<input type="submit" name="submit" value="Upload" />
-
-			</p>
 		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />
 	</div>

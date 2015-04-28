@@ -51,6 +51,10 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 	@Inject
 	private ExemplarRepository exemplarRepository;
 	
+	@Override 
+	public void registrarAtualizacao(AcervoDocumento acervoDocumento){
+		acervoDocumentoRepository.save(acervoDocumento);
+	}
 	
 	@Override
 	public void processarArquivo(MultipartFile multipartFile) {

@@ -1,19 +1,22 @@
 package br.ufc.npi.gal.web;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import br.ufc.npi.gal.model.AcervoDocumento;
 import br.ufc.npi.gal.model.ExemplarConflitante;
 import br.ufc.npi.gal.service.AcervoService;
 
@@ -26,6 +29,7 @@ public class AcervoController {
 
 	@RequestMapping(value = "/atualizar_acervo", method = RequestMethod.GET)
 	public String atualizarAcervo(ModelMap modelMap) {
+		modelMap.addAttribute("atualizacaoAcervo", new AcervoDocumento());
 		return "acervo/atualizar";
 	}
 	
@@ -37,15 +41,17 @@ public class AcervoController {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public String uploadDoArquivoXls(MultipartHttpServletRequest request) {
-		//validar se foi enviado o arquivo
-		if(request != null){	
-			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-			MultipartFile multipartFile = multipartRequest.getFile("file"); 
-			acervoService.processarArquivo(multipartFile);
-		}else{
-			//msg de erro, sem arquivo
+	public String uploadDoArquivoXls(
+			@ModelAttribute("atualizacaoAcervo") AcervoDocumento atualizacaoAcervo,
+			@RequestParam("file") MultipartFile request) {
+		try {
+			atualizacaoAcervo.setArquivo(request.getBytes());
+			acervoService.processarArquivo(request);
+		} catch (IOException e) {
+			System.err.println("Erro ao processar arquivo: " +e.getStackTrace());
+			//avisar ao usuario do erro
 		}
+		acervoService.registrarAtualizacao(atualizacaoAcervo);
 		return "redirect:/acervo/resolver_conflitos";
 
 	}
