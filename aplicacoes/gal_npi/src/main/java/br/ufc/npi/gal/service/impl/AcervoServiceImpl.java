@@ -121,6 +121,26 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 		}
 	}
 	
+	private void realizarAtualização(Exemplar exemplar) {
+		//se ISBN ja existe no banco cadastra apenas o exemplar
+		if(tituloRepository.getTituloByIsbn(exemplar.getTitulo().getIsbn()) != null){
+			if (exemplarRepository.getExemplarByCodigo(exemplar.getCodigoExemplar()) == null) {
+				exemplar.setTitulo(tituloRepository.getTituloByIsbn(exemplar.getTitulo().getIsbn()));
+				exemplarRepository.save(exemplar);
+			}
+			
+		}
+		//se não, cadastrar titulo primeiro e o exemplar dps
+		else{
+			tituloRepository.save(exemplar.getTitulo());
+			try{
+				exemplarRepository.save(exemplar);
+			}catch(Exception e){
+				System.err.println("Exemplar ja existente! Código do exemplar: " +exemplar.getCodigoExemplar());
+			}
+		}
+	}
+	
 	private void adicionarConflito(ExemplarConflitante conflito) {
 		try{
 			exemplarConflitanteReposiroty.save(conflito);
@@ -281,7 +301,9 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 		exemplarConflitante.setDescricaoErro(erros);
 		if(exemplarConflitante.getDescricaoErro().equals("")) {
 			Exemplar exemplar = formatarExemplar(exemplarConflitante);
-			exemplarRepository.save(exemplar);
+			System.out.println("aqui");
+			realizarAtualização(exemplar);
+			exemplarConflitanteReposiroty.delete(exemplarConflitante);
 			return true;
 		} else {
 			exemplarConflitanteReposiroty.update(exemplarConflitante);

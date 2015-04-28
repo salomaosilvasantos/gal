@@ -25,7 +25,7 @@
 			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">Título</label>
 			    <div class="col-sm-8">
-			    	<form:input id="titulo" class="form-control" placeholder="Título" path="titulo" required/>
+			    	<form:input id="titulo" class="form-control" placeholder="Titulo" path="titulo" />
 			    	<form:errors path="titulo" cssClass="error" />
 			    </div>
 			</div>
@@ -33,7 +33,7 @@
 			<div class="form-group">
 			    <label for="nome" class="col-sm-1 control-label">tipo</label>
 			    <div class="col-sm-8">
-			    	<form:input id="tipo" class="form-control" placeholder="tipo" path="tipo" required/>
+			    	<form:input id="tipo" class="form-control" placeholder="tipo" path="tipo" />
 			    	<form:errors path="tipo" cssClass="error" />
 			    </div>
 			</div>
@@ -41,7 +41,7 @@
 			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">isbn</label>
 			    <div class="col-sm-8">
-			    	<form:input id="isbn" class="form-control" placeholder="isbn" path="isbn" required/>
+			    	<form:input id="isbn" class="form-control" placeholder="isbn" path="isbn" />
 			    	<form:errors path="isbn" cssClass="error" />
 			    </div>
 			</div>
@@ -127,9 +127,17 @@
 			    </div>
 			</div>
 			
+			<div class="form-group">
+			    <label for="codigo" class="col-sm-1 control-label">Descrição Erro</label>
+			    <div class="col-sm-8">
+			    	<form:input id="descricaoErro" class="form-control" placeholder="descricaoErro" path="descricaoErro"/>
+			    	<form:errors path="descricaoErro" cssClass="error" />
+			    </div>
+			</div>
+			
 			<div class="controls">
 				<input id="criar" class="btn btn-primary" type="submit" value="Salvar"/>
-				<a href="<c:url value="/resolver_conflitos"></c:url>" class="btn btn-default">Cancelar</a>
+				<a href="<c:url value="/acervo/resolver_conflitos"></c:url>" class="btn btn-default">Cancelar</a>
 			</div>
 		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />

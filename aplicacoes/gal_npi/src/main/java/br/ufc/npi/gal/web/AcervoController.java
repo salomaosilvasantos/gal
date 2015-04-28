@@ -46,7 +46,7 @@ public class AcervoController {
 		}else{
 			//msg de erro, sem arquivo
 		}
-		return "acervo/conflitos";
+		return "/resolver_conflitos";
 
 	}
 	
@@ -66,10 +66,10 @@ public class AcervoController {
 	public String atualizar(@Valid ExemplarConflitante exemplar, BindingResult result,
 			RedirectAttributes redirectAttributes) {
 		if (acervoService.submeterExemplarConflitante(exemplar)) {
-			return "";
+			return "redirect:/acervo/resolver_conflitos";	
 		} else {
-		
+			return "redirect:/acervo/resolver_conflitos";
 		}
-		return "";
+		
 	}
 }
