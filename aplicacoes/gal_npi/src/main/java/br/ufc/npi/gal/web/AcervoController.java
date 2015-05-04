@@ -43,7 +43,32 @@ public class AcervoController {
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public String uploadDoArquivoXls(
 			@ModelAttribute("atualizacaoAcervo") AcervoDocumento atualizacaoAcervo,
-			@RequestParam("file") MultipartFile request) {
+			@RequestParam("file") MultipartFile request,
+			BindingResult result) {
+		Boolean erros = false;
+		if (atualizacaoAcervo.getInicioPeridoDelta()==null) {
+			result.rejectValue("inicioPeridoDelta", "Repeat.AcervoDocumento.inicioPeridoDelta",
+					"Inicio do delta não foi determinado");
+			erros =true;
+		}
+		if (atualizacaoAcervo.getFinalPeridoDelta()==null) {
+			result.rejectValue("finalPeridoDelta", "Repeat.AcervoDocumento.finalPeridoDelta",
+					"Final do delta não foi determinado");
+			erros=true;
+		}
+		if(request.isEmpty()) {
+			result.rejectValue("arquivo", "Repeat.AcervoDocumento.arquivo",
+					"Arquivo enviado inexistente");
+			erros=true;
+		}
+		if(!TestFormato(request)) {
+			result.rejectValue("arquivo", "Repeat.AcervoDocumento.arquivo",
+					"formato do arquivo incorreto, por favor selecionar um arquivo .xls");
+			erros=true;
+		}
+		if(erros) {
+			return "acervo/atualizar";
+		}
 		try {
 			atualizacaoAcervo.setArquivo(request.getBytes());
 			acervoService.processarArquivo(request);
@@ -77,5 +102,15 @@ public class AcervoController {
 			return "redirect:/acervo/resolver_conflitos";
 		}
 		
+	}
+	
+	private boolean TestFormato(MultipartFile request) {
+		String nome = request.getOriginalFilename();
+		String extencao = (String) nome.subSequence(nome.length()-4, nome.length());
+		System.out.println(extencao);
+		if(extencao.equals(".xls")) {
+			return true;
+		}
+		return false;
 	}
 }
