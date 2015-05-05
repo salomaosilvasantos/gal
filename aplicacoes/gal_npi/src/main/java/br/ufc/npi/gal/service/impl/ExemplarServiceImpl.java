@@ -6,6 +6,7 @@ import javax.inject.Named;
 import br.ufc.npi.gal.model.Exemplar;
 import br.ufc.npi.gal.repository.ExemplarRepository;
 import br.ufc.npi.gal.service.ExemplarService;
+import br.ufc.quixada.npi.service.impl.GenericServiceImpl;
 
 @Named
 public class ExemplarServiceImpl extends GenericServiceImpl<Exemplar> implements ExemplarService {

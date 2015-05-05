@@ -1,6 +1,7 @@
 package br.ufc.npi.gal.repository;
 
 import br.ufc.npi.gal.model.Titulo;
+import br.ufc.quixada.npi.repository.GenericRepository;
 
 public interface TituloRespository extends GenericRepository<Titulo> {
 	

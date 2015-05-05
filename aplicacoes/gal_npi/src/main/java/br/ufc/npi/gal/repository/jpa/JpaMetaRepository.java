@@ -4,12 +4,13 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Meta;
 import br.ufc.npi.gal.repository.MetaRepository;
+import br.ufc.quixada.npi.enumeration.QueryType;
+import br.ufc.quixada.npi.repository.jpa.JpaGenericRepositoryImpl;
 
 @Named
-public class JpaMetaRepository extends GenericRepositoryImpl<Meta> implements
+public class JpaMetaRepository extends JpaGenericRepositoryImpl<Meta> implements
 		MetaRepository {
 
 	@Override

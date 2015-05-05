@@ -6,12 +6,13 @@ import java.util.Map;
 
 import javax.inject.Named;
 
-import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.repository.DisciplinaRepository;
+import br.ufc.quixada.npi.enumeration.QueryType;
+import br.ufc.quixada.npi.repository.jpa.JpaGenericRepositoryImpl;
 
 @Named
-public class JpaDisciplinaRepository extends GenericRepositoryImpl<Disciplina> implements DisciplinaRepository {
+public class JpaDisciplinaRepository extends JpaGenericRepositoryImpl<Disciplina> implements DisciplinaRepository {
 
 	@Override
 	public Disciplina getDisciplinaByNome(String nome) {
