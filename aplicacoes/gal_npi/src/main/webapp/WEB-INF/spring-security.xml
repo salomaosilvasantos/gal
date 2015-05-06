@@ -12,7 +12,7 @@
 		<access-denied-handler error-page="/403" />
  		<intercept-url pattern="/login*" access="permitAll" /> 
  		<intercept-url pattern="/webjars/**" access="permitAll" /> 		
- 		<intercept-url pattern="/**" access="hasAnyRole('ROLE_COORDENADOR', 'ROLE_BIBLIOTECARIO', 'ROLE_ALUNO')" />	
+ 		<intercept-url pattern="/**" access="hasAnyRole('ROLE_COORDENADOR', 'ROLE_BIBLIOTECARIO', 'ROLE_ALUNO', 'ROLE_PROFESSOR')" />	
  		
 <!-- access="ROLE_BIBLIOTECARIO , ROLE_COORDENADOR , ROLE_ALUNO"  		 -->
  		<form-login login-page="/login" default-target-url="/" 
