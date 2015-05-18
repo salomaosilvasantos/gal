@@ -6,17 +6,18 @@ import java.util.Map;
 
 import javax.inject.Named;
 
-import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Usuario;
 import br.ufc.npi.gal.repository.UsuarioRepository;
+import br.ufc.quixada.npi.enumeration.QueryType;
+import br.ufc.quixada.npi.repository.jpa.JpaGenericRepositoryImpl;
 @Named
-public class UsuarioRepositoryImpl extends GenericRepositoryImpl<Usuario> implements UsuarioRepository{
+public class UsuarioRepositoryImpl extends JpaGenericRepositoryImpl<Usuario> implements UsuarioRepository{
 
 	@Override
-	public Usuario getUsuarioByLogin(String login) {
+	public Usuario getUsuarioByLogin(String cpf) {
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("login", login);
-		List<Usuario> result = find(QueryType.JPQL, "from Usuario where login = :login", params);
+		params.put("cpf", cpf);
+		List<Usuario> result = find(QueryType.JPQL, "from Usuario where cpf = :cpf", params);
 		if(result != null && !result.isEmpty()) {
 			return result.get(0);
 		}

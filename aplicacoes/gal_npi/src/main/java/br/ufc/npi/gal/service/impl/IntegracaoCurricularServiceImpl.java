@@ -6,6 +6,7 @@ import javax.inject.Named;
 import br.ufc.npi.gal.model.IntegracaoCurricular;
 import br.ufc.npi.gal.repository.IntegracaoCurricularRepository;
 import br.ufc.npi.gal.service.IntegracaoCurricularService;
+import br.ufc.quixada.npi.service.impl.GenericServiceImpl;
 
 @Named
 public class IntegracaoCurricularServiceImpl extends GenericServiceImpl<IntegracaoCurricular> implements IntegracaoCurricularService {

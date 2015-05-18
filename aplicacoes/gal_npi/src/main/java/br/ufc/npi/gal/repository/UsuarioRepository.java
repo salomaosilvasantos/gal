@@ -1,7 +1,7 @@
 package br.ufc.npi.gal.repository;
 
-import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.model.Usuario;
+import br.ufc.quixada.npi.repository.GenericRepository;
 
 public interface UsuarioRepository extends GenericRepository<Usuario>{
 	

@@ -2,6 +2,7 @@ package br.ufc.npi.gal.repository;
 
 
 import br.ufc.npi.gal.model.Disciplina;
+import br.ufc.quixada.npi.repository.GenericRepository;
 
 public interface DisciplinaRepository extends GenericRepository<Disciplina> {
 	

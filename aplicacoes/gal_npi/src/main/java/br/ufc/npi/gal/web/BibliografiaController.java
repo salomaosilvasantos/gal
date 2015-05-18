@@ -7,14 +7,14 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import br.ufc.npi.gal.model.Bibliografia;
-import br.ufc.npi.gal.service.BibliografiaService;
+import br.ufc.quixada.npi.service.GenericService;
 
 @Controller
 @RequestMapping("bibliografia")
 public class BibliografiaController {
 	
 	@Inject
-	private BibliografiaService bibliografiaService;
+	private GenericService<Bibliografia> bibliografiaService;
 	
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {

@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import br.ufc.npi.gal.model.AcervoDocumento;
 import br.ufc.npi.gal.model.ExemplarConflitante;
 import br.ufc.npi.gal.service.AcervoService;
-import br.ufc.npi.gal.service.UsuarioService;
+import br.ufc.npi.gal.service.UsuarioServiceGal;
 
 @Controller
 @RequestMapping("acervo")
@@ -31,7 +31,7 @@ public class AcervoController {
 	private AcervoService acervoService;
 	
 	@Inject
-	private UsuarioService usuarioService;
+	private UsuarioServiceGal usuarioService;
 
 	@RequestMapping(value = "/atualizar_acervo", method = RequestMethod.GET)
 	public String atualizarAcervo(ModelMap modelMap) {

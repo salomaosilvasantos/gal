@@ -24,6 +24,7 @@ import br.ufc.npi.gal.repository.ExemplarConflitanteRepository;
 import br.ufc.npi.gal.repository.ExemplarRepository;
 import br.ufc.npi.gal.repository.TituloRespository;
 import br.ufc.npi.gal.service.AcervoService;
+import br.ufc.quixada.npi.service.impl.GenericServiceImpl;
 
 @Named
 public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> implements AcervoService {

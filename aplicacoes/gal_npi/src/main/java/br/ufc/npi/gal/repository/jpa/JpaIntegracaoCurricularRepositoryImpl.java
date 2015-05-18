@@ -6,12 +6,13 @@ import java.util.Map;
 
 import javax.inject.Named;
 
-import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.IntegracaoCurricular;
 import br.ufc.npi.gal.repository.IntegracaoCurricularRepository;
+import br.ufc.quixada.npi.enumeration.QueryType;
+import br.ufc.quixada.npi.repository.jpa.JpaGenericRepositoryImpl;
 
 @Named
-public class JpaIntegracaoCurricularRepositoryImpl extends GenericRepositoryImpl<IntegracaoCurricular> implements IntegracaoCurricularRepository{
+public class JpaIntegracaoCurricularRepositoryImpl extends JpaGenericRepositoryImpl<IntegracaoCurricular> implements IntegracaoCurricularRepository{
 
 	@Override
 	public IntegracaoCurricular getIntegracao(Integer idDisciplina, Integer idCurriculo) {
