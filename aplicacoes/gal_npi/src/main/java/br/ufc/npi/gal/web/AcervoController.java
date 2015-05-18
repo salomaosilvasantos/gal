@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import br.ufc.npi.gal.model.AcervoDocumento;
 import br.ufc.npi.gal.model.ExemplarConflitante;
 import br.ufc.npi.gal.service.AcervoService;
+import br.ufc.npi.gal.service.UsuarioService;
 
 @Controller
 @RequestMapping("acervo")
@@ -26,6 +29,9 @@ public class AcervoController {
 
 	@Inject
 	private AcervoService acervoService;
+	
+	@Inject
+	private UsuarioService usuarioService;
 
 	@RequestMapping(value = "/atualizar_acervo", method = RequestMethod.GET)
 	public String atualizarAcervo(ModelMap modelMap) {
@@ -45,6 +51,7 @@ public class AcervoController {
 			@ModelAttribute("atualizacaoAcervo") AcervoDocumento atualizacaoAcervo,
 			@RequestParam("file") MultipartFile request,
 			BindingResult result) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Boolean erros = false;
 		if (atualizacaoAcervo.getInicioPeridoDelta()==null) {
 			result.rejectValue("inicioPeridoDelta", "Repeat.AcervoDocumento.inicioPeridoDelta",
@@ -60,10 +67,9 @@ public class AcervoController {
 			result.rejectValue("arquivo", "Repeat.AcervoDocumento.arquivo",
 					"Arquivo enviado inexistente");
 			erros=true;
-		}
-		if(!TestFormato(request)) {
+		} else if(!TestFormato(request)) {
 			result.rejectValue("arquivo", "Repeat.AcervoDocumento.arquivo",
-					"formato do arquivo incorreto, por favor selecionar um arquivo .xls");
+					"formato do arquivo incorreto, por favor selecionar um arquivo xls");
 			erros=true;
 		}
 		if(erros) {
@@ -76,6 +82,7 @@ public class AcervoController {
 			System.err.println("Erro ao processar arquivo: " +e.getStackTrace());
 			//avisar ao usuario do erro
 		}
+		atualizacaoAcervo.setUsuario(usuarioService.getUsuarioByLogin(auth.getName()));
 		acervoService.registrarAtualizacao(atualizacaoAcervo);
 		return "redirect:/acervo/resolver_conflitos";
 
