@@ -11,12 +11,14 @@ import javax.validation.constraints.Size;
 
 @Entity
 @EntityListeners(UsuarioEntityListener.class)
+
 public class Usuario {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
+	@Column(unique=true, nullable=false)
 	@Size(min = 11, message="Minino 11 dígitos")
 	private String cpf;
 	

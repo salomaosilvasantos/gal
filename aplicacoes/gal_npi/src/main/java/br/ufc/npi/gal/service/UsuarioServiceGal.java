@@ -5,6 +5,6 @@ import br.ufc.quixada.npi.service.GenericService;
 
 public interface UsuarioServiceGal extends GenericService<Usuario>{
 	
-	public abstract Usuario getUsuarioByLogin(String login);
+	public abstract Usuario getUsuarioByLogin(String cpf);
 		
 }
