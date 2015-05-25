@@ -31,9 +31,12 @@
 			</div>
 			
 			<div class="form-group">
-			    <label for="nome" class="col-sm-1 control-label">tipo</label>
+			    <label for="tipo" class="col-sm-1 control-label">Tipo</label>
 			    <div class="col-sm-8">
-			    	<form:input id="tipo" class="form-control" placeholder="tipo" path="tipo" />
+			    	<form:select path="tipo" class="form-control">
+			    		<form:option value="0">Físico</form:option>
+			    		<form:option value="1">Virtual</form:option>
+			    	</form:select>
 			    	<form:errors path="tipo" cssClass="error" />
 			    </div>
 			</div>
@@ -130,7 +133,7 @@
 			<div class="form-group">
 			    <label for="codigo" class="col-sm-1 control-label">Descrição Erro</label>
 			    <div class="col-sm-8">
-			    	<form:input id="descricaoErro" class="form-control" placeholder="descricaoErro" path="descricaoErro"/>
+			    	<form:input id="descricaoErro" class="form-control" placeholder="descricaoErro" path="descricaoErro" disabled="true"/>
 			    	<form:errors path="descricaoErro" cssClass="error" />
 			    </div>
 			</div>
