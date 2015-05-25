@@ -30,6 +30,14 @@ public class Usuario {
 	
 	@Transient
 	private String siape;
+	
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
 	public String getCpf() {
 		return cpf;
