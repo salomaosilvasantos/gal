@@ -31,6 +31,24 @@ $( document ).ready(function() {
 		}
 	);
 	
+	$('table#disciplina').dataTable({
+		"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 2,3,4 ] }],
+		"bDestroy": true
+		
+	})
+	
+	$('#titulo').dataTable({
+		"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 3,4,5 ] }],
+		"bDestroy": true
+		
+	})
+	
+	$('#resultado').dataTable({
+		"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 4,7,10 ] }],
+		"bDestroy": true
+		
+	})
+
 	$('#resultadoPar').dataTable( {
         "paging":   false,
         "ordering": false,
