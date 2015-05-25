@@ -17,30 +17,48 @@
 			<label class="control-label" style="font-size: 20px;">Atualizar
 				Acervo</label>
 		</div>
-<form:form id="adicionarAcervoForm" role="form" modelAttribute="atualizacaoAcervo" servletRelativeAction="/acervo/upload" method="POST" cssClass="form-horizontal" enctype="multipart/form-data">
+		<form:form id="adicionarAcervoForm" role="form"
+			modelAttribute="atualizacaoAcervo"
+			servletRelativeAction="/acervo/upload" method="POST"
+			cssClass="form-horizontal" enctype="multipart/form-data">
 			<div id="container">
-					<h3>Período do delta</h3>
-					<div >
-						<h4>Inicio do periodo</h4>
-						<form:input id="inicioPeridoDelta" path="inicioPeridoDelta" cssClass="data" />
-						<br>
-						<form:errors path="inicioPeridoDelta" cssClass="error" />
+				<h3>Período do delta</h3>
+				<div>
+					<h4>Inicio do periodo</h4>
+					<form:input id="inicioPeridoDelta" path="inicioPeridoDelta"
+						cssClass="data" />
+					<br>
+					<form:errors path="inicioPeridoDelta" cssClass="error" />
 
-						<h4>Término do periodo</h4>
-						<form:input id="finalPeridoDelta" path="finalPeridoDelta" cssClass="data" />
-						<br>
-						<form:errors path="finalPeridoDelta" cssClass="error" />
+					<h4>Término do periodo</h4>
+					<form:input id="finalPeridoDelta" path="finalPeridoDelta"
+						cssClass="data" />
+					<br>
+					<form:errors path="finalPeridoDelta" cssClass="error" />
 
-						<h4>Arquivo com o delta do novo acervo</h4>
-						<input type="file" name="file" id="arquivo" accept="application/vnd.ms-excel    xls"> <br>
-						<form:errors path="arquivo" cssClass="error" />
+					<h4>Arquivo com o delta do novo acervo</h4>
+					<input type="file" name="file" id="arquivo"
+						accept="application/vnd.ms-excel    xls"> <br>
+					<form:errors path="arquivo" cssClass="error" />
 
-					</div><br>
+				</div>
+				<br> <input type="submit" name="submit" class="btn btn-primary"
+					value="Atualizar" /> <a href="<c:url value="/"></c:url>"
+					class="btn btn-default">Cancelar</a>
 
-					
-					<input type="submit" name="submit" class="btn btn-primary" value="Atualizar" />
-					<a href="<c:url value="/"></c:url>" class="btn btn-default">Cancelar</a>
 
+				<c:if test="${not empty atualizacoesRealizadas}">
+					<datatables:table id="disciplina" data="${atualizacoesRealizadas}" cdn="true"
+						row="atualizacao" theme="bootstrap2" cssClass="table table-striped">
+						<datatables:column title="Inicio">
+							<c:out value="${atualizacao.inicioPeridoDelta}"></c:out>
+						</datatables:column>
+
+						<datatables:column title="Final">
+							<c:out value="${atualizacao.finalPeridoDelta}"></c:out>
+						</datatables:column>
+					</datatables:table>
+				</c:if>
 			</div>
 		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />
