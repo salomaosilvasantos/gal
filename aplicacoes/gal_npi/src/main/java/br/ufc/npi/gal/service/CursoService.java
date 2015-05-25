@@ -1,6 +1,7 @@
 package br.ufc.npi.gal.service;
 
 import br.ufc.npi.gal.model.Curso;
+import br.ufc.quixada.npi.service.GenericService;
 
 public interface CursoService extends GenericService<Curso> {
     
