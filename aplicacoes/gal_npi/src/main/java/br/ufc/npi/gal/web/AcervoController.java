@@ -1,6 +1,7 @@
 package br.ufc.npi.gal.web;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.ufc.npi.gal.model.AcervoDocumento;
 import br.ufc.npi.gal.model.ExemplarConflitante;
+import br.ufc.npi.gal.service.AcervoDocumentoService;
 import br.ufc.npi.gal.service.AcervoService;
 import br.ufc.npi.gal.service.UsuarioServiceGal;
 
@@ -32,9 +34,15 @@ public class AcervoController {
 	
 	@Inject
 	private UsuarioServiceGal usuarioService;
+	
+	@Inject
+	private AcervoDocumentoService acervoDocumentoService;
 
 	@RequestMapping(value = "/atualizar_acervo", method = RequestMethod.GET)
 	public String atualizarAcervo(ModelMap modelMap) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();		
+		List<AcervoDocumento> atualizacoesRealizadas =  acervoDocumentoService.atualizacoesPorUsuario(usuarioService.getUsuarioByLogin(auth.getName())); 
+		modelMap.addAllAttributes(atualizacoesRealizadas);
 		modelMap.addAttribute("atualizacaoAcervo", new AcervoDocumento());
 		return "acervo/atualizar";
 	}

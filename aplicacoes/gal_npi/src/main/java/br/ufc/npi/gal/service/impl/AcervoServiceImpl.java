@@ -72,7 +72,7 @@ public class AcervoServiceImpl extends GenericServiceImpl<ExemplarConflitante> i
 
 	public List<Exemplar> arquivoParaLista(File planilha) {
 		Workbook workbook;
-		List<Exemplar> relatorioDeExemplares = new ArrayList<>();
+		List<Exemplar> relatorioDeExemplares = new ArrayList<Exemplar>();
 		try{
 			
 			WorkbookSettings configuracao =new WorkbookSettings();
