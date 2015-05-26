@@ -6,12 +6,13 @@ import java.util.Map;
 
 import javax.inject.Named;
 
-import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Curso;
 import br.ufc.npi.gal.repository.CursoRepository;
+import br.ufc.quixada.npi.enumeration.QueryType;
+import br.ufc.quixada.npi.repository.jpa.JpaGenericRepositoryImpl;
 
 @Named
-public class JpaCursoRepository extends GenericRepositoryImpl<Curso> implements CursoRepository {
+public class JpaCursoRepository extends JpaGenericRepositoryImpl<Curso> implements CursoRepository {
 
 	@Override
 	public Curso getCursoBySigla(String sigla) {

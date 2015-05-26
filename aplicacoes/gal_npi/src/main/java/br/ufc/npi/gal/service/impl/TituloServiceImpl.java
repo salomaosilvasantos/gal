@@ -6,6 +6,7 @@ import javax.inject.Named;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.repository.TituloRespository;
 import br.ufc.npi.gal.service.TituloService;
+import br.ufc.quixada.npi.service.impl.GenericServiceImpl;
 
 @Named
 public class TituloServiceImpl extends GenericServiceImpl<Titulo> implements TituloService {
