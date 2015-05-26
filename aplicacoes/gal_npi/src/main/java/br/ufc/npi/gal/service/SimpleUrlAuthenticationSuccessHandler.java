@@ -35,6 +35,7 @@ public class SimpleUrlAuthenticationSuccessHandler implements AuthenticationSucc
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 		boolean usuarioValido = false;
         for (GrantedAuthority grantedAuthority : authorities) {
+        	usuarioValido = true;
             if (grantedAuthority.getAuthority().equals("ROLE_" + Constants.AFFILIATION_BIBLIOTECARIO) || grantedAuthority.getAuthority().equals("ROLE_" + Constants.AFFILIATION_COORDENADOR_CURSO)) {
             	usuarioValido = true;
                 break;
