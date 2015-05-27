@@ -2,6 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="datatables"
+	uri="http://github.com/dandelion/datatables"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -42,23 +44,29 @@
 					<form:errors path="arquivo" cssClass="error" />
 
 				</div>
-				<br> <input type="submit" name="submit" class="btn btn-primary"
-					value="Atualizar" /> <a href="<c:url value="/"></c:url>"
-					class="btn btn-default">Cancelar</a>
+				<br> 
+				<input type="submit" name="submit" class="btn btn-primary" value="Atualizar" /> <a href="<c:url value="/"></c:url>"
+					class="btn btn-default">Cancelar</a> <a></a>
+				
+				<div style="text-align: center;">
+					<label class="control-label" style="font-size: 16px;">Atualizações Anteriores</label>
+				</div>
+				
+				<datatables:table id="atualizacao" data="${atualizacoesRealizadas}"
+					cdn="true" row="atualizacao" theme="bootstrap2"
+					cssClass="table table-striped">
+					<datatables:column title="Inicio">
+						<c:out value="${atualizacao.inicioPeridoDelta}"></c:out>
+					</datatables:column>
+					<datatables:column title="Final">
+						<c:out value="${atualizacao.finalPeridoDelta}"></c:out>
+					</datatables:column>
+					<datatables:column title="Arquivo">
+						<a href="<c:url value="/acervo/download/${atualizacao.id}"/>">Download
+						</a>
+					</datatables:column>
+				</datatables:table>
 
-
-				<c:if test="${not empty atualizacoesRealizadas}">
-					<datatables:table id="disciplina" data="${atualizacoesRealizadas}" cdn="true"
-						row="atualizacao" theme="bootstrap2" cssClass="table table-striped">
-						<datatables:column title="Inicio">
-							<c:out value="${atualizacao.inicioPeridoDelta}"></c:out>
-						</datatables:column>
-
-						<datatables:column title="Final">
-							<c:out value="${atualizacao.finalPeridoDelta}"></c:out>
-						</datatables:column>
-					</datatables:table>
-				</c:if>
 			</div>
 		</form:form>
 		<jsp:include page="../fragments/footer.jsp" />

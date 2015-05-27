@@ -36,6 +36,9 @@ public class AcervoDocumento {
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date finalPeridoDelta;
+	
+	@Column(name = "extensao")
+	private String extensao;
 
 	@Type(type = "org.hibernate.type.BinaryType")
 	private byte[] arquivo;
@@ -90,6 +93,14 @@ public class AcervoDocumento {
 			}
 		}
 		return false;
+	}
+	
+	public void setExtensao(String extensao) {
+		this.extensao = extensao;
+	}
+	
+	public String getExtensao() {
+		return extensao;
 	}
 
 }

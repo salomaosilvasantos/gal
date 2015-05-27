@@ -23,7 +23,7 @@ public class AcervoDocumentoRepositoryImpl extends
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", usuario.getId());
 		List<AcervoDocumento> result = find(QueryType.JPQL,
-				"from AcervoDocumento where id != :id", params);
+				"from AcervoDocumento where id_usuario = :id", params);
 		if (result != null && !result.isEmpty()) {
 			return result;
 		}

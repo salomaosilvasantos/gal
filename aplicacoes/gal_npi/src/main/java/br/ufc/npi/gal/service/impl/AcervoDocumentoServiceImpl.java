@@ -22,5 +22,4 @@ public class AcervoDocumentoServiceImpl extends GenericServiceImpl<AcervoDocumen
 		return acervoDocRepository.findDocumentosByUsuario(name);
 	}
 
-
 }
