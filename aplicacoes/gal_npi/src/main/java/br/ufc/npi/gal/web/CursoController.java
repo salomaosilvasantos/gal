@@ -33,16 +33,17 @@ public class CursoController {
 
 	@RequestMapping(value = "/listar")
 	public String listar(ModelMap modelMap) {
-		//modelMap.addAttribute("integracao", new IntegracaoCurricular());
+		modelMap.addAttribute("integracao", new IntegracaoCurricular());
 		modelMap.addAttribute("cursos", this.cursoService.find(Curso.class));
-
-		//modelMap.addAttribute("estruturas", this.estruturaService.find(EstruturaCurricular.class));
+		modelMap.addAttribute("estruturas", this.estruturaService.find(EstruturaCurricular.class));
 		return "curso/listar";
 	}
 	
 	@RequestMapping(value = "{codigo}/visualizar")
 	public String visualizar(@PathVariable("codigo") Integer codigo, ModelMap modelMap) {
 		modelMap.addAttribute("curso", this.cursoService.getCursoByCodigo(codigo));
+		modelMap.addAttribute("integracao", new IntegracaoCurricular());
+		modelMap.addAttribute("estruturas", this.estruturaService.find(EstruturaCurricular.class));
 		return "curso/visualizar";
 	}
 	

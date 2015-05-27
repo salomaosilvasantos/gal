@@ -73,7 +73,7 @@
 
 
 									</div>
-									<div id="${curriculo.id }" class="tab-pane ${active }">
+									<div id="curriculo${curriculo.id }" class="tab-pane ${active }">
 
 										<div id="button-add">
 											<a style="float: left;" class="btn btn-success"
