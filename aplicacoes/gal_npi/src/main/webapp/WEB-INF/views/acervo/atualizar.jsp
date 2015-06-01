@@ -19,39 +19,47 @@
 			<label class="control-label" style="font-size: 20px;">Atualizar
 				Acervo</label>
 		</div>
-		<form:form id="adicionarAcervoForm" role="form"
-			modelAttribute="atualizacaoAcervo"
-			servletRelativeAction="/acervo/upload" method="POST"
-			cssClass="form-horizontal" enctype="multipart/form-data">
-			<div id="container">
-				<h3>Período do delta</h3>
-				<div>
-					<h4>Inicio do periodo</h4>
-					<form:input id="inicioPeridoDelta" path="inicioPeridoDelta"
-						cssClass="data" />
-					<br>
-					<form:errors path="inicioPeridoDelta" cssClass="error" />
+		
+		<div class="row">
+			<div class="col-sm-6">
+				<form:form id="adicionarAcervoForm" role="form"
+					modelAttribute="atualizacaoAcervo"
+					servletRelativeAction="/acervo/upload" method="POST"
+					cssClass="form-horizontal" enctype="multipart/form-data">
+					<div id="formulario" style= "float: left; margin-left: 15%">
+						<h4>Nova Atualização</h4>
+						<div>
+							<h4>Inicio do periodo</h4>
+							<form:input id="inicioPeridoDelta" path="inicioPeridoDelta"
+								cssClass="data" />
+							<br>
+							<form:errors path="inicioPeridoDelta" cssClass="error" />
+		
+							<h4>Término do periodo</h4>
+							<form:input id="finalPeridoDelta" path="finalPeridoDelta"
+								cssClass="data" />
+							<br>
+							<form:errors path="finalPeridoDelta" cssClass="error" />
+		
+							<h4>Arquivo com o delta do novo acervo</h4>
+							<input type="file" name="file" id="arquivo"
+								accept="application/vnd.ms-excel    xls"> <br>
+							<form:errors path="arquivo" cssClass="error" />
+		
+						</div>
+						<br> 
+						<input type="submit" name="submit" class="btn btn-primary" value="Atualizar" /> <a href="<c:url value="/"></c:url>"
+							class="btn btn-default">Cancelar</a> <a></a>
+						
+						
+					</div>
+				</form:form>
+			</div>
 
-					<h4>Término do periodo</h4>
-					<form:input id="finalPeridoDelta" path="finalPeridoDelta"
-						cssClass="data" />
-					<br>
-					<form:errors path="finalPeridoDelta" cssClass="error" />
-
-					<h4>Arquivo com o delta do novo acervo</h4>
-					<input type="file" name="file" id="arquivo"
-						accept="application/vnd.ms-excel    xls"> <br>
-					<form:errors path="arquivo" cssClass="error" />
-
-				</div>
-				<br> 
-				<input type="submit" name="submit" class="btn btn-primary" value="Atualizar" /> <a href="<c:url value="/"></c:url>"
-					class="btn btn-default">Cancelar</a> <a></a>
-				
+			<div class="col-sm-6">
 				<div style="text-align: center;">
-					<label class="control-label" style="font-size: 16px;">Atualizações Anteriores</label>
+					<h4>Atualizações Anteriores</h4>
 				</div>
-				
 				<datatables:table id="atualizacao" data="${atualizacoesRealizadas}"
 					cdn="true" row="atualizacao" theme="bootstrap2"
 					cssClass="table table-striped">
@@ -66,10 +74,13 @@
 						</a>
 					</datatables:column>
 				</datatables:table>
-
 			</div>
-		</form:form>
-		<jsp:include page="../fragments/footer.jsp" />
+
+		</div>
 	</div>
+	<div style="clear: both;"></div>
+	
+	<jsp:include page="../fragments/footer.jsp" />
+
 </body>
 </html>
