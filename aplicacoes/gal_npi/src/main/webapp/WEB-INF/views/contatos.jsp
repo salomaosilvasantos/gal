@@ -15,13 +15,10 @@
 		<jsp:include page="fragments/header.jsp" />
 
 		<div id="informacao">
-			<p>Atendimento: Sala 1 - Segunda a Quinta - Manhã</p>
+			<p>Atendimento: NPI Sala 2 - Segunda a Sexta</p>
 			<p>Contatos:</p>
-			<p>André: andre.luisfs01@gmail.com</p>
-			<p>Vieira: vieirajf@gmail.com</p>
+			<p>Rayson Santos: rayson.ufc@gmail.com</p>
 			<p>Prof. Camilo: camilo@es.ufc.br</p>
-
-
 		</div>
 
 		<jsp:include page="fragments/footer.jsp" />
