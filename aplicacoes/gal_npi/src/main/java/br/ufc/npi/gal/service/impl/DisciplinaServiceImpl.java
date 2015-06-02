@@ -6,6 +6,7 @@ import javax.inject.Named;
 import br.ufc.npi.gal.model.Disciplina;
 import br.ufc.npi.gal.repository.DisciplinaRepository;
 import br.ufc.npi.gal.service.DisciplinaService;
+import br.ufc.quixada.npi.service.impl.GenericServiceImpl;
 
 
 @Named

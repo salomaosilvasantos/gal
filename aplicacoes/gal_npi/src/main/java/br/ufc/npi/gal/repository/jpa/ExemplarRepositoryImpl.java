@@ -6,12 +6,14 @@ import java.util.Map;
 
 import javax.inject.Named;
 
-import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Exemplar;
 import br.ufc.npi.gal.repository.ExemplarRepository;
+import br.ufc.quixada.npi.enumeration.QueryType;
+import br.ufc.quixada.npi.repository.jpa.JpaGenericRepositoryImpl;
+
 
 @Named
-public class ExemplarRepositoryImpl extends GenericRepositoryImpl<Exemplar> implements ExemplarRepository{
+public class ExemplarRepositoryImpl extends JpaGenericRepositoryImpl<Exemplar> implements ExemplarRepository{
 
 	@Override
 	public Exemplar getExemplarByCodigo(String codigoExemplar) {

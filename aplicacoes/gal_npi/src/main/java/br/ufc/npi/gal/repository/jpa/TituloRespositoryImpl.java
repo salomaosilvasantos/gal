@@ -6,12 +6,13 @@ import java.util.Map;
 
 import javax.inject.Named;
 
-import br.ufc.npi.gal.enumeration.QueryType;
 import br.ufc.npi.gal.model.Titulo;
 import br.ufc.npi.gal.repository.TituloRespository;
+import br.ufc.quixada.npi.enumeration.QueryType;
+import br.ufc.quixada.npi.repository.jpa.JpaGenericRepositoryImpl;
 
 @Named
-public class TituloRespositoryImpl extends GenericRepositoryImpl<Titulo> implements TituloRespository {
+public class TituloRespositoryImpl extends JpaGenericRepositoryImpl<Titulo> implements TituloRespository {
 
 	@Override
 	public Titulo getTituloByNome(String nome) {
