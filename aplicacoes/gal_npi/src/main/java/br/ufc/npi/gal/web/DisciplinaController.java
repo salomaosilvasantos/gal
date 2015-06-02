@@ -196,7 +196,7 @@ public class DisciplinaController {
 				biblio.setTitulo(tituloService.find(Titulo.class, id_titulo));
 				biblio.setTipoBibliografia(tipoBibliografia);
 				bibliografiaService.save(biblio);
-			}
+			} 
 		}
 		}
 		return bibliografiasAseremModificadas;

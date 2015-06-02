@@ -1,6 +1,5 @@
 $( document ).ready(function() {
 
-	
 	$('table').dataTable(
 		{
 			iDisplayLength: 25,

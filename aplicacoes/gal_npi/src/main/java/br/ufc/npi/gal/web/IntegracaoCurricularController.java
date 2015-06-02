@@ -59,7 +59,6 @@ public class IntegracaoCurricularController {
 			return "redirect:/curso/listar";
 		}
 		
-		
 		IntegracaoCurricular integracao =  new IntegracaoCurricular();
 		
 		Disciplina disciplinaBD = disciplinaService.getDisciplinaByCodigo(disciplina);
@@ -97,7 +96,6 @@ public class IntegracaoCurricularController {
 
 	@RequestMapping(value = "/{idCurriculo}/adicionar")
 	public String adicionar(ModelMap modelMap, @PathVariable("idCurriculo") Integer idCurriculo, final RedirectAttributes redirectAttributes) {
-		
 		
 		modelMap.addAttribute("idCurriculo", idCurriculo);
 		modelMap.addAttribute("integracao", new IntegracaoCurricular());
