@@ -61,8 +61,9 @@
 								class="btn btn-success"
 								href="<c:url value="/curso/${curso.codigo}/visualizar" ></c:url>">
 								<span class="glyphicon glyphicon-eye-open"></span> Visualizar
+
 							</a> <a id="editar"
-								"href="<c:url value="/curso/${curso.id }/editar" ></c:url>">
+								href="<c:url value="/curso/${curso.id}/editar" ></c:url>">
 								<button class="btn btn-primary">
 									<span class="glyphicon glyphicon-edit"></span> Editar
 								</button>
