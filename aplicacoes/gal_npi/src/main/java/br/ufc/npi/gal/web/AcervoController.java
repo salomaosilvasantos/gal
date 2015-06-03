@@ -50,7 +50,6 @@ public class AcervoController {
 		List<AcervoDocumento> atualizacoesRealizadas = acervoDocumentoService
 				.atualizacoesPorUsuario(usuarioService.getUsuarioByLogin(auth
 						.getName()));
-
 		modelMap.addAttribute("atualizacoesRealizadas", atualizacoesRealizadas);
 		modelMap.addAttribute("atualizacaoAcervo", new AcervoDocumento());
 		return "acervo/atualizar";
@@ -67,7 +66,7 @@ public class AcervoController {
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public String uploadDoArquivoXls(
 			@ModelAttribute("atualizacaoAcervo") AcervoDocumento atualizacaoAcervo,
-			@RequestParam("file") MultipartFile request, BindingResult result) {
+			@RequestParam("file") MultipartFile request, BindingResult result, RedirectAttributes redirectAttributes) {
 		Authentication auth = SecurityContextHolder.getContext()
 				.getAuthentication();
 		Boolean erros = false;
@@ -107,6 +106,10 @@ public class AcervoController {
 				.getName()));
 		atualizacaoAcervo.setExtensao(request.getContentType());
 		acervoService.registrarAtualizacao(atualizacaoAcervo);
+		
+		redirectAttributes.addFlashAttribute("info",
+				"Atualização realizada com sucesso.");
+		
 		return "redirect:/acervo/resolver_conflitos";
 
 	}

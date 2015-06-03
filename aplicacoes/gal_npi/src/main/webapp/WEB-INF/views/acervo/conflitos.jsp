@@ -20,11 +20,18 @@
 	</script>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Resolver Conflitos de Atualização de Acervo</title>
 <jsp:include page="../fragments/htmlHead.jsp" />
 </head>
 <body><div id="container">
 		<jsp:include page="../fragments/header.jsp" />
+		
+		<c:if test="${not empty info}">
+			<div class="alert alert-info alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<c:out value="${info}"></c:out>
+			</div>
+		</c:if>
 		
 		<datatables:table id="exemplar" data="${exemplares}" cdn="true"
 					row="exemplar" theme="bootstrap2" cssClass="table table-striped">
