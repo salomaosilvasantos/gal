@@ -25,13 +25,17 @@ public class SimpleUrlAuthenticationSuccessHandler implements AuthenticationSucc
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 	
 	@Inject
-	private UsuarioService usuarioService; 
+	private UsuarioService usuarioService;
+	
+	@Inject
+	private UsuarioServiceGal usuarioServiceGal;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 		boolean usuarioValido = false;
         for (GrantedAuthority grantedAuthority : authorities) {
+        	usuarioValido = true;
             if (grantedAuthority.getAuthority().equals("ROLE_" + Constants.AFFILIATION_BIBLIOTECARIO) || grantedAuthority.getAuthority().equals("ROLE_" + Constants.AFFILIATION_COORDENADOR_CURSO)) {
             	usuarioValido = true;
                 break;
@@ -40,10 +44,19 @@ public class SimpleUrlAuthenticationSuccessHandler implements AuthenticationSucc
         if(!usuarioValido) {
         	redirectStrategy.sendRedirect(request, response, "/loginfailed");
         }
-        getUsuarioLogado(request.getSession());
+        
+        RegistraUsuario(getUsuarioLogado(request.getSession()));
+               
         redirectStrategy.sendRedirect(request, response, "/");
 	}
 	
+	private void RegistraUsuario(Usuario usuarioLogado) {
+		Usuario user = usuarioServiceGal.getUsuarioByLogin(usuarioLogado.getCpf());
+		if(user==null) {
+			usuarioServiceGal.save(usuarioLogado);
+		}
+	}
+
 	private Usuario getUsuarioLogado(HttpSession session) {
 		if (session.getAttribute("usuario") == null) {
 			br.ufc.quixada.npi.ldap.model.Usuario user = usuarioService.getByCpf(SecurityContextHolder.getContext().getAuthentication().getName().toString());
