@@ -10,7 +10,26 @@ http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 		<access-denied-handler error-page="/403" />
 		<intercept-url pattern="/login*" access="permitAll" />
 		<intercept-url pattern="/webjars/**" access="permitAll" />
-		<intercept-url pattern="/**" access="hasAnyRole('ROLE_COORDENADOR_NPI', 'ROLE_BIBLIOTECARIO', 'ROLE_DOCENTE', 'ROLE_COORDENADOR_CURSO')" />
+
+		<intercept-url pattern="/curso/listar**" access="isAuthenticated()" />
+		<intercept-url pattern="/curso/**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
+		
+		<intercept-url pattern="/disciplina/listar**" access="isAuthenticated()" />
+		<intercept-url pattern="/disciplina/**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
+		
+		<intercept-url pattern="/titulo/listar**" access="isAuthenticated()" />
+		<intercept-url pattern="/titulo/**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
+		
+		
+		<intercept-url pattern="/acervo**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
+		
+		<intercept-url pattern="/estrutura**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
+		
+		<intercept-url pattern="/integracao**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
+		
+		<intercept-url pattern="/exemplar/listar**" access="isAuthenticated()" />
+		<intercept-url pattern="/exemplar/{id}/listar**" access="isAuthenticated()" />
+		<intercept-url pattern="/exemplar/**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
 
 		<form-login login-page="/login" authentication-success-handler-ref="myAuthenticationSuccessHandler" authentication-failure-url="/loginfailed" />
 		<logout logout-success-url="/login" invalidate-session="true" logout-url="/logout" />
