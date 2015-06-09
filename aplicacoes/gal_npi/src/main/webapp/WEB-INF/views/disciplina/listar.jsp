@@ -3,7 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
 <html>
@@ -28,13 +27,12 @@
 				<c:out value="${info}"></c:out>
 			</div>
 		</c:if>
-		<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
-			<div id="button-add">
-				<a href="<c:url value="/disciplina/adicionar" ></c:url>">
-					<button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Adicionar</button>
-				</a>
-			</div>
-		</sec:authorize>
+		
+		<div id="button-add">
+			<a href="<c:url value="/disciplina/adicionar" ></c:url>">
+				<button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Adicionar</button>
+			</a>
+		</div>
 		
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 20px;">Disciplinas</label>
@@ -54,21 +52,20 @@
 				<datatables:column title="Codigo">
 					<c:out value="${disciplina.codigo}"></c:out>
 				</datatables:column>
-				<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
-					<datatables:column title="Vincular">
-						<a class="btn btn-success" href="<c:url value="/disciplina/${disciplina.id }/vincular" ></c:url>"><span class="glyphicon glyphicon-link"></span></a>
-					</datatables:column>
-					
-					<datatables:column title="Editar">
-						<a class="btn btn-primary" href="<c:url value="/disciplina/${disciplina.id }/editar" ></c:url>"><span class="glyphicon glyphicon-edit"></span></a>
-					</datatables:column>
-		
-					<datatables:column title="Excluir">
-					<a id="excluir" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" href="#" data-href="<c:url value="/disciplina/${disciplina.id}/excluir" ></c:url>">
-						<span class="glyphicon glyphicon-trash"></span>
-					</a>
-					</datatables:column>
-				</sec:authorize>
+				
+				<datatables:column title="Vincular">
+					<a class="btn btn-success" href="<c:url value="/disciplina/${disciplina.id }/vincular" ></c:url>"><span class="glyphicon glyphicon-link"></span></a>
+				</datatables:column>
+				
+				<datatables:column title="Editar">
+					<a class="btn btn-primary" href="<c:url value="/disciplina/${disciplina.id }/editar" ></c:url>"><span class="glyphicon glyphicon-edit"></span></a>
+				</datatables:column>
+	
+				<datatables:column title="Excluir">
+				<a id="excluir" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" href="#" data-href="<c:url value="/disciplina/${disciplina.id}/excluir" ></c:url>">
+					<span class="glyphicon glyphicon-trash"></span>
+				</a>
+				</datatables:column>
 			</datatables:table>
 		</c:if>
 

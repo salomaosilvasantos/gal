@@ -5,7 +5,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
 <html>
@@ -34,18 +33,16 @@
 			<datatables:column title="Tipo de Bibliografia">
 				<c:out value="${bibliografia.tipoBibliografia}"></c:out>
 			</datatables:column>
-			
-			<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
-				<datatables:column title="Editar">
-					<a class="buttonAdd"
-						href="<c:url value = "/disciplina/${disciplina.id}/editar"></c:url>">Editar</a>
-				</datatables:column>
-	
-				<datatables:column title="Deletar">
-					<a class="buttonAdd"
-						href="<c:url value = "/disciplina/${disciplina.id}/excluir"></c:url>">Deletar</a>
-				</datatables:column>
-			</sec:authorize>
+
+			<datatables:column title="Editar">
+				<a class="buttonAdd"
+					href="<c:url value = "/disciplina/${disciplina.id}/editar"></c:url>">Editar</a>
+			</datatables:column>
+
+			<datatables:column title="Deletar">
+				<a class="buttonAdd"
+					href="<c:url value = "/disciplina/${disciplina.id}/excluir"></c:url>">Deletar</a>
+			</datatables:column>
 		</datatables:table>
 
 		<a class="buttonAdd" href="/gal_npi/disciplina/adicionar">Adicionar</a>
