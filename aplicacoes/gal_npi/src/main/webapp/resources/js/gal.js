@@ -1,5 +1,11 @@
 $( document ).ready(function() {
 
+	$('.data').datepicker({
+		language: 'pt-BR',
+		autoclose: true,
+		format: "dd/mm/yyyy",
+	});
+
 	$('table').dataTable(
 		{
 			iDisplayLength: 25,

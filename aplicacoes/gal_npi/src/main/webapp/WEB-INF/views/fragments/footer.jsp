@@ -21,3 +21,5 @@
 <script src="<c:url value="/resources/js/sortable.js" />"></script>
 <script src="<c:url value="/resources/js/select2.min.js" />"></script>
 <script src="<c:url value="/resources/js/select2_locale_pt-BR.js" />"></script>
+<script src="<c:url value="/resources/js/bootstrap-datepicker.js" />"></script>
+<script src="<c:url value="/resources/js/bootstrap-datepicker.pt-BR.js" />"></script>

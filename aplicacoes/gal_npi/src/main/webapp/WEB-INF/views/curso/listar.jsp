@@ -5,6 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
 <html>
@@ -33,13 +34,14 @@
 			</div>
 		</c:if>
 
-		<div id="button-add">
-			<a href="<c:url value="/curso/adicionar" ></c:url>">
-				<button class="btn btn-primary">
-					<span class="glyphicon glyphicon-plus"></span> Adicionar
-				</button>
-			</a>
-		</div>
+		<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
+			<div id="button-add">
+				<a href="<c:url value="/curso/adicionar" ></c:url>">
+					<button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Adicionar</button>
+				</a>
+			</div>
+		</sec:authorize>
+		
 
 		<div style="text-align: center; margin-bottom: 30px;">
 			<label class="control-label" style="font-size: 20px;">Cursos</label>
@@ -56,31 +58,135 @@
 							</a>
 
 						</div>
+
 						<div style="float: right;">
 							<a id="visualizar" style="margin-right: 12px"
 								class="btn btn-success"
 								href="<c:url value="/curso/${curso.codigo}/visualizar" ></c:url>">
 								<span class="glyphicon glyphicon-eye-open"></span> Visualizar
 
-							</a> <a id="editar"
-								href="<c:url value="/curso/${curso.id}/editar" ></c:url>">
-								<button class="btn btn-primary">
-									<span class="glyphicon glyphicon-edit"></span> Editar
-								</button>
-							</a> <a id="excluir" class="btn btn-danger" data-toggle="modal"
-								data-target="#confirm-delete" href="#"
-								data-href="<c:url value="/curso/${curso.id}/excluir" ></c:url>">
-								<span class="glyphicon glyphicon-trash"></span> Excluir
-							</a>
+							</a> 
+	
+						<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
+							<div style="float: right;">
+								<a id="excluir" style="float: right;" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete" href="#" data-href="<c:url value="/curso/${curso.id}/excluir" ></c:url>">
+									<span class="glyphicon glyphicon-trash"></span> Excluir
+								</a>
+								<a id="editar" href="<c:url value="/curso/${curso.id }/editar" ></c:url>">
+									<button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Editar</button>
+								</a>
+							</div>
+						</sec:authorize>
+					</div>
+									
+					<div id="collapse${curso.id}" class="panel-collapse collapse">
+						<div class="panel-body">
+							<ul class="nav nav-tabs" role="tablist">
+								<c:forEach items="${curso.curriculos}" var="curriculo" varStatus="ct">
+									<c:if test="${ct.index == 0}">
+										<c:set var="act" value="active"></c:set>
+									</c:if>
+									<c:if test="${ct.index != 0}">
+										<c:set var="act" value=""></c:set>
+									</c:if>
+									<li class="${act }"><a href="#${curriculo.id }" role="tab" data-toggle="tab">${curriculo.anoSemestre}</a></li>
+								</c:forEach>
+								<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
+									<div id="button-add">
+										<a
+											href="<c:url value="/estrutura/${curso.id}/adicionar" ></c:url>">
+											<button class="btn btn-primary">
+												<span class="glyphicon glyphicon-plus"></span> Adicionar
+												Curriculo
+											</button>
+										</a>
+									</div>
+								</sec:authorize>
+							</ul>
+							<div class="tab-content">
+								<c:forEach items="${curso.curriculos}" var="curriculo" varStatus="count">
+									<c:if test="${count.index == 0}">
+										<c:set var="active" value="active"></c:set>
+									</c:if>
+									<c:if test="${count.index != 0}">
+										<c:set var="active" value=""></c:set>
+									</c:if>
+									<div class="tab-pane ${active }" id="${curriculo.anoSemestre }">
+
+										
+
+
+									</div>
+									<div id="${curriculo.id }" class="tab-pane ${active }">
+										<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
+											<div id="button-add">
+											<a style="float: left;" class="btn btn-success" href="<c:url value="/integracao/${curriculo.id}/adicionar" ></c:url>"><span class="glyphicon glyphicon-link"></span> Vincular Disciplina</a>
+												<a id="excluir" style="float: right;" class="btn btn-danger"
+													data-toggle="modal" data-target="#confirm-delete" href="#"
+													data-href="<c:url value="/estrutura/${curriculo.id }/excluir" ></c:url>">
+													<span class="glyphicon glyphicon-trash"></span> Excluir Curriculo
+												</a> 
+												<a
+													href="<c:url value="/estrutura/${curriculo.id }/editar" ></c:url>">
+													<button class="btn btn-primary">
+														<span class="glyphicon glyphicon-plus"></span> Editar
+														Curriculo
+													</button>
+												</a>
+											</div>
+										</sec:authorize>
+										<div class="panel panel-default">
+											<datatables:table id="estrutura${curso.id}"
+												data="${curriculo.curriculos}" cdn="true" row="integracao"
+												theme="bootstrap2" cssClass="table table-striped">
+												<datatables:column title="Disciplina">
+													<c:out value="${integracao.disciplina.nome}"></c:out>
+												</datatables:column>
+
+
+												<datatables:column title="Código disciplina">
+													<c:out value="${integracao.disciplina.codigo}"></c:out>
+												</datatables:column>
+
+
+												<datatables:column title="Quantidade aluno">
+													<c:out value="${integracao.quantidadeAlunos}"></c:out>
+												</datatables:column>
+		
+												<datatables:column title="Semestre oferta">
+													<c:out value="${integracao.semestreOferta}"></c:out>
+												</datatables:column>
+												<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
+													<datatables:column title="Editar">
+														<a class="btn btn-primary"
+															href="<c:url value="/integracao/${integracao.disciplina.id}/${curriculo.id}/editar" ></c:url>"><span
+															class="glyphicon glyphicon-edit"></span></a>
+													</datatables:column>
+	
+													<datatables:column title="Excluir">
+														<a id="excluir" class="btn btn-danger" data-toggle="modal"
+															data-target="#confirm-delete" href="#"
+															data-href="<c:url value="/integracao/${integracao.disciplina.id}/${curriculo.id}/excluir" ></c:url>">
+															<span class="glyphicon glyphicon-trash"></span>
+														</a>
+													</datatables:column>
+												</sec:authorize>
+											</datatables:table>
+										</div>
+									</div>
+								</c:forEach>
+							</div>
+
 						</div>
 					</div>
+				</div>
 				</div>
 			</c:forEach>
 
 		</div>
 
 		<jsp:include page="../fragments/footer.jsp" />
-	</div>
+	
 	<script type="text/javascript">
 		
 	</script>
