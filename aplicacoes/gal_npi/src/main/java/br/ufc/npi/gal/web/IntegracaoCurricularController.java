@@ -42,12 +42,14 @@ public class IntegracaoCurricularController {
 	@RequestMapping(value = "/{idDisciplina}/{idCurriculo}/excluir", method = RequestMethod.GET)
 	public String excluir(RedirectAttributes redirectAttributes,@PathVariable("idDisciplina") Integer idDisciplina, @PathVariable("idCurriculo") Integer idCurriculo) {
 		IntegracaoCurricular integracao = integracaoService.getIntegracaoByIdDisciplinaIdCurriculo(idDisciplina, idCurriculo);
+		int codigoCurso = integracao.getEstruturaCurricular().getCurso().getCodigo();
+
 		if (integracao != null) {
 			this.integracaoService.delete(integracao);
-			redirectAttributes.addFlashAttribute("info",
-					"Integração Curricular removida com sucesso.");
+			redirectAttributes.addFlashAttribute("info", "Integração Curricular removida com sucesso.");
 		}
-		return "redirect:/curso/listar";
+		
+		return "redirect:/curso/" + codigoCurso + "/visualizar";
 	}
 	
 	@RequestMapping(value = "/adicionar", method = RequestMethod.POST)
@@ -67,16 +69,14 @@ public class IntegracaoCurricularController {
 		
 		
 		if(disciplinaBD == null){
-			redirectAttributes.addFlashAttribute("error",
-					"Código da disciplina não existe");
-			return "redirect:/curso/listar";
+			redirectAttributes.addFlashAttribute("error", "Código da disciplina não existe");
+			return "redirect:/curso/" + estruturaBD.getCurso().getCodigo() + "/visualizar";
 		}
 		
 		for (IntegracaoCurricular integracaoCurricular : integracaoList) {
 			if(integracaoCurricular.getDisciplina().equals(disciplinaBD)){
-				redirectAttributes.addFlashAttribute("error",
-						"Essa disciplina já está vinculada");
-				return "redirect:/curso/listar";
+				redirectAttributes.addFlashAttribute("error", "Essa disciplina já está vinculada");
+				return "redirect:/curso/" + estruturaBD.getCurso().getCodigo() + "/visualizar";
 			}
 		}		
 		
@@ -89,9 +89,8 @@ public class IntegracaoCurricularController {
 		
 		integracaoService.save(integracao);
 		
-		redirectAttributes.addFlashAttribute("info",
-				"Integracao Curricular adicionada com sucesso.");
-		return "redirect:/curso/listar";
+		redirectAttributes.addFlashAttribute("info", "Integracao Curricular adicionada com sucesso.");
+		return "redirect:/curso/" + estruturaBD.getCurso().getCodigo() + "/visualizar";
 	}
 
 	@RequestMapping(value = "/{idCurriculo}/adicionar")
