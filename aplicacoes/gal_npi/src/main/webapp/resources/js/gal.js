@@ -138,7 +138,7 @@ $( document ).ready(function() {
 		$(".modal-body #id").val(id);
 	});
 	 	
-	$("#disciplina").select2();
+	$("#selectDisciplina").select2();
 
 });
 
