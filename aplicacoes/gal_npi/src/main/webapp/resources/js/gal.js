@@ -22,7 +22,7 @@ $( document ).ready(function() {
 			"sZeroRecords" : "Nenhum registro encontrado",
 			"sSearch" : "Pesquisar: ",
 			"oPaginate" : {
-				"sNext" : "PróximoPróximoPróximoPróximo",
+				"sNext" : "Próximo",
 				"sPrevious" : "Anterior",
 				"sFirst" : "Primeiro",
 				"sLast" : "Último"
@@ -52,7 +52,7 @@ $( document ).ready(function() {
 			"sZeroRecords" : "Nenhum registro encontrado",
 			"sSearch" : "Pesquisar: ",
 			"oPaginate" : {
-				"sNext" : "PróximoPróximoPróximoPróximo",
+				"sNext" : "Próximo",
 				"sPrevious" : "Anterior",
 				"sFirst" : "Primeiro",
 				"sLast" : "Último"
@@ -82,7 +82,7 @@ $( document ).ready(function() {
 			"sZeroRecords" : "Nenhum registro encontrado",
 			"sSearch" : "Pesquisar: ",
 			"oPaginate" : {
-				"sNext" : "PróximoPróximoPróximoPróximo",
+				"sNext" : "Próximo",
 				"sPrevious" : "Anterior",
 				"sFirst" : "Primeiro",
 				"sLast" : "Último"
