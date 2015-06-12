@@ -8,3 +8,4 @@ public interface UsuarioRepository extends GenericRepository<Usuario>{
 	public abstract Usuario getUsuarioByLogin(String login);
 
 }
+

@@ -6,3 +6,4 @@ import br.ufc.quixada.npi.repository.GenericRepository;
 public interface ExemplarConflitanteRepository extends GenericRepository<ExemplarConflitante>{
 	
 }
+

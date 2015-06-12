@@ -8,3 +8,4 @@ public interface UsuarioServiceGal extends GenericService<Usuario>{
 	public abstract Usuario getUsuarioByLogin(String cpf);
 		
 }
+

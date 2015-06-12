@@ -25,3 +25,4 @@ public class UsuarioRepositoryImpl extends JpaGenericRepositoryImpl<Usuario> imp
 	}
 
 }
+

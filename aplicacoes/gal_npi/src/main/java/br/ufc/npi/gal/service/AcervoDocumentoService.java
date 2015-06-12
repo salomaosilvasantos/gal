@@ -11,3 +11,4 @@ public interface AcervoDocumentoService extends GenericService<AcervoDocumento>{
 	List<AcervoDocumento> atualizacoesPorUsuario(Usuario usuario);
 
 }
+
