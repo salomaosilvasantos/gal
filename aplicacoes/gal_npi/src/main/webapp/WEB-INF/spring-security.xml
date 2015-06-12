@@ -8,10 +8,15 @@ http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
 	<http auto-config="true" use-expressions="true">
 		<access-denied-handler error-page="/403" />
-		<intercept-url pattern="/login*" access="permitAll" />
-		<intercept-url pattern="/webjars/**" access="permitAll" />
+ 		<intercept-url pattern="/login*" access="permitAll" /> 
+ 		<intercept-url pattern="/webjars/**" access="permitAll" /> 		
+ 		<intercept-url pattern="/resources/**" access="permitAll" />
+
+		<intercept-url pattern="/contatos" access="isAuthenticated()" />
+		<intercept-url pattern="/inicio" access="isAuthenticated()" />
 
 		<intercept-url pattern="/curso/listar**" access="isAuthenticated()" />
+		<intercept-url pattern="/curso/{id}/visualizar**" access="isAuthenticated()" />
 		<intercept-url pattern="/curso/**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
 		
 		<intercept-url pattern="/disciplina/listar**" access="isAuthenticated()" />
@@ -30,6 +35,8 @@ http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 		<intercept-url pattern="/exemplar/listar**" access="isAuthenticated()" />
 		<intercept-url pattern="/exemplar/{id}/listar**" access="isAuthenticated()" />
 		<intercept-url pattern="/exemplar/**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
+
+		<intercept-url pattern="/**" access="hasAnyRole( 'ROLE_BIBLIOTECARIO', 'ROLE_COORDENADOR_CURSO')" />
 
 		<form-login login-page="/login" authentication-success-handler-ref="myAuthenticationSuccessHandler" authentication-failure-url="/loginfailed" />
 		<logout logout-success-url="/login" invalidate-session="true" logout-url="/logout" />

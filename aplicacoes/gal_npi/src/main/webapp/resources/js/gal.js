@@ -6,58 +6,126 @@ $( document ).ready(function() {
 		format: "dd/mm/yyyy",
 	});
 
-	$('table').dataTable(
-		{
-			iDisplayLength: 25,
-			sPaginationType : "full_numbers",
-			oLanguage : {
-				"sEmptyTable" : "Nenhum registro encontrado",
-				"sInfo" : "Mostrando _START_ até _END_ de _TOTAL_ registros",
-				"sInfoEmpty" : "Mostrar 0 até 0 de 0 Registros",
-				"sInfoFiltered" : "(Filtrar de _MAX_ total registros)",
-				"sInfoPostFix" : "",
-				"sInfoThousands" : ".",
-				"sLengthMenu" : "Mostrar _MENU_ registros por página",
-				"sLoadingRecords" : "Carregando...",
-				"sProcessing" : "Processando...",
-				"sZeroRecords" : "Nenhum registro encontrado",
-				"sSearch" : "Pesquisar: ",
-				"oPaginate" : {
-					"sNext" : "Próximo",
-					"sPrevious" : "Anterior",
-					"sFirst" : "Primeiro",
-					"sLast" : "Último"
-				},
-				"oAria" : {
-					"sSortAscending" : ": Ordenar colunas de forma ascendente",
-					"sSortDescending" : ": Ordenar colunas de forma descendente"
-				}
+	$('#disciplinaTable').dataTable({
+		iDisplayLength: 25,
+		sPaginationType : "full_numbers",
+		oLanguage : {
+			"sEmptyTable" : "Nenhum registro encontrado",
+			"sInfo" : "Mostrando _START_ até _END_ de _TOTAL_ registros",
+			"sInfoEmpty" : "Mostrar 0 até 0 de 0 Registros",
+			"sInfoFiltered" : "(Filtrar de _MAX_ total registros)",
+			"sInfoPostFix" : "",
+			"sInfoThousands" : ".",
+			"sLengthMenu" : "Mostrar _MENU_ registros por página",
+			"sLoadingRecords" : "Carregando...",
+			"sProcessing" : "Processando...",
+			"sZeroRecords" : "Nenhum registro encontrado",
+			"sSearch" : "Pesquisar: ",
+			"oPaginate" : {
+				"sNext" : "PróximoPróximoPróximoPróximo",
+				"sPrevious" : "Anterior",
+				"sFirst" : "Primeiro",
+				"sLast" : "Último"
+			},
+			"oAria" : {
+				"sSortAscending" : ": Ordenar colunas de forma ascendente",
+				"sSortDescending" : ": Ordenar colunas de forma descendente"
 			}
-		}
-	);
-	
-	$('table#disciplina').dataTable({
+		},
 		"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 2,3,4 ] }],
 		"bDestroy": true
-		
-	})
+	});
 	
-	$('#titulo').dataTable({
+	$('#tituloTable').dataTable({
+		iDisplayLength: 25,
+		sPaginationType : "full_numbers",
+		oLanguage : {
+			"sEmptyTable" : "Nenhum registro encontrado",
+			"sInfo" : "Mostrando _START_ até _END_ de _TOTAL_ registros",
+			"sInfoEmpty" : "Mostrar 0 até 0 de 0 Registros",
+			"sInfoFiltered" : "(Filtrar de _MAX_ total registros)",
+			"sInfoPostFix" : "",
+			"sInfoThousands" : ".",
+			"sLengthMenu" : "Mostrar _MENU_ registros por página",
+			"sLoadingRecords" : "Carregando...",
+			"sProcessing" : "Processando...",
+			"sZeroRecords" : "Nenhum registro encontrado",
+			"sSearch" : "Pesquisar: ",
+			"oPaginate" : {
+				"sNext" : "PróximoPróximoPróximoPróximo",
+				"sPrevious" : "Anterior",
+				"sFirst" : "Primeiro",
+				"sLast" : "Último"
+			},
+			"oAria" : {
+				"sSortAscending" : ": Ordenar colunas de forma ascendente",
+				"sSortDescending" : ": Ordenar colunas de forma descendente"
+			}
+		},
 		"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 3,4,5 ] }],
 		"bDestroy": true
-		
 	})
 	
-	$('#resultado').dataTable({
+	$('#resultadoTable').dataTable({
+		iDisplayLength: 25,
+		sPaginationType : "full_numbers",
+		oLanguage : {
+			"sEmptyTable" : "Nenhum registro encontrado",
+			"sInfo" : "Mostrando _START_ até _END_ de _TOTAL_ registros",
+			"sInfoEmpty" : "Mostrar 0 até 0 de 0 Registros",
+			"sInfoFiltered" : "(Filtrar de _MAX_ total registros)",
+			"sInfoPostFix" : "",
+			"sInfoThousands" : ".",
+			"sLengthMenu" : "Mostrar _MENU_ registros por página",
+			"sLoadingRecords" : "Carregando...",
+			"sProcessing" : "Processando...",
+			"sZeroRecords" : "Nenhum registro encontrado",
+			"sSearch" : "Pesquisar: ",
+			"oPaginate" : {
+				"sNext" : "PróximoPróximoPróximoPróximo",
+				"sPrevious" : "Anterior",
+				"sFirst" : "Primeiro",
+				"sLast" : "Último"
+			},
+			"oAria" : {
+				"sSortAscending" : ": Ordenar colunas de forma ascendente",
+				"sSortDescending" : ": Ordenar colunas de forma descendente"
+			}
+		},
 		"aoColumnDefs": [ { "bSortable": false, "aTargets": [ 4,7,10 ] }],
 		"bDestroy": true
-		
 	})
 
-	$('#resultadoPar').dataTable( {
+	$('#resultadoParTable').dataTable( {
+		iDisplayLength: 25,
+		sPaginationType : "full_numbers",
+		oLanguage : {
+			"sEmptyTable" : "Nenhum registro encontrado",
+			"sInfo" : "Mostrando _START_ até _END_ de _TOTAL_ registros",
+			"sInfoEmpty" : "Mostrar 0 até 0 de 0 Registros",
+			"sInfoFiltered" : "(Filtrar de _MAX_ total registros)",
+			"sInfoPostFix" : "",
+			"sInfoThousands" : ".",
+			"sLengthMenu" : "Mostrar _MENU_ registros por página",
+			"sLoadingRecords" : "Carregando...",
+			"sProcessing" : "Processando...",
+			"sZeroRecords" : "Nenhum registro encontrado",
+			"sSearch" : "Pesquisar: ",
+			"oPaginate" : {
+				"sNext" : "Próximo",
+				"sPrevious" : "Anterior",
+				"sFirst" : "Primeiro",
+				"sLast" : "Último"
+			},
+			"oAria" : {
+				"sSortAscending" : ": Ordenar colunas de forma ascendente",
+				"sSortDescending" : ": Ordenar colunas de forma descendente"
+			}
+		},
         "paging":   false,
         "ordering": false,
-        "info":     false
+        "info":     false,
+		"bDestroy": true
     } );
 	
 	$('#confirm-delete').on('show.bs.modal', function(e) {
@@ -81,37 +149,21 @@ $( document ).ready(function() {
 		return columns;
 	}
 	
-	$('#btn-get')
-	.click(
-			function() {
-				var data = {
-					basica : getItems('#drag-and-drop')[0],
-					complementar : getItems('#drag-and-drop')[1],
-					idDiciplina : $('#disciplinaId').val()
-				};
-				$
-						.get(
-								'/gal_npi/disciplina/vincular',
-								data)
-						.success(
-								function(data) {
-									alert('OK');
-									window.location
-											.replace('/gal_npi/disciplina/listar');
-								});
+	$('#btn-get').click(function() {
+		var data = {
+			basica : getItems('#drag-and-drop')[0],
+			complementar : getItems('#drag-and-drop')[1],
+			idDiciplina : $('#disciplinaId').val()
+		};
+		$.get('/gal_npi/disciplina/vincular', data).success(function(data) {
+			alert('OK');
+			window.location.replace('/gal_npi/disciplina/listar');
+		});
+	});
 
-			});
-	
-	
-	
-	
 	$('#drag-and-drop .sortable-list').sortable({
 		connectWith : '#drag-and-drop .sortable-list'
 	});
-	
-	
-	
-	
 
 	$("select#seleciona").change(function() { 
 		var option = $("#seleciona").val();
@@ -123,25 +175,22 @@ $( document ).ready(function() {
 		}else{
 			newUrl = "/"+url[1]+"/meta/"+(option)+"/listar";
 		}
-
 		
 		$(location).attr("href", newUrl);
-		
-		
 	});
 	
+
 	$("#seleciona").val($("#idCurso").val());
 
-	$(document).on("click", ".open-AddBookDialog",
-			function() {
+	
+	$(document).on("click", ".open-AddBookDialog", function() {
 		var id = $(this).data('id');
 		$(".modal-body #id").val(id);
 	});
-	 	
+
 	$("#selectDisciplina").select2();
 
 });
-
 
 function goBack() {
 	window.history.back()
@@ -160,5 +209,3 @@ function execmascara(){
 function soNumeros(v){
     return v.replace(/\D/g,"")
 }
-
-

@@ -33,7 +33,7 @@
 			</div>
 		</c:if>
 		
-		<datatables:table id="exemplar" data="${exemplares}" cdn="true"
+		<datatables:table id="exemplarTable" data="${exemplares}" cdn="true"
 					row="exemplar" theme="bootstrap2" cssClass="table table-striped">
 					
 					<datatables:column title="Título do exemplar com conflito">

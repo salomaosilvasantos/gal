@@ -18,7 +18,7 @@
 			<label class="control-label" style="font-size: 20px;">Integração Curricular</label>
 		</div>
 
-		<datatables:table id="integracao" data="${integracao}" cdn="true" row="integ" theme="bootstrap2" cssClass="table table-striped">
+		<datatables:table id="integracaoTable" data="${integracao}" cdn="true" row="integ" theme="bootstrap2" cssClass="table table-striped">
 			<datatables:column title="Disciplina">
 				<c:out value="${integ.disciplina.id}"></c:out>
 			</datatables:column>

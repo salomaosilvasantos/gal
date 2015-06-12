@@ -48,7 +48,7 @@
 		</c:if>
 		
 		<c:if test="${not empty exemplares}">
-			<datatables:table id="exemplar" data="${exemplares}" cdn="true"
+			<datatables:table id="exemplarTable" data="${exemplares}" cdn="true"
 				row="exemplar" theme="bootstrap2" cssClass="table table-striped">
 				<datatables:column title="Codido do Exemplar">
 					<c:out value="${exemplar.codigoExemplar}"></c:out>

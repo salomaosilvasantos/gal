@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class LoginController {
 	
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@RequestMapping(value = {"/", "/login", ""}, method = RequestMethod.GET)
 	public ModelAndView login(
 			@RequestParam(value = "error", required = false) String error,
 			@RequestParam(value = "logout", required = false) String logout) {
@@ -64,6 +64,10 @@ public class LoginController {
 	@RequestMapping(value = "/contatos", method = RequestMethod.GET)
 	public String contatos(ModelMap model) {
 		return "contatos";
-
+	}
+	
+	@RequestMapping(value = "/inicio", method = RequestMethod.GET)
+	public String inicio(ModelMap model) {
+		return "index";
 	}
 }

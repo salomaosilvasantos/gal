@@ -63,7 +63,7 @@
 
 		<c:if test="${not empty resultados}">
 
-			<datatables:table id="resultado" data="${resultados}" cdn="true"
+			<datatables:table id="resultadoTable" data="${resultados}" cdn="true"
 				row="resultado" theme="bootstrap2" cssClass="table table-striped">
 
 

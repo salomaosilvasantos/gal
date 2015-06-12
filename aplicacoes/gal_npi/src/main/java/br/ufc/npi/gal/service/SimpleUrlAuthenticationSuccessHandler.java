@@ -47,7 +47,7 @@ public class SimpleUrlAuthenticationSuccessHandler implements AuthenticationSucc
         
         RegistraUsuario(getUsuarioLogado(request.getSession()));
                
-        redirectStrategy.sendRedirect(request, response, "/");
+        redirectStrategy.sendRedirect(request, response, "/inicio");
 	}
 	
 	private void RegistraUsuario(Usuario usuarioLogado) {

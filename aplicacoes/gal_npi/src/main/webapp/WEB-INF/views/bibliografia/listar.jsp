@@ -21,7 +21,7 @@
 			<label class="control-label" style="font-size: 20px;">Bibliografia</label>
 		</div>
 
-		<datatables:table id="bibliografia" data="${bibliografia}" cdn="true"
+		<datatables:table id="bibliografiaTable" data="${bibliografia}" cdn="true"
 			row="bibliografia" theme="bootstrap2" cssClass="table table-striped">
 			<datatables:column title="Disciplina">
 				<c:out value="${bibliografia.disciplina.id}"></c:out>

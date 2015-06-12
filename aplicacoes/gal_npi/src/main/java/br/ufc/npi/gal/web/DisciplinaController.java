@@ -35,7 +35,7 @@ public class DisciplinaController {
 
 	@Inject
 	private GenericService<Bibliografia> bibliografiaService;
-	
+
 	private static final String COMPLEMENTAR = "Complementar";
 	private static final String BASICA = "Básica";
 	
