@@ -1,10 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<%@ taglib prefix="datatables"
-	uri="http://github.com/dandelion/datatables"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
 <html>
@@ -32,14 +31,15 @@
 				<c:out value="${info}"></c:out>
 			</div>
 		</c:if>
-
-		<div id="button-add">
-			<a href="<c:url value="/titulo/adicionar" ></c:url>">
-				<button class="btn btn-primary">
-					<span class="glyphicon glyphicon-plus"></span> Adicionar
-				</button>
-			</a>
-		</div>
+		<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
+			<div id="button-add">
+				<a href="<c:url value="/titulo/adicionar" ></c:url>">
+					<button class="btn btn-primary">
+						<span class="glyphicon glyphicon-plus"></span> Adicionar
+					</button>
+				</a>
+			</div>
+		</sec:authorize>
 
 		<div style="text-align: center;">
 			<label class="control-label" style="font-size: 20px;">Títulos</label>
@@ -64,21 +64,23 @@
 				<datatables:column title="Tipo">
 					<c:out value="${titulo.tipo}"></c:out>
 				</datatables:column>
-
-				<datatables:column title="Editar">
-					<a class="btn btn-primary"
-						href="<c:url value = "/titulo/${titulo.id}/editar"></c:url>">
-						<span class="glyphicon glyphicon-edit"></span>
-					</a>
-				</datatables:column>
-
-				<datatables:column title="Excluir">
-					<a id="excluir" class="btn btn-danger" data-toggle="modal"
-						data-target="#confirm-delete" href="#"
-						data-href="<c:url value="/titulo/${titulo.id}/excluir" ></c:url>">
-						<span class="glyphicon glyphicon-trash"></span>
-					</a>
-				</datatables:column>
+				
+				<sec:authorize access="hasAnyRole('ROLE_COORDENADOR_CURSO','ROLE_BIBLIOTECARIO')">
+					<datatables:column title="Editar">
+						<a class="btn btn-primary"
+							href="<c:url value = "/titulo/${titulo.id}/editar"></c:url>">
+							<span class="glyphicon glyphicon-edit"></span>
+						</a>
+					</datatables:column>
+	
+					<datatables:column title="Excluir">
+						<a id="excluir" class="btn btn-danger" data-toggle="modal"
+							data-target="#confirm-delete" href="#"
+							data-href="<c:url value="/titulo/${titulo.id}/excluir" ></c:url>">
+							<span class="glyphicon glyphicon-trash"></span>
+						</a>
+					</datatables:column>
+				</sec:authorize>
 				<datatables:column title="Exemplar">
 					<a href="<c:url value="/exemplar/${titulo.id}/listar" ></c:url>">
 						<button class="btn btn-primary">
