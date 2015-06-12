@@ -20,4 +20,3 @@ public class UsuarioServiceGalImpl extends GenericServiceImpl<Usuario> implement
 	}
 
 }
-

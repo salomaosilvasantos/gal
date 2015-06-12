@@ -74,4 +74,3 @@ public class SimpleUrlAuthenticationSuccessHandler implements AuthenticationSucc
 	
 
 }
-

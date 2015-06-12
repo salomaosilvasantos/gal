@@ -16,4 +16,3 @@ public interface AcervoService extends GenericService<ExemplarConflitante> {
 	public void registrarAtualizacao(AcervoDocumento acervoDocumento);
 	
 }
-

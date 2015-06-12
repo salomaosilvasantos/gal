@@ -13,4 +13,3 @@
 		clear: "Limpar"
 	};
 }(jQuery));
-

@@ -11,4 +11,3 @@ public interface AcervoDocumentoRepository extends GenericRepository<AcervoDocum
 	List<AcervoDocumento> findDocumentosByUsuario(Usuario name);
 
 }
-

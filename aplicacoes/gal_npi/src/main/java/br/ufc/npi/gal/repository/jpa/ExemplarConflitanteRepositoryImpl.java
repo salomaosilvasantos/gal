@@ -10,4 +10,3 @@ import br.ufc.quixada.npi.repository.jpa.JpaGenericRepositoryImpl;
 public class ExemplarConflitanteRepositoryImpl extends JpaGenericRepositoryImpl<ExemplarConflitante> implements ExemplarConflitanteRepository{
 
 }
-
