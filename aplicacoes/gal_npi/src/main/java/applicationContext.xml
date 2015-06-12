@@ -3,7 +3,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:tx="http://www.springframework.org/schema/tx"
-	
 	xmlns:jee="http://www.springframework.org/schema/jee"
 	
 	xsi:schemaLocation="http://www.springframework.org/schema/beans          
@@ -15,25 +14,38 @@
 		   http://www.springframework.org/schema/jee 
            http://www.springframework.org/schema/jee/spring-jee-3.2.xsd">
 
-
-	<context:property-placeholder location="classpath:email.properties"/>
-
-	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+	<bean id="emf"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceUnitName" value="gal" />
-		<property name="dataSource" ref="galnpi"/>
+		<property name="dataSource" ref="galnpi" />
 	</bean>
 	
 	<bean id="galnpi" class="org.springframework.jndi.JndiObjectFactoryBean">
-		<property name="jndiName" value="java:comp/env/galnpi"/>
+		<property name="jndiName" value="java:comp/env/galnpi" />
 	</bean>
 	
 	<bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="emf" />
 	</bean>
-	
+
+<!-- <<<<<<< HEAD -->
+
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basename" value="/WEB-INF/messages" />
-   </bean>
+	</bean>
+	
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="100000000" />
+	</bean>
+	
+<!-- 	<tx:annotation-driven transaction-manager="txManager" proxy-target-class="true" /> -->
+
+<!-- ======= -->
+	
+<!-- 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"> -->
+<!-- 		<property name="basename" value="/WEB-INF/messages" /> -->
+<!--    </bean> -->
    
 	<bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">
     	<property name="jndiName" value="java:comp/env/mail/Session" />
@@ -69,6 +81,5 @@
 	<context:annotation-config />
 	<context:component-scan base-package="br.ufc.npi.gal.*" />
 	<context:component-scan base-package="br.ufc.quixada.npi.*" />
-    
-    
+
 </beans>
